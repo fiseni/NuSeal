@@ -1,0 +1,12 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Target Name="NuSealLicenseValidation"
+          AfterTargets="AfterBuild"
+          Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'">
+
+    <NuSeal.LicenseValidationTask
+      MainAssemblyPath="$(TargetPath)"
+      LicensePublicKeys="$(NuSealPublicKeys)" />
+  </Target>
+
+</Project>
