@@ -1,0 +1,9 @@
+<Project>
+
+  <ItemGroup Label="Project Metadata">
+    <None Include="../../icon.png" Pack="true" PackagePath="" Visible="false" />
+    <None Include="../../readme-nuget.md" Pack="true" PackagePath="" Visible="false" />
+    <None Include="../../LICENSE.txt" Pack="true" PackagePath="" Visible="false" />
+  </ItemGroup>
+  
+</Project>
