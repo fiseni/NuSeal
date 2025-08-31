@@ -6,7 +6,7 @@
 
     <NuSeal.LicenseValidationTask
       MainAssemblyPath="$(TargetPath)"
-      LicensePublicKeys="$(NuSealPublicKeys)" />
+      NuSealConfigs="$(NuSealConfigs)" />
   </Target>
 
 </Project>

@@ -11,43 +11,43 @@ public class LicenseValidationTask : Task
     [Required]
     public string MainAssemblyPath { get; set; } = "";
 
-    public string[] LicensePublicKeys { get; set; } = [];
+    public string[] NuSealConfigs { get; set; } = [];
 
     public override bool Execute()
     {
-        PrintState();
+        PrintState(NuSealConfigs);
 
-        var keys = NormalizePublicKeys(LicensePublicKeys);
+        var configs = SanitizeConfiguration(NuSealConfigs);
 
-        PrintNormalizedKeys(keys);
+        PrintConfig(configs);
 
-        if (keys.Length == 0)
+        if (configs.Length == 0)
         {
             Log.LogWarning("No license public keys provided.");
             return true;
         }
 
-        foreach (var key in keys)
+        foreach (var config in configs)
         {
-            if (TryGetLicenseContent(key.Name, out var content))
+            if (TryGetLicenseContent(config.ProductName, out var content))
             {
                 if (string.IsNullOrWhiteSpace(content))
                 {
-                    Log.LogError($"License file for '{key.Name}' is empty.");
+                    Log.LogError($"License file for '{config.ProductName}' is empty.");
                     return false;
                 }
 
-                if (!LicenseValidator.IsValid(content, key.Value))
+                if (!LicenseValidator.IsValid(config.PublicKeyPem, content, config.ProductName))
                 {
-                    Log.LogError($"License file for '{key.Name}' is invalid.");
+                    Log.LogError($"License file for '{config.ProductName}' is invalid.");
                     return false;
                 }
 
-                Log.LogMessage(MessageImportance.High, $"License for '{key.Name}' is valid.");
+                Log.LogMessage(MessageImportance.High, $"License for '{config.ProductName}' is valid.");
             }
             else
             {
-                Log.LogError($"License file for '{key.Name}' not found.");
+                Log.LogError($"License file for '{config.ProductName}' not found.");
                 return false;
             }
         }
@@ -56,32 +56,32 @@ public class LicenseValidationTask : Task
     }
 
     // For debugging purposes
-    private void PrintState()
+    private void PrintState(string[] configs)
     {
         Log.LogMessage(MessageImportance.High, $"MainAssemblyPath: {MainAssemblyPath}");
-        foreach (var key in LicensePublicKeys)
+        foreach (var config in configs)
         {
-            Log.LogMessage(MessageImportance.High, $"PublicKey: {key}");
+            Log.LogMessage(MessageImportance.High, $"Config: {config}");
         }
     }
 
     // For debugging purposes
-    private void PrintNormalizedKeys(KeyInfo[] keys)
+    private void PrintConfig(Config[] configs)
     {
-        foreach (var key in keys)
+        foreach (var config in configs)
         {
-            Log.LogMessage(MessageImportance.High, $"Product Name: {key.Name}, Public Key: {key.Value}");
+            Log.LogMessage(MessageImportance.High, $"Product Name: {config.ProductName}, Public Key: {config.PublicKeyPem}");
         }
     }
 
-    private static KeyInfo[] NormalizePublicKeys(string[] keys)
+    private static Config[] SanitizeConfiguration(string[] configs)
     {
-        return keys
-            .Select(k => k.Split(new[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries))
-            .Where(parts => parts.Length == 2)
-            .Select(parts => new KeyInfo(parts[0].Trim(), parts[1].Trim()))
-            .GroupBy(k => k.Name)
-            .Select(g => g.Last())
+        return configs
+            .Select(x => x.Split(new[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries))
+            .Where(x => x.Length == 2)
+            .Select(x => new Config(x[0].Trim(), x[1].Trim()))
+            .GroupBy(x => x.ProductName)
+            .Select(x => x.Last())
             .ToArray();
     }
 
@@ -112,9 +112,9 @@ public class LicenseValidationTask : Task
         return false;
     }
 
-    private class KeyInfo(string name, string value)
+    private class Config(string productName, string publicKeyPem)
     {
-        public string Name { get; } = name;
-        public string Value { get; } = value;
+        public string ProductName { get; } = productName;
+        public string PublicKeyPem { get; } = publicKeyPem;
     }
 }
