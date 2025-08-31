@@ -1,8 +1,12 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.OpenSsl;
+using Org.BouncyCastle.Security;
+using System;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using Microsoft.IdentityModel.JsonWebTokens;
-using Microsoft.IdentityModel.Tokens;
 
 namespace NuSeal;
 
@@ -10,28 +14,23 @@ public sealed class LicenseValidator
 {
     public static bool IsValid(string publicKeyPem, string license, string productName)
     {
-        using var rsa = RSA.Create();
-
         // Note: ImportFromPem is available in .NET 5.0 and later
-        //rsa.ImportFromPem(publicKeyPem.AsSpan());
-
+        // We'll use BouncyCastle for netstandard2.0
+        using var rsa = CreateRsaFromPem(publicKeyPem);
         var key = new RsaSecurityKey(rsa);
 
         var validationParameters = new TokenValidationParameters
         {
             ValidateLifetime = true,
             RequireExpirationTime = true,
-            RequireSignedTokens = false,
-            //ValidateIssuer = true,
-            //ValidateAudience = true,
-            //ValidIssuer = "a",
-            //ValidAudience = "b",
+            RequireSignedTokens = true,
+            ValidateIssuer = false,
+            ValidateAudience = false,
             IssuerSigningKey = key,
             ClockSkew = TimeSpan.FromMinutes(5)
         };
 
         var handler = new JsonWebTokenHandler();
-
         var result = handler.ValidateTokenAsync(license, validationParameters).Result;
 
         if (result.IsValid is false)
@@ -45,5 +44,21 @@ public sealed class LicenseValidator
             return false;
 
         return productClaim.Equals(productName, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static RSA CreateRsaFromPem(string pem)
+    {
+        using var reader = new StringReader(pem);
+        var pemReader = new PemReader(reader);
+        var obj = pemReader.ReadObject();
+
+        if (obj is RsaKeyParameters rsaKeyParams)
+        {
+            return DotNetUtilities.ToRSA(rsaKeyParams);
+        }
+        else
+        {
+            throw new ArgumentException("PEM string does not contain a valid RSA public key.", nameof(pem));
+        }
     }
 }
