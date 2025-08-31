@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Package Metadata">
-    <Version>0.0.1</Version>
+    <Version>0.0.1-alpha2</Version>
     <PackageId>NuSeal</PackageId>
     <Title>NuSeal</Title>
     <Description>An MSBuild task for NuGet package license validation.</Description>
