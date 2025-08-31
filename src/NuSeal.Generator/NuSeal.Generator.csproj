@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\ProjectMetadata.props" />
+  <Import Project="..\ProjectMetadata.targets" />
+
+  <PropertyGroup>
+    <AssemblyName>NuSeal.Generator</AssemblyName>
+    <RootNamespace>NuSeal</RootNamespace>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Package Metadata">
+    <Version>0.0.1</Version>
+    <PackageId>NuSeal.Generator</PackageId>
+    <Title>NuSeal.Generator</Title>
+    <Description>A library for generating licenses for NuSeal.</Description>
+    <Summary>A library for generating licenses for NuSeal.</Summary>
+    <PackageTags>fiseni pozitron nuseal nuget license</PackageTags>
+    <PackageReleaseNotes>
+      Refer to Releases page for details.
+      https://github.com/fiseni/NuSeal/releases
+    </PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Build and Packaging">
+    <DebugType>embedded</DebugType>
+    <EmbedAllSources>true</EmbedAllSources>
+    <Deterministic>true</Deterministic>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+</Project>

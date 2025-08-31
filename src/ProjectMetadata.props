@@ -4,7 +4,7 @@
     <Authors>Fati Iseni</Authors>
     <Company>Pozitron Group</Company>
     <Copyright>Copyright © 2025 Pozitron Group</Copyright>
-    <Product>NuGet Package License Validation</Product>
+    <Product>NuSeal License Validation</Product>
 
     <PackageProjectUrl>https://github.com/fiseni/NuSeal</PackageProjectUrl>
     <RepositoryUrl>https://github.com/fiseni/NuSeal</RepositoryUrl>

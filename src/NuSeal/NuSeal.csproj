@@ -13,11 +13,11 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Package Metadata">
-    <Version>0.0.1-alpha2</Version>
+    <Version>0.0.1</Version>
     <PackageId>NuSeal</PackageId>
     <Title>NuSeal</Title>
-    <Description>An MSBuild task for NuGet package license validation.</Description>
-    <Summary>An MSBuild task for NuGet package license validation.</Summary>
+    <Description>An MSBuild task for validating NuGet package licenses.</Description>
+    <Summary>An MSBuild task for validating NuGet package licenses.</Summary>
     <PackageTags>fiseni pozitron nuseal nuget license msbuild</PackageTags>
     <PackageReleaseNotes>
       Refer to Releases page for details.
