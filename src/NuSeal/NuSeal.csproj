@@ -48,6 +48,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Build.Utilities.Core" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" PrivateAssets="all" />
   </ItemGroup>
 
   <Target
