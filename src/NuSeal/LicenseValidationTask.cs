@@ -2,6 +2,7 @@
 using Microsoft.Build.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -15,8 +16,11 @@ public class LicenseValidationTask : Task
 
     public override bool Execute()
     {
+        Debugger.Launch();
+
         try
         {
+            Log.LogMessage(MessageImportance.High, $"NuSeal: Starting.");
             var dllFiles = GetDllFiles();
             var pemConfigs = GetPemConfigs(dllFiles);
             if (pemConfigs.Length == 0)
@@ -72,13 +76,16 @@ public class LicenseValidationTask : Task
 
         var dllFiles = allDllFiles
             .Where(x =>
-                !x.Equals(MainAssemblyPath, StringComparison.OrdinalIgnoreCase) &&
-                !x.StartsWith("NuSeal", StringComparison.OrdinalIgnoreCase) &&
-                !x.StartsWith("System", StringComparison.OrdinalIgnoreCase) &&
-                !x.StartsWith("Microsoft", StringComparison.OrdinalIgnoreCase) &&
-                !x.StartsWith("netstandard", StringComparison.OrdinalIgnoreCase) &&
-                !x.StartsWith("Windows", StringComparison.OrdinalIgnoreCase)
-            )
+            {
+                var fileName = Path.GetFileName(x);
+                return
+                    !x.Equals(MainAssemblyPath, StringComparison.OrdinalIgnoreCase) &&
+                    !fileName.StartsWith("NuSeal", StringComparison.OrdinalIgnoreCase) &&
+                    !fileName.StartsWith("System", StringComparison.OrdinalIgnoreCase) &&
+                    !fileName.StartsWith("Microsoft", StringComparison.OrdinalIgnoreCase) &&
+                    !fileName.StartsWith("netstandard", StringComparison.OrdinalIgnoreCase) &&
+                    !fileName.StartsWith("Windows", StringComparison.OrdinalIgnoreCase);
+            })
             .ToArray();
 
         Log.LogMessage(MessageImportance.High, $"NuSeal: Found {dllFiles.Length} DLL files to scan for NuSeal protected packages.");
@@ -236,17 +243,5 @@ public class LicenseValidationTask : Task
 
         licenseContent = string.Empty;
         return false;
-    }
-
-    private class PemConfig
-    {
-        public PemConfig(string productName, string publicKeyPem)
-        {
-            ProductName = productName;
-            PublicKeyPem = publicKeyPem;
-        }
-
-        public string ProductName { get; }
-        public string PublicKeyPem { get; }
     }
 }
