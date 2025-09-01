@@ -20,7 +20,6 @@ public class LicenseValidationTask : Task
 
         try
         {
-            Log.LogMessage(MessageImportance.High, $"NuSeal: Starting.");
             var dllFiles = GetDllFiles();
             var pemConfigs = GetPemConfigs(dllFiles);
             if (pemConfigs.Length == 0)
