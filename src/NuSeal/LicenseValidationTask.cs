@@ -19,10 +19,9 @@ public class LicenseValidationTask : Task
         {
             var dllFiles = GetDllFiles();
             var pemConfigs = GetPemConfigs(dllFiles);
-
             if (pemConfigs.Length == 0)
             {
-                Log.LogWarning("NuSeal: No public key PEM resources found in any NuSeal-protected assemblies.");
+                Log.LogWarning("NuSeal: No public key PEM resources found in any NuSeal protected assemblies.");
                 return true;
             }
 
@@ -107,10 +106,10 @@ public class LicenseValidationTask : Task
 
                 var assembly = Assembly.LoadFrom(dllFile);
 
-                //if (!HasNuSealProtectedAttribute(assembly))
-                //{
-                //    continue;
-                //}
+                if (!assembly.GetCustomAttributes<NuSealProtectedAttribute>().Any())
+                {
+                    continue;
+                }
 
                 var resourceNames = assembly.GetManifestResourceNames();
                 var pemResources = resourceNames
@@ -161,18 +160,6 @@ public class LicenseValidationTask : Task
             .ToArray();
 
         return uniquePemConfigs;
-    }
-
-    private bool HasNuSealProtectedAttribute(Assembly assembly)
-    {
-        try
-        {
-            return assembly.GetCustomAttributes<NuSealProtectedAttribute>().Any();
-        }
-        catch
-        {
-            return false;
-        }
     }
 
     private static bool IsLikelyManagedAssembly(string filePath)
