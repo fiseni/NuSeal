@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Package Metadata">
-    <Version>0.0.1</Version>
+    <Version>0.0.1-alpha3</Version>
     <PackageId>NuSeal</PackageId>
     <Title>NuSeal</Title>
     <Description>An MSBuild task for validating NuGet package licenses.</Description>
@@ -35,10 +35,10 @@
 
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage;CopyAssemblyToPackage</TargetsForTfmSpecificBuildOutput>
     <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
     <!--<DevelopmentDependency>true</DevelopmentDependency>-->
-    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <!--<SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>-->
     <NoPackageAnalysis>true</NoPackageAnalysis>
   </PropertyGroup>
 
@@ -61,6 +61,18 @@
       <BuildOutputInPackage
         Include="@(ReferenceCopyLocalPaths)"
         TargetPath="%(ReferenceCopyLocalPaths.DestinationSubPath)" />
+
+    </ItemGroup>
+  </Target>
+
+  <Target
+    Name="CopyAssemblyToPackage"
+    DependsOnTargets="ResolveReferences">
+
+    <ItemGroup>
+      <BuildOutputInPackage
+        Include="$(TargetDir)$(AssemblyName).dll"
+        TargetPath="..\..\lib\$(TargetFramework)" />
     </ItemGroup>
   </Target>
 
