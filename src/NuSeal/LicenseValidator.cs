@@ -14,36 +14,50 @@ public sealed class LicenseValidator
 {
     public static bool IsValid(string publicKeyPem, string license, string productName)
     {
-        // Note: ImportFromPem is available in .NET 5.0 and later
-        // We'll use BouncyCastle for netstandard2.0
-        using var rsa = CreateRsaFromPem(publicKeyPem);
-        var key = new RsaSecurityKey(rsa);
-
-        var validationParameters = new TokenValidationParameters
+        if (string.IsNullOrWhiteSpace(publicKeyPem)
+            || string.IsNullOrWhiteSpace(license)
+            || string.IsNullOrWhiteSpace(productName))
         {
-            ValidateLifetime = true,
-            RequireExpirationTime = true,
-            RequireSignedTokens = true,
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            IssuerSigningKey = key,
-            ClockSkew = TimeSpan.FromMinutes(5)
-        };
-
-        var handler = new JsonWebTokenHandler();
-        var result = handler.ValidateTokenAsync(license, validationParameters).Result;
-
-        if (result.IsValid is false)
             return false;
+        }
 
-        // Parse the token and check the "product" claim
-        var jwt = handler.ReadJsonWebToken(license);
-        var productClaim = jwt.Claims.FirstOrDefault(c => c.Type == "product")?.Value;
+        try
+        {
 
-        if (productClaim is null)
-            return false;
+            // Note: ImportFromPem is available in .NET 5.0 and later
+            // We'll use BouncyCastle for netstandard2.0
+            using var rsa = CreateRsaFromPem(publicKeyPem);
+            var key = new RsaSecurityKey(rsa);
 
-        return productClaim.Equals(productName, StringComparison.OrdinalIgnoreCase);
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateLifetime = true,
+                RequireExpirationTime = true,
+                RequireSignedTokens = true,
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                IssuerSigningKey = key,
+                ClockSkew = TimeSpan.FromMinutes(5)
+            };
+
+            var handler = new JsonWebTokenHandler();
+            var result = handler.ValidateTokenAsync(license, validationParameters).Result;
+
+            if (result.IsValid is false)
+                return false;
+
+            // Parse the token and check the "product" claim
+            var jwt = handler.ReadJsonWebToken(license);
+            var productClaim = jwt.Claims.FirstOrDefault(c => c.Type == "product")?.Value;
+
+            if (productClaim is null)
+                return false;
+
+            return productClaim.Equals(productName, StringComparison.OrdinalIgnoreCase);
+        }
+        catch { }
+
+        return false;
     }
 
     private static RSA CreateRsaFromPem(string pem)

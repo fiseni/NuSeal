@@ -1,5 +1,6 @@
 ﻿using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using Mono.Cecil;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,62 +20,73 @@ public class LicenseValidationTask : Task
 
         try
         {
-            var dllFiles = GetDllFiles();
-            var pemConfigs = GetPemConfigs(dllFiles);
-
-            if (pemConfigs.Length == 0)
+            var outputDirectory = Path.GetDirectoryName(MainAssemblyPath);
+            if (string.IsNullOrEmpty(outputDirectory))
             {
-                Log.LogWarning("NuSeal: No public key resources found in any NuSeal protected assemblies.");
+                Log.LogWarning($"NuSeal: Cannot determine output directory from MainAssemblyPath: {MainAssemblyPath}");
                 return true;
             }
 
-            foreach (var config in pemConfigs)
+            var dllFiles = GetDllFiles(outputDirectory, MainAssemblyPath);
+            if (dllFiles.Length == 0)
             {
-                if (!TryGetLicenseContent(config.ProductName, out var licenseContent))
-                {
-                    Log.LogError($"NuSeal: License file for '{config.ProductName}' not found.");
-                    return false;
-                }
+                Log.LogWarning("NuSeal: No applicable dll files found in the output directory.");
+                return true;
+            }
 
-                if (string.IsNullOrWhiteSpace(licenseContent))
+            foreach (var dllFile in dllFiles)
+            {
+                try
                 {
-                    Log.LogError($"NuSeal: License file for '{config.ProductName}' is empty.");
-                    return false;
-                }
+                    var assembly = AssemblyDefinition.ReadAssembly(dllFile);
 
-                if (!LicenseValidator.IsValid(config.PublicKeyPem, licenseContent, config.ProductName))
+                    var hasNuSealAttribute = assembly.CustomAttributes
+                        .Any(attr => attr.AttributeType.FullName == typeof(NuSealProtectedAttribute).FullName);
+
+                    if (hasNuSealAttribute is false)
+                        continue;
+
+                    var pemConfigs = ExtractPemFromAssembly(assembly);
+
+                    if (pemConfigs.Count == 0)
+                    {
+                        Log.LogWarning($"NuSeal: No public key resources found for {dllFile}.");
+                        return true;
+                    }
+
+                    var hasValidLicense = pemConfigs.Any(config =>
+                        TryGetLicenseContent(MainAssemblyPath, config.ProductName, out var licenseContent)
+                        && LicenseValidator.IsValid(config.PublicKeyPem, licenseContent, config.ProductName));
+
+                    if (hasValidLicense is false)
+                    {
+                        Log.LogError($"NuSeal: No valid license found for {dllFile}.");
+                        return false;
+                    }
+                }
+                catch (Exception ex)
                 {
-                    Log.LogError($"NuSeal: License file for '{config.ProductName}' is invalid.");
-                    return false;
+                    Log.LogWarning($"NuSeal: Failed to process {dllFile}. Error: {ex.Message}");
                 }
-
-                Log.LogMessage(MessageImportance.High, $"NuSeal: License for '{config.ProductName}' is valid.");
             }
 
             return true;
         }
         catch (Exception ex)
         {
-            Log.LogErrorFromException(ex, true);
-            return false;
+            Log.LogWarningFromException(ex, true);
+            return true;
         }
     }
 
-    private string[] GetDllFiles()
+    private static string[] GetDllFiles(string directory, string mainAssemblyPath)
     {
-        var outputDirectory = Path.GetDirectoryName(MainAssemblyPath);
-        if (string.IsNullOrEmpty(outputDirectory))
-        {
-            Log.LogWarning($"NuSeal: Cannot determine output directory from MainAssemblyPath: {MainAssemblyPath}");
-            return Array.Empty<string>();
-        }
-
-        var dllFiles = Directory.GetFiles(outputDirectory, "*.dll")
+        var dllFiles = Directory.GetFiles(directory, "*.dll")
             .Where(x =>
             {
                 var fileName = Path.GetFileName(x);
                 return
-                    !x.Equals(MainAssemblyPath, StringComparison.OrdinalIgnoreCase) &&
+                    !x.Equals(mainAssemblyPath, StringComparison.OrdinalIgnoreCase) &&
                     !fileName.StartsWith("NuSeal", StringComparison.OrdinalIgnoreCase) &&
                     !fileName.StartsWith("System", StringComparison.OrdinalIgnoreCase) &&
                     !fileName.StartsWith("Microsoft", StringComparison.OrdinalIgnoreCase) &&
@@ -86,74 +98,49 @@ public class LicenseValidationTask : Task
         return dllFiles;
     }
 
-    private PemConfig[] GetPemConfigs(string[] dllFiles)
+    private static readonly char[] _resourceNameDelimiter = new[] { '.' };
+    private static List<PemConfig> ExtractPemFromAssembly(AssemblyDefinition assembly)
     {
-        if (dllFiles.Length == 0)
-        {
-            return Array.Empty<PemConfig>();
-        }
-
         var pemConfigs = new List<PemConfig>();
 
-        foreach (var dllFile in dllFiles)
+        if (assembly.MainModule.HasResources is false)
         {
-            try
+            return pemConfigs;
+        }
+
+        const string pemFileSuffix = "nuseal.pem";
+
+        foreach (var resource in assembly.MainModule.Resources)
+        {
+            if (resource is EmbeddedResource embeddedResource
+                && embeddedResource.Name.EndsWith(pemFileSuffix, StringComparison.OrdinalIgnoreCase))
             {
-                var fileContent = File.ReadAllText(dllFile);
-                if (!fileContent.Contains("NuSealProtectedAttribute"))
+                using var stream = embeddedResource.GetResourceStream();
+                using var reader = new StreamReader(stream);
+                var pemContent = reader.ReadToEnd();
+
+                var parts = embeddedResource.Name.Split(_resourceNameDelimiter, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length < 3)
                 {
                     continue;
                 }
 
-                var pemConfig = ExtractPemConfig(fileContent);
-                if (pemConfig is not null)
-                {
-                    pemConfigs.Add(pemConfig);
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.LogWarningFromException(ex, true);
+                var productName = parts[parts.Length - 3]; // Get the part before "nuseal.pem"
+                var pemConfig = new PemConfig(productName, pemContent);
+                pemConfigs.Add(pemConfig);
             }
         }
 
-        var uniquePemConfigs = pemConfigs
-            .GroupBy(x => x.ProductName)
-            .Select(g => g.First())
-            .ToArray();
-
-        return uniquePemConfigs;
+        return pemConfigs;
     }
 
-    private static PemConfig? ExtractPemConfig(string fileContent)
-    {
-        const string startToken = "-----BEGIN";
-        const string endToken = "KEY-----";
-
-        int startIndex = fileContent.IndexOf(startToken, 0);
-        if (startIndex == -1) return null;
-        int endIndex = fileContent.IndexOf(endToken, startIndex);
-        if (endIndex == -1) return null;
-        endIndex += endToken.Length;
-        endIndex = fileContent.IndexOf(endToken, endIndex);
-        if (endIndex == -1) return null;
-        endIndex += endToken.Length;
-
-        var pemContent = fileContent.Substring(startIndex, endIndex - startIndex);
-        var resourceNameIndex = fileContent.LastIndexOf(".nuseal.pem", startIndex);
-        var dotIndex = fileContent.LastIndexOf('.', resourceNameIndex - 1);
-        var productName = fileContent.Substring(dotIndex + 1, resourceNameIndex - dotIndex - 1).Trim();
-
-        return new PemConfig(productName, pemContent);
-    }
-
-    private bool TryGetLicenseContent(string productName, out string licenseContent)
+    private static bool TryGetLicenseContent(string mainAssemblyPath, string productName, out string licenseContent)
     {
         var licenseFileName = $"{productName}.license";
 
         try
         {
-            var dir = new DirectoryInfo(Path.GetDirectoryName(MainAssemblyPath)!);
+            var dir = new DirectoryInfo(Path.GetDirectoryName(mainAssemblyPath)!);
             while (dir is not null)
             {
                 var file = Path.Combine(dir.FullName, licenseFileName);
@@ -165,12 +152,23 @@ public class LicenseValidationTask : Task
                 dir = dir.Parent;
             }
         }
-        catch (Exception ex)
+        catch
         {
-            Log.LogWarningFromException(ex, true);
         }
 
         licenseContent = string.Empty;
         return false;
+    }
+
+    private class PemConfig
+    {
+        public PemConfig(string productName, string publicKeyPem)
+        {
+            ProductName = productName;
+            PublicKeyPem = publicKeyPem;
+        }
+
+        public string ProductName { get; }
+        public string PublicKeyPem { get; }
     }
 }

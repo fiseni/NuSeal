@@ -205,7 +205,7 @@ public class LicenseValidationTask_Option3 : Task
         }
     }
 
-    private static readonly char[] _delimiter = new[] { ',' };
+    private static readonly char[] _delimiter = new[] { '.' };
 
     private static bool TryExtractProductNameFromResourceName(string resourceName, out string productName)
     {
@@ -245,5 +245,17 @@ public class LicenseValidationTask_Option3 : Task
 
         licenseContent = string.Empty;
         return false;
+    }
+
+    private class PemConfig
+    {
+        public PemConfig(string productName, string publicKeyPem)
+        {
+            ProductName = productName;
+            PublicKeyPem = publicKeyPem;
+        }
+
+        public string ProductName { get; }
+        public string PublicKeyPem { get; }
     }
 }
