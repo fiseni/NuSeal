@@ -14,7 +14,6 @@ public class NuSealLicense
         string productName,
         string edition,
         string issuer,
-        string audience,
         DateTimeOffset startDate,
         DateTimeOffset expirationDate)
     {
@@ -38,7 +37,7 @@ public class NuSealLicense
             Expires = expirationDate.UtcDateTime,
             NotBefore = startDate.UtcDateTime,
             Issuer = issuer,
-            Audience = audience,
+            Audience = "NuSeal",
             SigningCredentials = credentials
         };
 
