@@ -34,7 +34,7 @@
     <GenerateDependencyFile>true</GenerateDependencyFile>
 
     <IsPackable>true</IsPackable>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage;CopyAssemblyToPackage</TargetsForTfmSpecificBuildOutput>
     <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
     <!--<DevelopmentDependency>true</DevelopmentDependency>-->
