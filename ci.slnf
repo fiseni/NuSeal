@@ -2,7 +2,7 @@
   "solution": {
     "path": "NuSeal.sln",
     "projects": [
-      "src\\NuSeal\\NuSeal.csproj"
+      "src\\NuSeal\\NuSeal.csproj",
       "src\\NuSeal.Generator\\NuSeal.Generator.csproj"
     ]
   }
