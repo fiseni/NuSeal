@@ -116,6 +116,15 @@ End users of your protected NuGet package need to:
 
 The license file should be named `YourProductName.license` where `YourProductName` matches the `productName` parameter used when creating the license.
 
+## Validation Criteria
+
+- The license is validated against the following criteria:
+  - The license is signed with the private key corresponding to the embedded public key
+  - The license has not expired
+  - The `product` claim in the license matches the product name associated with the public key
+- The validation occurs only for the "executable" assemblies (i.e., those that produce an application, not a library). This is determined by
+checking whether the `OutputType` is `Exe` or `WinExe`, or the SDK is `Microsoft.NET.Sdk.Web`. This is done to avoid cluttering the build output for large solutions with many library projects, but I'm open to suggestions from the community.
+
 ## How It Works
 
 1. NuSeal runs during the build process
