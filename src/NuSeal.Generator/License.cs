@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 
 namespace NuSeal;
 
-public class NuSealLicense
+public class License
 {
     public static string Create(
         string privateKeyPem,

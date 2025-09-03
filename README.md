@@ -54,7 +54,7 @@ Keep the private key secure and confidential, as it will be used to sign license
 Once you have the key pair, you can create licenses for your product:
 
 ```csharp
-var license = NuSealLicense.Create(
+var license = NuSeal.License.Create(
     privateKeyPem: keys.PrivateKey,
     subscriptionId: "00000000-0000-0000-0000-000000000000",
     productName: "YourProductName",
