@@ -16,8 +16,8 @@
     <Version>0.1.0</Version>
     <PackageId>NuSeal</PackageId>
     <Title>NuSeal</Title>
-    <Description>An MSBuild task for validating NuGet package licenses.</Description>
-    <Summary>An MSBuild task for validating NuGet package licenses.</Summary>
+    <Description>A library that validates licenses during build time.</Description>
+    <Summary>A library that validates licenses during build time.</Summary>
     <PackageTags>fiseni pozitron nuseal nuget license msbuild</PackageTags>
     <PackageReleaseNotes>
       Refer to Releases page for details.

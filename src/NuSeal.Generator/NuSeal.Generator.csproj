@@ -16,8 +16,8 @@
     <Version>0.1.0</Version>
     <PackageId>NuSeal.Generator</PackageId>
     <Title>NuSeal.Generator</Title>
-    <Description>A library for generating licenses for NuSeal.</Description>
-    <Summary>A library for generating licenses for NuSeal.</Summary>
+    <Description>A helper library for generating licenses for NuSeal.</Description>
+    <Summary>A helper library for generating licenses for NuSeal.</Summary>
     <PackageTags>fiseni pozitron nuseal nuget license</PackageTags>
     <PackageReleaseNotes>
       Refer to Releases page for details.
