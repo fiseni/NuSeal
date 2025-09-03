@@ -50,7 +50,8 @@ public class LicenseValidationTask : Task
 
                     if (pemConfigs.Count == 0)
                     {
-                        Log.LogWarning($"NuSeal: No public key resources found for {dllFile}.");
+                        var fileName = Path.GetFileNameWithoutExtension(dllFile);
+                        Log.LogWarning($"NuSeal: No public key resources found for {fileName}. Path: {dllFile}.");
                         return true;
                     }
 
@@ -60,7 +61,8 @@ public class LicenseValidationTask : Task
 
                     if (hasValidLicense is false)
                     {
-                        Log.LogError($"NuSeal: No valid license found for {dllFile}.");
+                        var fileName = Path.GetFileNameWithoutExtension(dllFile);
+                        Log.LogError($"NuSeal: No valid license found for {fileName}. Path: {dllFile}.");
                         return false;
                     }
                 }
