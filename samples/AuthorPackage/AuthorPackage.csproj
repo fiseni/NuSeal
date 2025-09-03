@@ -10,4 +10,8 @@
     <PackageReference Include="NuSeal" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="YourProductName.nuseal.pem" />
+  </ItemGroup>
+
 </Project>
