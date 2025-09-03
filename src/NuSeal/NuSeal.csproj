@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Package Metadata">
-    <Version>0.0.1-alpha3</Version>
+    <Version>0.1.0</Version>
     <PackageId>NuSeal</PackageId>
     <Title>NuSeal</Title>
     <Description>An MSBuild task for validating NuGet package licenses.</Description>
@@ -34,7 +34,7 @@
     <GenerateDependencyFile>true</GenerateDependencyFile>
 
     <IsPackable>true</IsPackable>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage;CopyAssemblyToPackage</TargetsForTfmSpecificBuildOutput>
     <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
     <!--<DevelopmentDependency>true</DevelopmentDependency>-->
