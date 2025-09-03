@@ -15,10 +15,17 @@ NuSeal provides infrastructure for creating and validating NuGet package license
 
 NuSeal consists of two main packages:
 
-1. **NuSeal** - Core package that validates licenses during build time
-2. **NuSeal.Generator** - Helper package for generating RSA key pairs and licenses
+1. **NuSeal** - Core package that validates licenses during build time (`netstandar2.0` library)
+2. **NuSeal.Generator** - Helper package for generating RSA key pairs and licenses (`net8.0` library)
 
 ## Usage Guide
+
+### TL;DR
+
+- Authors create RSA key pairs. They may create them using `NuSeal.Generator`.
+- Authors create licenses for their users using `NuSeal.Generator`. License files are named `YourProductName.license`.
+- Authors embed the public key in their NuGet package using `NuSeal`. The public key file is named `YourProductName.nuseal.pem`.
+- End users obtain a license file and place it in their project directory.
 
 ### For Package Authors
 
