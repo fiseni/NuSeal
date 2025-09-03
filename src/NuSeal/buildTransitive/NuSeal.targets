@@ -1,5 +1,15 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <Target Name="InjectNuSealProtectedAttribute"
+          BeforeTargets="BeforeCompile"
+          Condition="'@(PackageReference->WithMetadataValue('Identity', 'NuSeal')->'%(Identity)'->Count())' != 0">
+
+    <Message Importance="High" Text="Injected attribute" />
+    <ItemGroup>
+      <AssemblyAttribute Include="NuSeal.NuSealProtectedAttribute" />
+    </ItemGroup>
+  </Target>
+
   <Target Name="NuSealLicenseValidation"
           AfterTargets="AfterBuild"
           Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'">
