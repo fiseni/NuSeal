@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: contains(github.event.release.tag_name, 'nuseal-generator-')
+    if: contains(github.event.release.tag_name, 'nuseal-generator-v')
 
     steps:
     - name: Checkout

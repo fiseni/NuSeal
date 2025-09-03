@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: contains(github.event.release.tag_name, 'nuseal-')
+    if: contains(github.event.release.tag_name, 'nuseal-v')
 
     steps:
     - name: Checkout
