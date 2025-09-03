@@ -23,7 +23,6 @@ public sealed class LicenseValidator
 
         try
         {
-
             // Note: ImportFromPem is available in .NET 5.0 and later
             // We'll use BouncyCastle for netstandard2.0
             using var rsa = CreateRsaFromPem(publicKeyPem);

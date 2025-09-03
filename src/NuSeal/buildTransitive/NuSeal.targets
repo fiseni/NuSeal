@@ -4,7 +4,6 @@
           BeforeTargets="BeforeCompile"
           Condition="'@(PackageReference->WithMetadataValue('Identity', 'NuSeal')->'%(Identity)'->Count())' != 0">
 
-    <Message Importance="High" Text="Injected attribute" />
     <ItemGroup>
       <AssemblyAttribute Include="NuSeal.NuSealProtectedAttribute" />
     </ItemGroup>
