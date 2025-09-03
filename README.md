@@ -9,13 +9,13 @@
 ---
 # NuSeal
 
-NuSeal provides infrastructure for creating and validating NuGet package licenses. The validation occurs during build time, preventing unauthorized usage of your packages. It's designed to be generic while allowing each product package to set its own public key and license policies.
+NuSeal provides infrastructure for creating and validating NuGet package licenses. The validation occurs during build time (offline), preventing unauthorized usage of your packages. It's designed to be generic while allowing each product package to set its own public key and license policies.
 
 ## Overview
 
 NuSeal consists of two main packages:
 
-1. **NuSeal** - Core package that validates licenses during build time (`netstandar2.0` library)
+1. **NuSeal** - Core package that validates licenses during build time (`netstandard2.0` library)
 2. **NuSeal.Generator** - Helper package for generating RSA key pairs and licenses (`net8.0` library)
 
 ## Usage Guide
@@ -112,9 +112,11 @@ End users of your protected NuGet package need to:
 1. Obtain a license file from you (the package author)
 2. Place the license file in one of these locations:
    - Same directory as the application executable
-   - Root of the solution or repository
+   - Anywhere in the directory tree.
 
 The license file should be named `YourProductName.license` where `YourProductName` matches the `productName` parameter used when creating the license.
+
+<strong>Important:</strong> Avoid checking the license file into source control to prevent leakages.
 
 ## Validation Criteria
 
