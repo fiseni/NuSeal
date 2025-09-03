@@ -24,8 +24,9 @@ NuSeal consists of two main packages:
 
 - Authors create RSA key pairs. They may create them using `NuSeal.Generator`.
 - Authors create licenses for their users using `NuSeal.Generator`. License files are named `YourProductName.license`.
-- Authors embed the public key in their NuGet package using `NuSeal`. The public key file is named `YourProductName.nuseal.pem`.
-- End users obtain a license file and place it in their project directory.
+- Authors install the `NuSeal` package in their NuGet package to protect it.
+- Authors embed the public key in their NuGet package. The public key file is named `YourProductName.nuseal.pem`.
+- End users obtain a license file and place it anywhere in their project directory tree.
 
 ### For Package Authors
 
@@ -111,7 +112,7 @@ End users of your protected NuGet package need to:
 
 1. Obtain a license file from you (the package author)
 2. Place the license file in one of these locations:
-   - Same directory as the application executable
+   - In the solution/repository root directory.
    - Anywhere in the directory tree.
 
 The license file should be named `YourProductName.license` where `YourProductName` matches the `productName` parameter used when creating the license.
