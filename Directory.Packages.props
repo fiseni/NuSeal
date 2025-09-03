@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Sample projects">
+    <PackageVersion Include="NuSeal" Version="0.1.1-beta21" />
   </ItemGroup>
 
   <ItemGroup Label="Transitive Updates">
