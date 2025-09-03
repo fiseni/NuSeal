@@ -2,15 +2,17 @@
 using Microsoft.Build.Utilities;
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 
-namespace NuSeal;
+namespace NuSeal.Internal;
 
 // I explored the idea of package authors passing the public key directly via MSBuild properties.
 // But it seems too cumbersome to manage long PEM strings in project files.
 // Also, it would require authors to add and pack targets in buildTransitive which may/may not be confusing.
-public class LicenseValidationTask_Option2 : Task
+[ExcludeFromCodeCoverage]
+internal class LicenseValidationTask_Option2 : Task
 {
     [Required]
     public string MainAssemblyPath { get; set; } = "";

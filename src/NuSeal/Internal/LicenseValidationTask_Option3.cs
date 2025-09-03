@@ -3,16 +3,18 @@ using Microsoft.Build.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace NuSeal;
+namespace NuSeal.Internal;
 
 // This was the most elegant idea.
 // The package authors just add the pem file and include it as an embedded resource.
 // However, the MSBuild task does not run on .NET, and is unable to load .NET assemblies.
-public class LicenseValidationTask_Option3 : Task
+[ExcludeFromCodeCoverage]
+internal class LicenseValidationTask_Option3 : Task
 {
     [Required]
     public string MainAssemblyPath { get; set; } = "";

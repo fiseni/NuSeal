@@ -3,14 +3,16 @@ using Microsoft.Build.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 
-namespace NuSeal;
+namespace NuSeal.Internal;
 
 // Parsing the assembly files as text to extract the embedded public key PEM and product name
-// Very simplistic approach. It works but I'm not confident. It may fail in some edge cases.
-public class LicenseValidationTask_Option4 : Task
+// Very simplistic and rudimentary approach. It works for simple scenarios with a single pem, but I'm not confident.
+[ExcludeFromCodeCoverage]
+internal class LicenseValidationTask_Option4 : Task
 {
     [Required]
     public string MainAssemblyPath { get; set; } = "";
@@ -132,9 +134,9 @@ public class LicenseValidationTask_Option4 : Task
         const string startToken = "-----BEGIN";
         const string endToken = "KEY-----";
 
-        int startIndex = fileContent.IndexOf(startToken, 0);
+        var startIndex = fileContent.IndexOf(startToken, 0);
         if (startIndex == -1) return null;
-        int endIndex = fileContent.IndexOf(endToken, startIndex);
+        var endIndex = fileContent.IndexOf(endToken, startIndex);
         if (endIndex == -1) return null;
         endIndex += endToken.Length;
         endIndex = fileContent.IndexOf(endToken, endIndex);
