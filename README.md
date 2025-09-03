@@ -2,7 +2,7 @@
 
 &nbsp; [![NuGet](https://img.shields.io/nuget/v/NuSeal.svg)](https://www.nuget.org/packages/NuSeal)
 
-&nbsp; [![Full Build](https://github.com/fiseni/NuSeal/actions/workflows/build.yml/badge.svg)](https://github.com/fiseni/NuSeal/actions/workflows/build.yml)
+&nbsp; [![Actions Status](https://github.com/fiseni/NuSeal/actions/workflows/ci.yml/badge.svg)](https://github.com/fiseni/NuSeal/actions/workflows/ci.yml)
 
 &nbsp; 
 
