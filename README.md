@@ -35,7 +35,7 @@ Package authors first need to create public/private key pairs. You can use the `
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="NuSeal.Generator" Version="0.0.1" />
+  <PackageReference Include="NuSeal.Generator" Version="0.1.0" />
 </ItemGroup>
 ```
 
@@ -94,7 +94,7 @@ Then, add your public key as an embedded resource. The file should be named `You
 </ItemGroup>
 ```
 
-The package authors may include more than one pem file. It's a common practice that authors provide licenses for a single package or a bundle of packages. In this case, the author may include multiple pem files.
+The package authors may include more than one pem file. It's a common practice that authors provide licenses for a single package or a bundle of packages. In this case, the author may include multiple pem files. If the public pem is the same (created both licenses with the same private key), you still need to include pem file per product. 
 
 ```xml
 <ItemGroup>
