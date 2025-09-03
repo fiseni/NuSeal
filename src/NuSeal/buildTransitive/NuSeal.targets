@@ -2,7 +2,7 @@
 
   <Target Name="InjectNuSealProtectedAttribute"
           BeforeTargets="BeforeCompile"
-          Condition="'@(PackageReference->WithMetadataValue('Identity', 'NuSeal')->'%(Identity)'->Count())' != 0">
+          Condition="$(NuSealPackageReferenced) != 0">
 
     <ItemGroup>
       <AssemblyAttribute Include="NuSeal.NuSealProtectedAttribute" />
