@@ -10,6 +10,7 @@
     <ProjectReference Include="..\..\src\NuSeal\NuSeal.csproj" />
   </ItemGroup>
 
+  <Import Project="..\..\src\NuSeal\build\NuSeal.targets" />
   <Import Project="..\..\src\NuSeal\buildTransitive\NuSeal.props" />
   <Import Project="..\..\src\NuSeal\buildTransitive\NuSeal.targets" />
 

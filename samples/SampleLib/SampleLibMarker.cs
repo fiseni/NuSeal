@@ -1,7 +1,4 @@
-﻿
-[assembly: NuSeal.NuSealProtected]
-
-namespace SampleLib;
+﻿namespace SampleLib;
 
 public class SampleLibMarker
 {
