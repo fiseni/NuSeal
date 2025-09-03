@@ -1,13 +1,13 @@
-name: Release All Packages
+name: Release NuSeal.Generator
 
-on: 
+on:
   release:
     types: [published]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.release.tag_name, 'nuseal-') && !contains(github.event.release.tag_name, 'nuseal-generator-')"
+    if: contains(github.event.release.tag_name, 'nuseal-generator-')
 
     steps:
     - name: Checkout
@@ -28,4 +28,4 @@ jobs:
       run: dotnet pack ci.slnf --configuration Release --no-build --no-restore --output .
 
     - name: Push to NuGet
-      run: dotnet nuget push "*.nupkg" --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push "NuSeal.Generator.*.nupkg" --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json

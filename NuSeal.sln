@@ -10,12 +10,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_meta", "_meta", "{02EA681E
 		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
+		.github\workflows\ci.yml = .github\workflows\ci.yml
 		Directory.Packages.props = Directory.Packages.props
 		exclusion.dic = exclusion.dic
 		src\ProjectMetadata.props = src\ProjectMetadata.props
 		src\ProjectMetadata.targets = src\ProjectMetadata.targets
 		readme-nuget.md = readme-nuget.md
 		README.md = README.md
+		.github\workflows\release-nuseal-generator.yml = .github\workflows\release-nuseal-generator.yml
+		.github\workflows\release-nuseal.yml = .github\workflows\release-nuseal.yml
+		.github\workflows\release.yml = .github\workflows\release.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuSeal.Generator", "src\NuSeal.Generator\NuSeal.Generator.csproj", "{C28C3A06-FC92-4B0E-90F2-77F8FB47EC99}"
