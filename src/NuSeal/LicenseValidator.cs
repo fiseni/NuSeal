@@ -10,9 +10,9 @@ using System.Security.Cryptography;
 
 namespace NuSeal;
 
-internal sealed class LicenseValidator
+internal class LicenseValidator
 {
-    public static bool IsValid(string publicKeyPem, string license, string productName)
+    internal static bool IsValid(string publicKeyPem, string license, string productName)
     {
         if (string.IsNullOrWhiteSpace(publicKeyPem)
             || string.IsNullOrWhiteSpace(license)
