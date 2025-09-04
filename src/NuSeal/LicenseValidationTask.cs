@@ -26,7 +26,7 @@ public partial class LicenseValidationTask : Task
                 return true;
             }
 
-            var dllFiles = Utils.GetDllFiles(outputDirectory, MainAssemblyPath);
+            var dllFiles = FileUtils.GetDllFiles(outputDirectory, MainAssemblyPath);
             if (dllFiles.Length == 0)
             {
                 Log.LogWarning("NuSeal: No applicable dll files found in the output directory.");
@@ -39,13 +39,10 @@ public partial class LicenseValidationTask : Task
                 {
                     var assembly = AssemblyDefinition.ReadAssembly(dllFile);
 
-                    var hasNuSealAttribute = assembly.CustomAttributes
-                        .Any(attr => attr.AttributeType.FullName == typeof(NuSealProtectedAttribute).FullName);
-
-                    if (hasNuSealAttribute is false)
+                    if (AssemblyUtils.IsNuSealProtected(assembly) is false)
                         continue;
 
-                    var pems = Utils.ExtractPemFromAssembly(assembly);
+                    var pems = AssemblyUtils.ExtractPems(assembly);
 
                     if (pems.Count == 0)
                     {
@@ -55,8 +52,8 @@ public partial class LicenseValidationTask : Task
                     }
 
                     var hasValidLicense = pems.Any(pem =>
-                        Utils.TryGetLicenseContent(MainAssemblyPath, pem.ProductName, out var licenseContent)
-                        && LicenseValidator.IsValid(pem, licenseContent));
+                        FileUtils.TryGetLicense(MainAssemblyPath, pem.ProductName, out var license)
+                        && LicenseValidator.IsValid(pem, license));
 
                     if (hasValidLicense is false)
                     {

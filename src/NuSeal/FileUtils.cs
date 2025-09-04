@@ -1,48 +1,11 @@
-﻿using Mono.Cecil;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Linq;
 
 namespace NuSeal;
-internal class Utils
+
+internal class FileUtils
 {
-    private const string _pemFileSuffix = "nuseal.pem";
-    private static readonly char[] _resourceNameDelimiter = new[] { '.' };
-
-    internal static List<PemData> ExtractPemFromAssembly(AssemblyDefinition assembly)
-    {
-        var pems = new List<PemData>();
-
-        if (assembly.MainModule.HasResources is false)
-        {
-            return pems;
-        }
-
-        foreach (var resource in assembly.MainModule.Resources)
-        {
-            if (resource is EmbeddedResource embeddedResource
-                && embeddedResource.Name.EndsWith(_pemFileSuffix, StringComparison.OrdinalIgnoreCase))
-            {
-                using var stream = embeddedResource.GetResourceStream();
-                using var reader = new StreamReader(stream);
-                var content = reader.ReadToEnd();
-
-                var parts = embeddedResource.Name.Split(_resourceNameDelimiter, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length < 3)
-                {
-                    continue;
-                }
-
-                var productName = parts[parts.Length - 3]; // Get the part before "nuseal.pem"
-                var pem = new PemData(productName, content);
-                pems.Add(pem);
-            }
-        }
-
-        return pems;
-    }
-
     internal static string[] GetDllFiles(string directory, string mainAssemblyPath)
     {
         var dllFiles = Directory.GetFiles(directory, "*.dll")
@@ -62,7 +25,7 @@ internal class Utils
         return dllFiles;
     }
 
-    internal static bool TryGetLicenseContent(string mainAssemblyPath, string productName, out string licenseContent)
+    internal static bool TryGetLicense(string mainAssemblyPath, string productName, out string licenseContent)
     {
         var licenseFileName = $"{productName}.license";
 
