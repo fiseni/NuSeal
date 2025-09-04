@@ -6,10 +6,6 @@
     <NuSealAssembly Condition="!Exists('$(NuSealAssembly)')">$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', '..', 'bin', 'Debug', 'netstandard2.0', 'NuSeal.dll'))</NuSealAssembly>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <IsNuSealPackageReferenced>@(PackageReference->WithMetadataValue('Identity', 'NuSeal')->'%(Identity)'->Count())</IsNuSealPackageReferenced>
-  </PropertyGroup>
-  
   <UsingTask
     TaskName="NuSeal.LicenseValidationTask"
     AssemblyFile="$(NuSealAssembly)"

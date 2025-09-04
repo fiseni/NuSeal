@@ -1,12 +1,23 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <Target Name="CheckIfNuSealDirectlyReferenced"
+          BeforeTargets="BeforeCompile">
+
+    <PropertyGroup>
+      <IsNuSealPackageReferenced>@(PackageReference->WithMetadataValue('Identity', 'NuSeal')->'%(Identity)'->Count())</IsNuSealPackageReferenced>
+    </PropertyGroup>
+    
+  </Target>
+
   <Target Name="InjectNuSealProtectedAttribute"
           BeforeTargets="BeforeCompile"
+          DependsOnTargets="CheckIfNuSealDirectlyReferenced"
           Condition="$(IsNuSealPackageReferenced) != 0">
 
     <ItemGroup>
       <AssemblyAttribute Include="NuSeal.NuSealProtectedAttribute" />
     </ItemGroup>
+
   </Target>
 
   <Target Name="NuSealLicenseValidation"
@@ -15,6 +26,7 @@
 
     <NuSeal.LicenseValidationTask
       MainAssemblyPath="$(TargetPath)" />
+
   </Target>
 
 </Project>
