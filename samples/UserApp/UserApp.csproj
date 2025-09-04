@@ -7,6 +7,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <!--End users will install your package from NuGet. In this sample I'm referencing the project.-->
+  <!--<ItemGroup>
+    <PackageReference Include="AuthorPackage" />
+  </ItemGroup>-->
+  
   <ItemGroup>
     <ProjectReference Include="..\AuthorPackage\AuthorPackage.csproj" />
   </ItemGroup>
