@@ -45,18 +45,18 @@ public partial class LicenseValidationTask : Task
                     if (hasNuSealAttribute is false)
                         continue;
 
-                    var pemConfigs = Utils.ExtractPemFromAssembly(assembly);
+                    var pems = Utils.ExtractPemFromAssembly(assembly);
 
-                    if (pemConfigs.Count == 0)
+                    if (pems.Count == 0)
                     {
                         var fileName = Path.GetFileNameWithoutExtension(dllFile);
                         Log.LogWarning($"NuSeal: No public key resources found for {fileName}. Path: {dllFile}.");
                         return true;
                     }
 
-                    var hasValidLicense = pemConfigs.Any(config =>
-                        Utils.TryGetLicenseContent(MainAssemblyPath, config.ProductName, out var licenseContent)
-                        && LicenseValidator.IsValid(config.PublicKeyPem, licenseContent, config.ProductName));
+                    var hasValidLicense = pems.Any(pem =>
+                        Utils.TryGetLicenseContent(MainAssemblyPath, pem.ProductName, out var licenseContent)
+                        && LicenseValidator.IsValid(pem, licenseContent));
 
                     if (hasValidLicense is false)
                     {

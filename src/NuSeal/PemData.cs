@@ -1,8 +1,8 @@
 ﻿namespace NuSeal;
 
-internal class PemConfig
+internal class PemData
 {
-    public PemConfig(string productName, string publicKeyPem)
+    public PemData(string productName, string publicKeyPem)
     {
         ProductName = productName;
         PublicKeyPem = publicKeyPem;

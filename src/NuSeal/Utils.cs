@@ -7,26 +7,26 @@ using System.Linq;
 namespace NuSeal;
 internal class Utils
 {
-    private const string pemFileSuffix = "nuseal.pem";
+    private const string _pemFileSuffix = "nuseal.pem";
     private static readonly char[] _resourceNameDelimiter = new[] { '.' };
 
-    internal static List<PemConfig> ExtractPemFromAssembly(AssemblyDefinition assembly)
+    internal static List<PemData> ExtractPemFromAssembly(AssemblyDefinition assembly)
     {
-        var pemConfigs = new List<PemConfig>();
+        var pems = new List<PemData>();
 
         if (assembly.MainModule.HasResources is false)
         {
-            return pemConfigs;
+            return pems;
         }
 
         foreach (var resource in assembly.MainModule.Resources)
         {
             if (resource is EmbeddedResource embeddedResource
-                && embeddedResource.Name.EndsWith(pemFileSuffix, StringComparison.OrdinalIgnoreCase))
+                && embeddedResource.Name.EndsWith(_pemFileSuffix, StringComparison.OrdinalIgnoreCase))
             {
                 using var stream = embeddedResource.GetResourceStream();
                 using var reader = new StreamReader(stream);
-                var pemContent = reader.ReadToEnd();
+                var content = reader.ReadToEnd();
 
                 var parts = embeddedResource.Name.Split(_resourceNameDelimiter, StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length < 3)
@@ -35,12 +35,12 @@ internal class Utils
                 }
 
                 var productName = parts[parts.Length - 3]; // Get the part before "nuseal.pem"
-                var pemConfig = new PemConfig(productName, pemContent);
-                pemConfigs.Add(pemConfig);
+                var pem = new PemData(productName, content);
+                pems.Add(pem);
             }
         }
 
-        return pemConfigs;
+        return pems;
     }
 
     internal static string[] GetDllFiles(string directory, string mainAssemblyPath)

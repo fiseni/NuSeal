@@ -12,11 +12,11 @@ namespace NuSeal;
 
 internal class LicenseValidator
 {
-    internal static bool IsValid(string publicKeyPem, string license, string productName)
+    internal static bool IsValid(PemData pem, string license)
     {
-        if (string.IsNullOrWhiteSpace(publicKeyPem)
-            || string.IsNullOrWhiteSpace(license)
-            || string.IsNullOrWhiteSpace(productName))
+        if (string.IsNullOrWhiteSpace(pem.PublicKeyPem)
+            || string.IsNullOrWhiteSpace(pem.ProductName)
+            || string.IsNullOrWhiteSpace(license))
         {
             return false;
         }
@@ -25,7 +25,7 @@ internal class LicenseValidator
         {
             // Note: RSA ImportFromPem is available in .NET 5.0 and later
             // We'll use BouncyCastle for netstandard2.0
-            using var rsa = CreateRsaFromPem(publicKeyPem);
+            using var rsa = CreateRsaFromPem(pem.PublicKeyPem);
             var key = new RsaSecurityKey(rsa);
 
             var validationParameters = new TokenValidationParameters
@@ -52,7 +52,7 @@ internal class LicenseValidator
             if (productClaim is null)
                 return false;
 
-            return productClaim.Equals(productName, StringComparison.OrdinalIgnoreCase);
+            return productClaim.Equals(pem.ProductName, StringComparison.OrdinalIgnoreCase);
         }
         catch { }
 
