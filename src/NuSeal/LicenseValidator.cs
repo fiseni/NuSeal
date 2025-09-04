@@ -10,7 +10,7 @@ using System.Security.Cryptography;
 
 namespace NuSeal;
 
-public sealed class LicenseValidator
+internal sealed class LicenseValidator
 {
     public static bool IsValid(string publicKeyPem, string license, string productName)
     {
@@ -23,7 +23,7 @@ public sealed class LicenseValidator
 
         try
         {
-            // Note: ImportFromPem is available in .NET 5.0 and later
+            // Note: RSA ImportFromPem is available in .NET 5.0 and later
             // We'll use BouncyCastle for netstandard2.0
             using var rsa = CreateRsaFromPem(publicKeyPem);
             var key = new RsaSecurityKey(rsa);
