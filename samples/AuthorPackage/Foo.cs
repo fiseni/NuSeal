@@ -1,5 +1,6 @@
-﻿namespace AuthorPackage;
-
-public class Foo
+﻿namespace AuthorPackage
 {
+    public class Foo
+    {
+    }
 }

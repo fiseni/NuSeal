@@ -1,12 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
-  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>AuthorPackage</PackageId>
     <Version>0.0.1</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
