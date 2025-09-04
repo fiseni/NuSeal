@@ -33,6 +33,11 @@ public class License
             claims.Add(new Claim("edition", parameters.Edition));
         }
 
+        if (!string.IsNullOrWhiteSpace(parameters.ClientId))
+        {
+            claims.Add(new Claim("client", parameters.ClientId));
+        }
+
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
