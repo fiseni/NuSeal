@@ -9,7 +9,7 @@
 
   <!--End users will install your package from NuGet. In this sample I'm referencing the project.-->
   <!--<ItemGroup>
-    <PackageReference Include="AuthorPackage" />
+    <PackageReference Include="AuthorPackage" Version="0.0.1" />
   </ItemGroup>-->
   
   <ItemGroup>
