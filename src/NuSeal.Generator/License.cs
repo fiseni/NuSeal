@@ -17,6 +17,10 @@ public class License
         DateTimeOffset startDate,
         DateTimeOffset expirationDate)
     {
+        ArgumentException.ThrowIfNullOrEmpty(privateKeyPem);
+        ArgumentException.ThrowIfNullOrEmpty(productName);
+        ArgumentException.ThrowIfNullOrEmpty(issuer);
+
         using var rsa = RSA.Create();
         rsa.ImportFromPem(privateKeyPem.AsSpan());
 
