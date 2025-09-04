@@ -43,6 +43,7 @@
   </PropertyGroup>
 
   <ItemGroup Label="Packaging files">
+    <None Include="buildTransitive\*" Pack="true" PackagePath="build\" />
     <None Include="buildTransitive\*" Pack="true" PackagePath="buildTransitive\" />
   </ItemGroup>
 
