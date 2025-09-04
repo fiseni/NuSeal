@@ -1,4 +1,4 @@
-NuSeal provides infrastructure for creating and validating NuGet package licenses. The validation occurs during build time (offline), preventing unauthorized usage of your packages. It's designed to be generic while allowing each product package to set its own public key and license policies.
+NuSeal provides the infrastructure for creating and validating NuGet package licenses. The validation occurs during build time (offline), preventing unauthorized use of your packages. It's designed to be generic while allowing each product package to set its own public key and license policies.
 
 ## Overview
 
@@ -11,8 +11,8 @@ NuSeal consists of two main packages:
 
 ### TL;DR
 
-- Authors create RSA key pairs. They may create them using `NuSeal.Generator`.
-- Authors create licenses for their users using `NuSeal.Generator`. License files are named `YourProductName.license`.
+- Authors create RSA key pairs. They may create them using `NuSeal.Generator` package.
+- Authors create licenses for their users using `NuSeal.Generator` package. License files are named `YourProductName.license`.
 - Authors install the `NuSeal` package in their NuGet package to protect it.
 - Authors embed the public key in their NuGet package. The public key file is named `YourProductName.nuseal.pem`.
 - End users obtain a license file and place it anywhere in their project directory tree.
@@ -104,9 +104,7 @@ End users of your protected NuGet package need to:
    - In the solution/repository root directory.
    - Anywhere in the directory tree.
 
-The license file should be named `YourProductName.license` where `YourProductName` matches the `productName` parameter used when creating the license.
-
-<strong>Important:</strong> Avoid checking the license file into source control to prevent leakages.
+The license file should be named `YourProductName.license`. <strong>Important:</strong> Avoid checking the license file into source control to prevent leaks.
 
 ## Validation Criteria
 
@@ -114,7 +112,7 @@ The license file should be named `YourProductName.license` where `YourProductNam
   - The license is signed with the private key corresponding to the embedded public key
   - The license has not expired
   - The `product` claim in the license matches the product name associated with the public key
-- The validation occurs only for the "executable" assemblies (i.e., those that produce an application, not a library) which directly or transiently depend on the protected package. This is determined by checking whether the `OutputType` is `Exe` or `WinExe`, or the SDK is `Microsoft.NET.Sdk.Web`. This is done to avoid cluttering the build output for large solutions with many library projects, but I'm open to suggestions from the community.
+- The validation occurs only for the "executable" assemblies (i.e., those that produce an application, not a library) which directly or transitively depend on the protected package. This is determined by checking whether the `OutputType` is `Exe` or `WinExe`, or the SDK is `Microsoft.NET.Sdk.Web`. This is done to avoid cluttering the build output for large solutions with many library projects, but I'm open to suggestions from the community.
 
 ## How It Works
 
