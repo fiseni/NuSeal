@@ -1,6 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <Target Name="CheckIfNuSealDirectlyReferenced"
+  <Target Name="NuSealCheckDirectReference"
           BeforeTargets="BeforeCompile">
 
     <PropertyGroup>
@@ -9,9 +9,9 @@
     
   </Target>
 
-  <Target Name="InjectNuSealProtectedAttribute"
+  <Target Name="NuSealInjectProtectedAttribute"
           BeforeTargets="BeforeCompile"
-          DependsOnTargets="CheckIfNuSealDirectlyReferenced"
+          DependsOnTargets="NuSealCheckDirectReference"
           Condition="$(IsNuSealPackageReferenced) != 0">
 
     <ItemGroup>
@@ -20,9 +20,9 @@
 
   </Target>
 
-  <Target Name="InjectNuSealValidationBehaviorAttribute"
+  <Target Name="NuSealInjectValidationBehaviorAttribute"
           BeforeTargets="BeforeCompile"
-          DependsOnTargets="CheckIfNuSealDirectlyReferenced"
+          DependsOnTargets="NuSealCheckDirectReference"
           Condition="$(IsNuSealPackageReferenced) != 0 And '$(NuSealValidationBehavior)' != ''">
 
     <ItemGroup>
