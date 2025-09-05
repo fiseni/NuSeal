@@ -54,6 +54,10 @@
     <PackageReference Include="Mono.Cecil" PrivateAssets="all" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="NuSeal.Tests" />
+  </ItemGroup>
+
   <Target
     Name="CopyProjectReferencesToPackage"
     DependsOnTargets="ResolveReferences">

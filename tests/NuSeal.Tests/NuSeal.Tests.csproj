@@ -24,4 +24,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\NuSeal.Generator\NuSeal.Generator.csproj" />
+    <ProjectReference Include="..\..\src\NuSeal\NuSeal.csproj" />
+  </ItemGroup>
+
 </Project>
