@@ -28,14 +28,14 @@
     </ItemGroup>
   </Target>
 
-  <!--<Target Name="NuSealLicenseValidation"
+  <Target Name="NuSealLicenseValidation"
           AfterTargets="AfterBuild"
           DependsOnTargets="NuSealCheckDirectReference"
           Condition="'$(NuSealValidateAllTypes)' == 'enable' Or '$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'">
     <Message Importance="High" Text="NuSealLicenseValidation: " />
 
     <NuSeal.LicenseValidationTask MainAssemblyPath="$(TargetPath)" />
-  </Target>-->
+  </Target>
 
   <Target Name="NuSealCopyAssets"
           BeforeTargets="Build"
@@ -43,19 +43,6 @@
           Condition="$(IsNuSealPackageReferenced) != 0 And '$(NuSealTransitiveBehavior)' == 'disable'">
     
     <Message Importance="High" Text="IsNuSealPackageReferenced: $(IsNuSealPackageReferenced)" />
-
-    <!--<PropertyGroup>
-      <NuSealProps>$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', 'NuSeal.props'))</NuSealProps>
-      <NuSealTargets>$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', 'NuSeal.targets'))</NuSealTargets>
-    </PropertyGroup>
-    
-    <Copy SourceFiles="$(NuSealProps)" DestinationFolder="$(OutputPath)" ContinueOnError="false" />
-    <Copy SourceFiles="$(NuSealTargets)" DestinationFolder="$(OutputPath)" ContinueOnError="false" />
-
-    <WriteLinesToFile
-        File="$(OutputPath)\NuSeal.props"
-        Lines="$([System.IO.File]::ReadAllText('$(OutputPath)\NuSeal.props').Replace('&lt;NuSealValidateAllTypes&gt;disable&lt;/NuSealValidateAllTypes&gt;', '&lt;NuSealValidateAllTypes&gt;enable&lt;/NuSealValidateAllTypes&gt;'))"
-        Overwrite="true" />-->
 
     <NuSeal.PrepareAssetsForConsumerTask
         NuSealAssetsPath="$(MSBuildThisFileDirectory)"
