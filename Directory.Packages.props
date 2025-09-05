@@ -20,11 +20,6 @@
     <PackageVersion Include="coverlet.collector" Version="6.0.2" />
   </ItemGroup>
 
-  <ItemGroup Label="Sample projects">
-    <PackageVersion Include="NuSeal" Version="0.2.0" />
-    <PackageVersion Include="NuSeal.Generator" Version="0.2.0" />
-  </ItemGroup>
-
   <ItemGroup Label="Transitive Updates">
   </ItemGroup>
 
