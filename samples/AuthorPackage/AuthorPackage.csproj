@@ -19,6 +19,7 @@
   <!--Ignore this. It's used for debugging locally.-->
   <!--<ItemGroup>
     <ProjectReference Include="..\..\src\NuSeal\NuSeal.csproj" />
+    <AssemblyAttribute Include="NuSeal.NuSealProtectedAttribute" />
   </ItemGroup>
   <Import Project="..\..\src\NuSeal\buildTransitive\NuSeal.props" />
   <Import Project="..\..\src\NuSeal\buildTransitive\NuSeal.targets" />-->
