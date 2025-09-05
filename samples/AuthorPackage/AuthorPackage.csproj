@@ -8,31 +8,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NuSeal" Version="0.2.0-beta41">
-      <ExcludeAssets>buildTransitive</ExcludeAssets>
-      <!--<PrivateAssets>all</PrivateAssets>-->
-      <!--<PrivateAssets>build;buildTransitive</PrivateAssets>-->
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Label="Packaging props and targets">
-    <None Include="build\*" Pack="true" PackagePath="build\" />
-  </ItemGroup>
-
-  <!--<Import Project="build\AuthorPackage.props" />-->
-  <Import Project="build\AuthorPackage.targets" />
-
-  <ItemGroup>
     <EmbeddedResource Include="YourProductName.nuseal.pem" />
   </ItemGroup>
-
+  
+  <!--<ItemGroup>
+    <PackageReference Include="NuSeal" Version="0.2.0-beta41">
+      <PrivateAssets>build;buildTransitive</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>-->
 
   <!--Ignore this. It's used for debugging locally.-->
-  <!--<ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\src\NuSeal\NuSeal.csproj" />
-    <AssemblyAttribute Include="NuSeal.NuSealProtectedAttribute" />
+    <!--<AssemblyAttribute Include="NuSeal.NuSealProtectedAttribute" />-->
   </ItemGroup>
   <Import Project="..\..\src\NuSeal\buildTransitive\NuSeal.props" />
-  <Import Project="..\..\src\NuSeal\buildTransitive\NuSeal.targets" />-->
+  <Import Project="..\..\src\NuSeal\buildTransitive\NuSeal.targets" />
 
 </Project>

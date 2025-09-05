@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <!--Ignore this. It's used for debugging locally.-->
-  <!--<Import Project="..\..\src\NuSeal\buildTransitive\NuSeal.props" />
-  <Import Project="..\..\src\NuSeal\buildTransitive\NuSeal.targets" />-->
+  <Import Project="..\..\src\NuSeal\buildTransitive\NuSeal.props" />
+  <Import Project="..\..\src\NuSeal\buildTransitive\NuSeal.targets" />
 
 </Project>

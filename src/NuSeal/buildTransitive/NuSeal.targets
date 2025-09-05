@@ -2,44 +2,56 @@
 
   <Target Name="NuSealCheckDirectReference"
           BeforeTargets="BeforeCompile">
-
     <PropertyGroup>
-      <IsNuSealPackageReferenced>@(PackageReference->WithMetadataValue('Identity', 'NuSeal')->'%(Identity)'->Count())</IsNuSealPackageReferenced>
+      <IsNuSealPackageReferenced>1</IsNuSealPackageReferenced>
+      <!--<IsNuSealPackageReferenced>@(PackageReference->WithMetadataValue('Identity', 'NuSeal')->'%(Identity)'->Count())</IsNuSealPackageReferenced>-->
     </PropertyGroup>
-    
   </Target>
 
   <Target Name="NuSealInjectProtectedAttribute"
           BeforeTargets="BeforeCompile"
           DependsOnTargets="NuSealCheckDirectReference"
           Condition="$(IsNuSealPackageReferenced) != 0">
-
     <ItemGroup>
       <AssemblyAttribute Include="NuSeal.NuSealProtectedAttribute" />
     </ItemGroup>
-
   </Target>
 
   <Target Name="NuSealInjectValidationBehaviorAttribute"
           BeforeTargets="BeforeCompile"
           DependsOnTargets="NuSealCheckDirectReference"
           Condition="$(IsNuSealPackageReferenced) != 0 And '$(NuSealValidationBehavior)' != ''">
-
     <ItemGroup>
       <AssemblyAttribute Include="NuSeal.NuSealValidationBehaviorAttribute">
         <_Parameter1>$(NuSealValidationBehavior)</_Parameter1>
       </AssemblyAttribute>
     </ItemGroup>
-
   </Target>
 
   <Target Name="NuSealLicenseValidation"
           AfterTargets="AfterBuild"
           Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'">
-
     <NuSeal.LicenseValidationTask
       MainAssemblyPath="$(TargetPath)" />
+  </Target>
 
+  <Target Name="NuSealCopyAssets"
+          BeforeTargets="Build"
+          DependsOnTargets="NuSealCheckDirectReference"
+          Condition="$(IsNuSealPackageReferenced) != 0">
+    <Message Importance="High" Text="IsNuSealPackageReferenced: $(IsNuSealPackageReferenced)" />
+    <PropertyGroup>
+      <NuSealProps>$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', 'NuSeal.props'))</NuSealProps>
+      <NuSealTargets>$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', 'NuSeal.targets'))</NuSealTargets>
+    </PropertyGroup>
+    
+    <Copy SourceFiles="$(NuSealProps)" DestinationFolder="$(OutputPath)" ContinueOnError="false" />
+    <Copy SourceFiles="$(NuSealTargets)" DestinationFolder="$(OutputPath)" ContinueOnError="false" />
+
+    <ItemGroup Label="Packaging build assets">
+      <None Include="$(OutputPath)\NuSeal.props" Pack="true" PackagePath="build\$(PackageId).props" Visible="false"/>
+      <None Include="$(OutputPath)\NuSeal.targets" Pack="true" PackagePath="build\$(PackageId).targets" Visible="false"/>
+    </ItemGroup>
   </Target>
 
 </Project>
