@@ -1,29 +1,41 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   
-  <Target Name="SetupDirectDependency" BeforeTargets="BeforeCompile">
+  <!-- This target needs to run BEFORE any imports to properly evaluate the PackageReference -->
+  <Target Name="EvaluateNuSealVersion" BeforeTargets="BeforeBuild">
     <PropertyGroup>
       <NuSealVersionX>@(PackageReference->WithMetadataValue('Identity', 'NuSeal')->'%(Version)')</NuSealVersionX>
-      <NuSealVersionY>$(NuSealVersionX)</NuSealVersionY>
-      <NuSealVersion>v0.2.0-beta41</NuSealVersion>
-      <NuSealBuildPathX>$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', '..', '..', 'NuSeal', $(NuSealVersionX), 'buildTransitive'))</NuSealBuildPathX>
-      <NuSealBuildPath Condition="!Exists('$(NuSealBuildPathX)')">$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', '..', '..', '..', 'src', 'NuSeal', 'buildTransitive'))</NuSealBuildPath>
+      <!-- Use package version or fallback to hardcoded value -->
+      <NuSealVersion Condition="'$(NuSealVersionX)' != ''">$(NuSealVersionX)</NuSealVersion>
+      <!--<NuSealVersion Condition="'$(NuSealVersionX)' == ''">0.2.0-beta41</NuSealVersion>-->
     </PropertyGroup>
-    <!--<Import Project="$(NuSealBuildPath)\NuSeal.props" />
-    <Import Project="$(NuSealBuildPath)\NuSeal.targets" />-->
+    
+    <PropertyGroup>
+      <NuSealPackagePath>$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', '..', '..', 'NuSeal', $(NuSealVersion), 'buildTransitive'))</NuSealPackagePath>
+      <NuSealBuildPath Condition="Exists('$(NuSealPackagePath)')">$(NuSealPackagePath)</NuSealBuildPath>
+      <NuSealBuildPath Condition="!Exists('$(NuSealPackagePath)')">$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', '..', '..', '..', 'src', 'NuSeal', 'buildTransitive'))</NuSealBuildPath>
+    </PropertyGroup>
+    
+    <Message Importance="high" Text="AuthorPackage: NuSeal version from package reference: $(NuSealVersionX)" />
+    <Message Importance="high" Text="AuthorPackage: NuSeal version being used: $(NuSealVersion)" />
+    <Message Importance="high" Text="AuthorPackage: NuSeal package path: $(NuSealPackagePath)" />
+    <Message Importance="high" Text="AuthorPackage: NuSeal build path: $(NuSealBuildPath)" />
   </Target>
-
-
-  <Target Name="TestSomething" AfterTargets="SetupDirectDependency">
+  
+  <!-- Import NuSeal props and targets (this will only work after the EvaluateNuSealVersion target runs) -->
+  <PropertyGroup>
+    <NuSealPropsFile>$([MSBuild]::NormalizePath('$(NuSealBuildPath)', 'NuSeal.props'))</NuSealPropsFile>
+    <NuSealTargetsFile>$([MSBuild]::NormalizePath('$(NuSealBuildPath)', 'NuSeal.targets'))</NuSealTargetsFile>
+  </PropertyGroup>
+  
+  <Import Project="$(NuSealPropsFile)" Condition="Exists('$(NuSealPropsFile)')" />
+  <Import Project="$(NuSealTargetsFile)" Condition="Exists('$(NuSealTargetsFile)')" />
+  
+  <Target Name="TestNuSealPaths" AfterTargets="EvaluateNuSealVersion">
     <Message Importance="high" Text="Hello from AuthorPackage.targets!" />
     <Message Importance="high" Text="AuthorPackage: PkgNuSeal: $(PkgNuSeal)" />
     <Message Importance="high" Text="AuthorPackage: MSBuildThisFileDirectory: $(MSBuildThisFileDirectory)" />
-    <Message Importance="high" Text="AuthorPackage: MSBuildThisFileDirectory: $(MSBuildThisFileDirectory)..\..\NuSeal\$(NuSealVersion)\build\NuSeal.props" />
-    <Message Importance="high" Text="AuthorPackage: MSBuildThisFileDirectory: $(MSBuildThisFileDirectory)..\..\..\src\NuSeal\build\NuSeal.props" />
-    <Message Importance="high" Text="AuthorPackage: NuSealX: $(NuSealVersionX)" />
-    <Message Importance="high" Text="AuthorPackage: NuSealX: $(NuSealVersionY)" />
-
-    <Message Importance="high" Text="AuthorPackage: NuSealBuildPathX: $(NuSealBuildPathX)" />
-    <Message Importance="high" Text="AuthorPackage: NuSealBuildPath: $(NuSealBuildPath)" />
+    <Message Importance="high" Text="AuthorPackage: NuSealPropsFile: $(NuSealPropsFile)" />
+    <Message Importance="high" Text="AuthorPackage: NuSealTargetsFile: $(NuSealTargetsFile)" />
   </Target>
 </Project>
 
