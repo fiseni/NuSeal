@@ -20,6 +20,19 @@
 
   </Target>
 
+  <Target Name="InjectNuSealValidationBehaviorAttribute"
+          BeforeTargets="BeforeCompile"
+          DependsOnTargets="CheckIfNuSealDirectlyReferenced"
+          Condition="$(IsNuSealPackageReferenced) != 0 And '$(NuSealValidationBehavior)' != ''">
+
+    <ItemGroup>
+      <AssemblyAttribute Include="NuSeal.NuSealValidationBehaviorAttribute">
+        <_Parameter1>$(NuSealValidationBehavior)</_Parameter1>
+      </AssemblyAttribute>
+    </ItemGroup>
+
+  </Target>
+
   <Target Name="NuSealLicenseValidation"
           AfterTargets="AfterBuild"
           Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'">

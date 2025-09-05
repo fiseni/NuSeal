@@ -22,14 +22,14 @@ public partial class LicenseValidationTask : Task
             var outputDirectory = Path.GetDirectoryName(MainAssemblyPath);
             if (string.IsNullOrEmpty(outputDirectory))
             {
-                Log.LogWarning($"NuSeal: Cannot determine output directory from MainAssemblyPath: {MainAssemblyPath}");
+                Log.LogMessage(MessageImportance.High, "NuSeal: Cannot determine output directory from MainAssemblyPath: {0}", MainAssemblyPath);
                 return true;
             }
 
             var dllFiles = FileUtils.GetDllFiles(outputDirectory, MainAssemblyPath);
             if (dllFiles.Length == 0)
             {
-                Log.LogWarning("NuSeal: No applicable dll files found in the output directory.");
+                Log.LogMessage(MessageImportance.High, "NuSeal: No applicable dll files found in the output directory.");
                 return true;
             }
 
@@ -47,7 +47,7 @@ public partial class LicenseValidationTask : Task
                     if (pems.Count == 0)
                     {
                         var fileName = Path.GetFileNameWithoutExtension(dllFile);
-                        Log.LogWarning($"NuSeal: No public key resources found for {fileName}. Path: {dllFile}.");
+                        Log.LogMessage(MessageImportance.High, "NuSeal: No public key resources found for {0}. Path: {1}.", fileName, dllFile);
                         return true;
                     }
 
@@ -58,13 +58,13 @@ public partial class LicenseValidationTask : Task
                     if (hasValidLicense is false)
                     {
                         var fileName = Path.GetFileNameWithoutExtension(dllFile);
-                        Log.LogError($"NuSeal: No valid license found for {fileName}. Path: {dllFile}.");
+                        Log.LogError("NuSeal: No valid license found for {0}. Path: {1}.", fileName, dllFile);
                         return false;
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log.LogWarning($"NuSeal: Failed to process {dllFile}. Error: {ex.Message}");
+                    Log.LogMessage(MessageImportance.High, "NuSeal: Failed to process {0}. Error: {1}", dllFile, ex.Message);
                 }
             }
 
@@ -72,7 +72,7 @@ public partial class LicenseValidationTask : Task
         }
         catch (Exception ex)
         {
-            Log.LogWarningFromException(ex, true);
+            Log.LogMessage(MessageImportance.High, "NuSeal: Failed to process. Error: {0}", ex.Message);
             return true;
         }
     }
