@@ -3,8 +3,8 @@
   <Target Name="NuSealCheckDirectReference"
           BeforeTargets="BeforeCompile">
     <PropertyGroup>
+      <IsNuSealPackageReferenced>@(PackageReference->WithMetadataValue('Identity', 'NuSeal')->'%(Identity)'->Count())</IsNuSealPackageReferenced>
       <IsNuSealPackageReferenced>1</IsNuSealPackageReferenced>
-      <!--<IsNuSealPackageReferenced>@(PackageReference->WithMetadataValue('Identity', 'NuSeal')->'%(Identity)'->Count())</IsNuSealPackageReferenced>-->
     </PropertyGroup>
   </Target>
 
@@ -30,15 +30,18 @@
 
   <Target Name="NuSealLicenseValidation"
           AfterTargets="AfterBuild"
-          Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'">
-    <NuSeal.LicenseValidationTask
-      MainAssemblyPath="$(TargetPath)" />
+          DependsOnTargets="NuSealCheckDirectReference"
+          Condition="'$(NuSealValidateAllTypes)' == 'enable' Or '$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'">
+    <Message Importance="High" Text="NuSealLicenseValidation: " />
+
+    <NuSeal.LicenseValidationTask MainAssemblyPath="$(TargetPath)" />
   </Target>
 
   <Target Name="NuSealCopyAssets"
           BeforeTargets="Build"
           DependsOnTargets="NuSealCheckDirectReference"
-          Condition="$(IsNuSealPackageReferenced) != 0">
+          Condition="$(IsNuSealPackageReferenced) != 0 And '$(NuSealTransitiveBehavior)' == 'disable'">
+    
     <Message Importance="High" Text="IsNuSealPackageReferenced: $(IsNuSealPackageReferenced)" />
     <PropertyGroup>
       <NuSealProps>$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', 'NuSeal.props'))</NuSealProps>
@@ -47,6 +50,11 @@
     
     <Copy SourceFiles="$(NuSealProps)" DestinationFolder="$(OutputPath)" ContinueOnError="false" />
     <Copy SourceFiles="$(NuSealTargets)" DestinationFolder="$(OutputPath)" ContinueOnError="false" />
+
+    <WriteLinesToFile
+        File="$(OutputPath)\NuSeal.props"
+        Lines="$([System.IO.File]::ReadAllText('$(OutputPath)\NuSeal.props').Replace('&lt;NuSealValidateAllTypes&gt;disable&lt;/NuSealValidateAllTypes&gt;', '&lt;NuSealValidateAllTypes&gt;enable&lt;/NuSealValidateAllTypes&gt;'))"
+        Overwrite="true" />
 
     <ItemGroup Label="Packaging build assets">
       <None Include="$(OutputPath)\NuSeal.props" Pack="true" PackagePath="build\$(PackageId).props" Visible="false"/>

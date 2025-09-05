@@ -4,6 +4,7 @@
     <NuSealAssembly>$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', '..', 'tasks', 'netstandard2.0', 'NuSeal.dll'))</NuSealAssembly>
     <!--Needed while debugging locally-->
     <NuSealAssembly Condition="!Exists('$(NuSealAssembly)')">$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', '..', 'bin', 'Debug', 'netstandard2.0', 'NuSeal.dll'))</NuSealAssembly>
+    <NuSealValidateAllTypes>disable</NuSealValidateAllTypes>
   </PropertyGroup>
 
   <UsingTask

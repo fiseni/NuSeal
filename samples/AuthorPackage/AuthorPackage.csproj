@@ -5,6 +5,8 @@
     <PackageId>AuthorPackage</PackageId>
     <Version>0.0.1-beta42</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+    <NuSealTransitiveBehavior>disable</NuSealTransitiveBehavior>
   </PropertyGroup>
 
   <ItemGroup>
