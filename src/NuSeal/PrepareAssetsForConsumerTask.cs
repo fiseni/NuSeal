@@ -26,28 +26,31 @@ public partial class PrepareAssetsForConsumerTask : Task
         {
             var nusealProps = Path.Combine(NuSealAssetsPath, "NuSeal.props");
             var nusealTargets = Path.Combine(NuSealAssetsPath, "NuSeal.props");
-
             var nusealPropsOutput = Path.Combine(OutputPath, "NuSeal.props");
             var nusealTargetsOutput = Path.Combine(OutputPath, "NuSeal.targets");
 
-            File.Copy(nusealProps, nusealPropsOutput, true);
-            File.Copy(nusealTargets, nusealTargetsOutput, true);
+            var props = File.ReadAllText(nusealProps);
+            var targets = File.ReadAllText(nusealTargets);
 
-            var propsContent = File.ReadAllText(nusealPropsOutput);
-            propsContent = propsContent.Replace("<NuSealValidateAllTypes>disable</NuSealValidateAllTypes>", "<NuSealValidateAllTypes>enable</NuSealValidateAllTypes>");
-            File.WriteAllText(nusealPropsOutput, propsContent);
+            props = props.Replace("<NuSealValidateAllTypes>disable</NuSealValidateAllTypes>", "<NuSealValidateAllTypes>enable</NuSealValidateAllTypes>");
+            File.WriteAllText(nusealPropsOutput, props);
 
             if (!string.IsNullOrEmpty(ConsumerPropsFile) && File.Exists(ConsumerPropsFile))
             {
                 var content = File.ReadAllText(ConsumerPropsFile);
-                File.AppendAllText(nusealPropsOutput, content);
+                content = RemoveProjectTags(content);
+                props = props.Replace("</Project>", $"{content}{Environment.NewLine}</Project>");
             }
 
             if (!string.IsNullOrEmpty(ConsumerTargetsFile) && File.Exists(ConsumerTargetsFile))
             {
                 var content = File.ReadAllText(ConsumerTargetsFile);
-                File.AppendAllText(nusealTargetsOutput, content);
+                content = RemoveProjectTags(content);
+                targets = targets.Replace("</Project>", $"{content}{Environment.NewLine}</Project>");
             }
+
+            File.WriteAllText(nusealPropsOutput, props);
+            File.WriteAllText(nusealTargetsOutput, targets);
 
             return true;
         }
@@ -56,5 +59,18 @@ public partial class PrepareAssetsForConsumerTask : Task
             Log.LogErrorFromException(ex, true);
             return false;
         }
+    }
+
+    // Very rudimentary, but it's not worth parsing the XML properly for this
+    private static string RemoveProjectTags(string content)
+    {
+        int startIndex = content.IndexOf("<Project");
+        if (startIndex == -1)
+            return content;
+        int endIndex = content.IndexOf(">", startIndex);
+        if (endIndex == -1)
+            return content;
+        string projectTag = content.Substring(startIndex, endIndex - startIndex + 1);
+        return content.Replace(projectTag, "").Replace("</Project>", "");
     }
 }
