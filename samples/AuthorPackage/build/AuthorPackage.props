@@ -1,0 +1,21 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <NuSealVersion>0.2.0-beta41</NuSealVersion>
+    
+    <NuSealBuildPath>$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', '..', '..', 'NuSeal', '$(NuSealVersion)', 'buildTransitive'))</NuSealBuildPath>
+    <!--Needed while debugging locally-->
+    <NuSealBuildPath Condition="!Exists('$(NuSealBuildPath)')">$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', '..', '..', '..', 'src', 'NuSeal', 'buildTransitive'))</NuSealBuildPath>
+  </PropertyGroup>
+
+  <Import Project="$(NuSealBuildPath)\NuSeal.props" />
+
+  <Target Name="TestSomething" BeforeTargets="BeforeCompile">
+    <Message Importance="high" Text="Hello from AuthorPackage.targets!" />
+    <Message Importance="high" Text="AuthorPackage: PkgNuSeal: $(PkgNuSeal)" />
+    <Message Importance="high" Text="AuthorPackage: MSBuildThisFileDirectory: $(MSBuildThisFileDirectory)" />
+    <Message Importance="high" Text="AuthorPackage: MSBuildThisFileDirectory: $(MSBuildThisFileDirectory)..\..\NuSeal\$(NuSealVersion)\build\NuSeal.props" />
+    <Message Importance="high" Text="AuthorPackage: MSBuildThisFileDirectory: $(MSBuildThisFileDirectory)..\..\..\src\NuSeal\build\NuSeal.props" />
+    <Message Importance="high" Text="AuthorPackage: MSBuildThisFileDirectory: $(NuSealBuildPath)" />
+  </Target>
+
+</Project>

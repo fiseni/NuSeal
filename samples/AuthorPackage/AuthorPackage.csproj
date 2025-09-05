@@ -3,13 +3,24 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>AuthorPackage</PackageId>
-    <Version>0.0.1</Version>
+    <Version>0.0.1-beta42</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NuSeal" Version="0.2.0"/>
+    <PackageReference Include="NuSeal" Version="0.2.0-beta41">
+      <ExcludeAssets>buildTransitive</ExcludeAssets>
+      <!--<PrivateAssets>all</PrivateAssets>-->
+      <!--<PrivateAssets>build;buildTransitive</PrivateAssets>-->
+    </PackageReference>
   </ItemGroup>
+
+  <ItemGroup Label="Packaging props and targets">
+    <None Include="build\*" Pack="true" PackagePath="build\" />
+  </ItemGroup>
+
+  <Import Project="build\AuthorPackage.props" />
+  <Import Project="build\AuthorPackage.targets" />
 
   <ItemGroup>
     <EmbeddedResource Include="YourProductName.nuseal.pem" />
