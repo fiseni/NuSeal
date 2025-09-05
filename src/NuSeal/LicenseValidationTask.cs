@@ -42,6 +42,7 @@ public partial class LicenseValidationTask : Task
                     if (AssemblyUtils.IsNuSealProtected(assembly) is false)
                         continue;
 
+                    var options = AssemblyUtils.ExtractOptions(assembly);
                     var pems = AssemblyUtils.ExtractPems(assembly);
 
                     if (pems.Count == 0)
@@ -58,8 +59,16 @@ public partial class LicenseValidationTask : Task
                     if (hasValidLicense is false)
                     {
                         var fileName = Path.GetFileNameWithoutExtension(dllFile);
-                        Log.LogError("NuSeal: No valid license found for {0}. Path: {1}.", fileName, dllFile);
-                        return false;
+
+                        if (options.ValidationBehavior.Equals("Warning", StringComparison.OrdinalIgnoreCase))
+                        {
+                            Log.LogWarning("NuSeal: No valid license found for {0}. Path: {1}.", fileName, dllFile);
+                        }
+                        else
+                        {
+                            Log.LogError("NuSeal: No valid license found for {0}. Path: {1}.", fileName, dllFile);
+                            return false;
+                        }
                     }
                 }
                 catch (Exception ex)

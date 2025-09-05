@@ -7,13 +7,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <!--End users will install your package from NuGet. In this sample I'm referencing the project.-->
-  <!--<ItemGroup>
-    <PackageReference Include="AuthorPackage" Version="0.0.1" />
-  </ItemGroup>-->
-  
   <ItemGroup>
+    <!--End users will install your package from NuGet as follows. In this sample I'm referencing the project.-->
+    <!--<PackageReference Include="AuthorPackage" Version="0.0.1" />-->
     <ProjectReference Include="..\AuthorPackage\AuthorPackage.csproj" />
   </ItemGroup>
+
+  <!--Ignore this. It's used for debugging locally.-->
+  <!--<Import Project="..\..\src\NuSeal\buildTransitive\NuSeal.props" />
+  <Import Project="..\..\src\NuSeal\buildTransitive\NuSeal.targets" />-->
 
 </Project>

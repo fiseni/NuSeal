@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace NuSeal;
+﻿namespace NuSeal;
 
 public class NuSealOptions
 {
-    public string ValidationBehavior { get; set; }
+    public string ValidationBehavior { get; set; } = "Error";
 }
