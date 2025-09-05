@@ -3,7 +3,8 @@
     "path": "NuSeal.sln",
     "projects": [
       "src\\NuSeal\\NuSeal.csproj",
-      "src\\NuSeal.Generator\\NuSeal.Generator.csproj"
+      "src\\NuSeal.Generator\\NuSeal.Generator.csproj",
+      "tests\\NuSeal.Tests\\NuSeal.Tests.csproj"
     ]
   }
 }

@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserApp", "samples\UserApp\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthorPackage", "samples\AuthorPackage\AuthorPackage.csproj", "{A8A700B8-64D9-4FAE-8645-7D120F918885}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuSeal.Tests", "tests\NuSeal.Tests\NuSeal.Tests.csproj", "{BD4624C4-62AF-438F-ABE3-7EFC8C5E141B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,10 @@ Global
 		{A8A700B8-64D9-4FAE-8645-7D120F918885}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8A700B8-64D9-4FAE-8645-7D120F918885}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8A700B8-64D9-4FAE-8645-7D120F918885}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD4624C4-62AF-438F-ABE3-7EFC8C5E141B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD4624C4-62AF-438F-ABE3-7EFC8C5E141B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD4624C4-62AF-438F-ABE3-7EFC8C5E141B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD4624C4-62AF-438F-ABE3-7EFC8C5E141B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
