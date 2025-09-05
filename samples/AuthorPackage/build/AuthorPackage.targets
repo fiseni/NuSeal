@@ -1,4 +1,29 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(NuSealBuildPath)\NuSeal.targets" />
+  
+  <Target Name="SetupDirectDependency" BeforeTargets="BeforeCompile">
+    <PropertyGroup>
+      <NuSealVersionX>@(PackageReference->WithMetadataValue('Identity', 'NuSeal')->'%(Version)')</NuSealVersionX>
+      <NuSealVersionY>$(NuSealVersionX)</NuSealVersionY>
+      <NuSealVersion>v0.2.0-beta41</NuSealVersion>
+      <NuSealBuildPathX>$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', '..', '..', 'NuSeal', $(NuSealVersionX), 'buildTransitive'))</NuSealBuildPathX>
+      <NuSealBuildPath Condition="!Exists('$(NuSealBuildPathX)')">$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', '..', '..', '..', 'src', 'NuSeal', 'buildTransitive'))</NuSealBuildPath>
+    </PropertyGroup>
+    <!--<Import Project="$(NuSealBuildPath)\NuSeal.props" />
+    <Import Project="$(NuSealBuildPath)\NuSeal.targets" />-->
+  </Target>
+
+
+  <Target Name="TestSomething" AfterTargets="SetupDirectDependency">
+    <Message Importance="high" Text="Hello from AuthorPackage.targets!" />
+    <Message Importance="high" Text="AuthorPackage: PkgNuSeal: $(PkgNuSeal)" />
+    <Message Importance="high" Text="AuthorPackage: MSBuildThisFileDirectory: $(MSBuildThisFileDirectory)" />
+    <Message Importance="high" Text="AuthorPackage: MSBuildThisFileDirectory: $(MSBuildThisFileDirectory)..\..\NuSeal\$(NuSealVersion)\build\NuSeal.props" />
+    <Message Importance="high" Text="AuthorPackage: MSBuildThisFileDirectory: $(MSBuildThisFileDirectory)..\..\..\src\NuSeal\build\NuSeal.props" />
+    <Message Importance="high" Text="AuthorPackage: NuSealX: $(NuSealVersionX)" />
+    <Message Importance="high" Text="AuthorPackage: NuSealX: $(NuSealVersionY)" />
+
+    <Message Importance="high" Text="AuthorPackage: NuSealBuildPathX: $(NuSealBuildPathX)" />
+    <Message Importance="high" Text="AuthorPackage: NuSealBuildPath: $(NuSealBuildPath)" />
+  </Target>
 </Project>
 

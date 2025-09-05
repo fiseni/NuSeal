@@ -19,7 +19,7 @@
     <None Include="build\*" Pack="true" PackagePath="build\" />
   </ItemGroup>
 
-  <Import Project="build\AuthorPackage.props" />
+  <!--<Import Project="build\AuthorPackage.props" />-->
   <Import Project="build\AuthorPackage.targets" />
 
   <ItemGroup>
