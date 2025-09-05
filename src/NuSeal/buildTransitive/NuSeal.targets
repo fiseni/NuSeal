@@ -28,14 +28,14 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="NuSealLicenseValidation"
+  <!--<Target Name="NuSealLicenseValidation"
           AfterTargets="AfterBuild"
           DependsOnTargets="NuSealCheckDirectReference"
           Condition="'$(NuSealValidateAllTypes)' == 'enable' Or '$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'">
     <Message Importance="High" Text="NuSealLicenseValidation: " />
 
     <NuSeal.LicenseValidationTask MainAssemblyPath="$(TargetPath)" />
-  </Target>
+  </Target>-->
 
   <Target Name="NuSealCopyAssets"
           BeforeTargets="Build"
@@ -43,7 +43,8 @@
           Condition="$(IsNuSealPackageReferenced) != 0 And '$(NuSealTransitiveBehavior)' == 'disable'">
     
     <Message Importance="High" Text="IsNuSealPackageReferenced: $(IsNuSealPackageReferenced)" />
-    <PropertyGroup>
+
+    <!--<PropertyGroup>
       <NuSealProps>$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', 'NuSeal.props'))</NuSealProps>
       <NuSealTargets>$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', 'NuSeal.targets'))</NuSealTargets>
     </PropertyGroup>
@@ -54,9 +55,16 @@
     <WriteLinesToFile
         File="$(OutputPath)\NuSeal.props"
         Lines="$([System.IO.File]::ReadAllText('$(OutputPath)\NuSeal.props').Replace('&lt;NuSealValidateAllTypes&gt;disable&lt;/NuSealValidateAllTypes&gt;', '&lt;NuSealValidateAllTypes&gt;enable&lt;/NuSealValidateAllTypes&gt;'))"
-        Overwrite="true" />
+        Overwrite="true" />-->
+
+    <NuSeal.PrepareAssetsForConsumerTask
+        NuSealAssetsPath="$(MSBuildThisFileDirectory)"
+        OutputPath="$(OutputPath)"
+        ConsumerPropsFile="$(NuSealIncludeProps)"
+        ConsumerTargetsFile="$(NuSealIncludeTargets)" />
 
     <ItemGroup Label="Packaging build assets">
+      <PackageReference Update="NuSeal" PrivateAssets="All" />
       <None Include="$(OutputPath)\NuSeal.props" Pack="true" PackagePath="build\$(PackageId).props" Visible="false"/>
       <None Include="$(OutputPath)\NuSeal.targets" Pack="true" PackagePath="build\$(PackageId).targets" Visible="false"/>
     </ItemGroup>

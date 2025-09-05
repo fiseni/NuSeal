@@ -1,0 +1,7 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <Target Name="AAAAAAAAAAAAAAAAAAAAAAAAAA">
+        <Message Importance="High" Text="Test2: $(IsNuSealPackageReferenced)" />
+    </Target>
+
+</Project>

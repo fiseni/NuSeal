@@ -7,8 +7,13 @@
     <NuSealValidateAllTypes>disable</NuSealValidateAllTypes>
   </PropertyGroup>
 
-  <UsingTask
+  <!--<UsingTask
     TaskName="NuSeal.LicenseValidationTask"
+    AssemblyFile="$(NuSealAssembly)"
+    TaskFactory="TaskHostFactory" />-->
+
+  <UsingTask
+    TaskName="NuSeal.PrepareAssetsForConsumerTask"
     AssemblyFile="$(NuSealAssembly)"
     TaskFactory="TaskHostFactory" />
 
