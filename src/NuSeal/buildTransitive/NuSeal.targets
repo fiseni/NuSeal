@@ -1,18 +1,23 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <ItemGroup Condition="'$(NuSealTransitiveBehavior)' == 'disable'">
+    <PackageReference Update="NuSeal" PrivateAssets="contentfiles;analyzers;build;buildTransitive" />
+  </ItemGroup>
+
   <Target Name="NuSealCheckDirectReference"
           BeforeTargets="BeforeCompile">
 
     <PropertyGroup>
-      <IsNuSealPackageReferenced>@(PackageReference->WithMetadataValue('Identity', 'NuSeal')->'%(Identity)'->Count())</IsNuSealPackageReferenced>
+      <NuSealIsPackageReferenced>@(PackageReference->WithMetadataValue('Identity', 'NuSeal')->'%(Identity)'->Count())</NuSealIsPackageReferenced>
+      <NuSealVersion>@(PackageReference->WithMetadataValue('Identity', 'NuSeal')->'%(Version)')</NuSealVersion>
     </PropertyGroup>
-    
+
   </Target>
 
   <Target Name="NuSealInjectProtectedAttribute"
           BeforeTargets="BeforeCompile"
           DependsOnTargets="NuSealCheckDirectReference"
-          Condition="$(IsNuSealPackageReferenced) != 0">
+          Condition="$(NuSealIsPackageReferenced) != 0">
 
     <ItemGroup>
       <AssemblyAttribute Include="NuSeal.NuSealProtectedAttribute" />
@@ -23,7 +28,7 @@
   <Target Name="NuSealInjectValidationBehaviorAttribute"
           BeforeTargets="BeforeCompile"
           DependsOnTargets="NuSealCheckDirectReference"
-          Condition="$(IsNuSealPackageReferenced) != 0 And '$(NuSealValidationBehavior)' != ''">
+          Condition="$(NuSealIsPackageReferenced) != 0 And '$(NuSealValidationBehavior)' != ''">
 
     <ItemGroup>
       <AssemblyAttribute Include="NuSeal.NuSealValidationBehaviorAttribute">
@@ -37,9 +42,26 @@
           AfterTargets="AfterBuild"
           Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'">
 
-    <NuSeal.LicenseValidationTask
-      MainAssemblyPath="$(TargetPath)" />
+    <NuSeal.LicenseValidationTask MainAssemblyPath="$(TargetPath)" />
+  </Target>
 
+  <Target Name="NuSealDisableTransitiveBehavior"
+          BeforeTargets="Build"
+          DependsOnTargets="NuSealCheckDirectReference"
+          Condition="$(NuSealIsPackageReferenced) != 0 And '$(NuSealTransitiveBehavior)' == 'disable'">
+
+    <NuSeal.PrepareAssetsForConsumerTask
+        NuSealAssetsPath="$(MSBuildThisFileDirectory)"
+        NuSealVersion="$(NuSealVersion)"
+        OutputPath="$(OutputPath)"
+        ConsumerPackageId="$(PackageId)"
+        ConsumerPropsFile="$(NuSealIncludePropsFile)"
+        ConsumerTargetsFile="$(NuSealIncludeTargetsFile)" />
+
+    <ItemGroup Label="Packaging build assets">
+      <None Include="$(OutputPath)\$(PackageId).props" Pack="true" PackagePath="build\$(PackageId).props" Visible="false"/>
+      <None Include="$(OutputPath)\$(PackageId).targets" Pack="true" PackagePath="build\$(PackageId).targets" Visible="false"/>
+    </ItemGroup>
   </Target>
 
 </Project>
