@@ -37,12 +37,7 @@ public partial class PrepareAssetsForConsumerTask : Task
             var props = File.ReadAllText(nusealPropsFile);
             var targets = File.ReadAllText(nusealTargetsFile);
 
-            var nusealAssemblyProperty =
-                @"<NuSealAssembly>$([MSBuild]::NormalizePath('$(NugetPackageRoot)', 'nuseal', '_NuSealVersion_', 'tasks', 'netstandard2.0', 'NuSeal.dll'))</NuSealAssembly>";
-
-            nusealAssemblyProperty = nusealAssemblyProperty.Replace("_NuSealVersion_", NuSealVersion);
-
-            props = props.Replace("_NuSealAssembly_", nusealAssemblyProperty);
+            props = props.Replace("_NuSealVersion_", NuSealVersion);
 
             if (!string.IsNullOrEmpty(ConsumerPropsFile) && File.Exists(ConsumerPropsFile))
             {
