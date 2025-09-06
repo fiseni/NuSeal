@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <Target Name="NuSealLicenseValidation" AfterTargets="AfterBuild">
-    <NuSeal.LicenseValidationTask MainAssemblyPath="$(TargetPath)" />
+  <Target Name="NuSealLicenseValidationForDirectConsumers" AfterTargets="AfterBuild">
+    <NuSeal.LicenseValidationDirectTask MainAssemblyPath="$(TargetPath)" />
   </Target>
 
 </Project>
