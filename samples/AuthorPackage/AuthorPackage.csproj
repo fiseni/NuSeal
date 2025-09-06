@@ -3,14 +3,14 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>AuthorPackage</PackageId>
-    <Version>0.0.1-beta58</Version>
+    <Version>0.0.1-beta60</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
     <NuSealTransitiveBehavior>disable</NuSealTransitiveBehavior>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NuSeal" Version="0.2.0-beta58"/>
+    <PackageReference Include="NuSeal" Version="0.2.0-beta60" />
   </ItemGroup>
 
   <ItemGroup>

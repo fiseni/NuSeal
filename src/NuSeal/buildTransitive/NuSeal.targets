@@ -2,14 +2,15 @@
 
   <!-- Add an ItemDefinitionGroup to set default PrivateAssets for NuSeal when transitive behavior is disabled -->
   <ItemGroup Condition="'$(NuSealTransitiveBehavior)' == 'disable'">
-    <PackageReference Update="NuSeal" PrivateAssets="All" />
+    <PackageReference Update="NuSeal" PrivateAssets="contentfiles;analyzers;build;buildTransitive" />
   </ItemGroup>
 
   <Target Name="NuSealCheckDirectReference"
           BeforeTargets="BeforeCompile">
 
     <PropertyGroup>
-      <IsNuSealPackageReferenced>@(PackageReference->WithMetadataValue('Identity', 'NuSeal')->'%(Identity)'->Count())</IsNuSealPackageReferenced>
+      <NuSealIsPackageReferenced>@(PackageReference->WithMetadataValue('Identity', 'NuSeal')->'%(Identity)'->Count())</NuSealIsPackageReferenced>
+      <NuSealVersion>@(PackageReference->WithMetadataValue('Identity', 'NuSeal')->'%(Version)')</NuSealVersion>
     </PropertyGroup>
 
   </Target>
@@ -17,7 +18,7 @@
   <Target Name="NuSealInjectProtectedAttribute"
           BeforeTargets="BeforeCompile"
           DependsOnTargets="NuSealCheckDirectReference"
-          Condition="$(IsNuSealPackageReferenced) != 0">
+          Condition="$(NuSealIsPackageReferenced) != 0">
 
     <ItemGroup>
       <AssemblyAttribute Include="NuSeal.NuSealProtectedAttribute" />
@@ -28,7 +29,7 @@
   <Target Name="NuSealInjectValidationBehaviorAttribute"
           BeforeTargets="BeforeCompile"
           DependsOnTargets="NuSealCheckDirectReference"
-          Condition="$(IsNuSealPackageReferenced) != 0 And '$(NuSealValidationBehavior)' != ''">
+          Condition="$(NuSealIsPackageReferenced) != 0 And '$(NuSealValidationBehavior)' != ''">
 
     <ItemGroup>
       <AssemblyAttribute Include="NuSeal.NuSealValidationBehaviorAttribute">
@@ -40,7 +41,7 @@
 
   <Target Name="NuSealLicenseValidation"
           AfterTargets="AfterBuild"
-          Condition="'$(NuSealValidateAnyProjectType)' == 'enable' Or '$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'">
+          Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'">
 
     <NuSeal.LicenseValidationTask MainAssemblyPath="$(TargetPath)" />
   </Target>
@@ -48,10 +49,11 @@
   <Target Name="NuSealCopyAssets"
           BeforeTargets="Build"
           DependsOnTargets="NuSealCheckDirectReference"
-          Condition="$(IsNuSealPackageReferenced) != 0 And '$(NuSealTransitiveBehavior)' == 'disable'">
+          Condition="$(NuSealIsPackageReferenced) != 0 And '$(NuSealTransitiveBehavior)' == 'disable'">
 
     <NuSeal.PrepareAssetsForConsumerTask
         NuSealAssetsPath="$(MSBuildThisFileDirectory)"
+        NuSealVersion="$(NuSealVersion)"
         OutputPath="$(OutputPath)"
         ConsumerPackageId="$(PackageId)"
         ConsumerPropsFile="$(NuSealIncludePropsFile)"

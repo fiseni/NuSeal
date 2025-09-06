@@ -1,7 +1,6 @@
 ﻿using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using System;
-using System.Diagnostics;
 using System.IO;
 
 namespace NuSeal;
@@ -10,6 +9,9 @@ public partial class PrepareAssetsForConsumerTask : Task
 {
     [Required]
     public string NuSealAssetsPath { get; set; } = "";
+
+    [Required]
+    public string NuSealVersion { get; set; } = "";
 
     [Required]
     public string OutputPath { get; set; } = "";
@@ -27,17 +29,20 @@ public partial class PrepareAssetsForConsumerTask : Task
 
         try
         {
-            var nusealPropsFile = Path.Combine(NuSealAssetsPath, "NuSeal.props");
-            var nusealTargetsFile = Path.Combine(NuSealAssetsPath, "NuSeal.targets");
+            var nusealPropsFile = Path.Combine(NuSealAssetsPath, "NuSeal.Direct.props");
+            var nusealTargetsFile = Path.Combine(NuSealAssetsPath, "NuSeal.Direct.targets");
             var propsOutputFile = Path.Combine(OutputPath, $"{ConsumerPackageId}.props");
             var targetsOutputFile = Path.Combine(OutputPath, $"{ConsumerPackageId}.targets");
 
             var props = File.ReadAllText(nusealPropsFile);
             var targets = File.ReadAllText(nusealTargetsFile);
 
-            props = props.Replace(
-                "<NuSealValidateAnyProjectType>disable</NuSealValidateAnyProjectType>",
-                "<NuSealValidateAnyProjectType>enable</NuSealValidateAnyProjectType>");
+            var nusealAssemblyProperty =
+                @"<NuSealAssembly>$([MSBuild]::NormalizePath('$(NugetPackageRoot)', 'nuseal', '_NuSealVersion_', 'tasks', 'netstandard2.0', 'NuSeal.dll'))</NuSealAssembly>";
+
+            nusealAssemblyProperty = nusealAssemblyProperty.Replace("_NuSealVersion_", NuSealVersion);
+
+            props = props.Replace("_NuSealAssembly_", nusealAssemblyProperty);
 
             if (!string.IsNullOrEmpty(ConsumerPropsFile) && File.Exists(ConsumerPropsFile))
             {

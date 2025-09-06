@@ -1,9 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <NuSealAssembly>$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', '..', 'tasks', 'netstandard2.0', 'NuSeal.dll'))</NuSealAssembly>
-    <!--Needed while debugging locally-->
-    <!--<NuSealAssembly Condition="!Exists('$(NuSealAssembly)')">$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', '..', 'bin', 'Debug', 'netstandard2.0', 'NuSeal.dll'))</NuSealAssembly>-->
+    _NuSealAssembly_
   </PropertyGroup>
 
   <UsingTask
