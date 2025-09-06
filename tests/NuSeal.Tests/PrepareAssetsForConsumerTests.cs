@@ -253,7 +253,6 @@ public class PrepareAssetsForConsumerTests : IDisposable
                 <PropertyGroup>
                     <NuSealVersion>1.0.0</NuSealVersion>
                 </PropertyGroup>
-
             </Project>
             """;
         var expectedTargetsContent = """
@@ -261,7 +260,6 @@ public class PrepareAssetsForConsumerTests : IDisposable
                 <Target Name="NuSealCheck">
                     <Message Text="NuSeal is working" />
                 </Target>
-
             </Project>
             """;
 
