@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Package Metadata">
-    <Version>0.2.0</Version>
+    <Version>0.2.0-beta58</Version>
     <PackageId>NuSeal</PackageId>
     <Title>NuSeal</Title>
     <Description>A library that validates licenses during build time.</Description>
@@ -34,7 +34,7 @@
     <GenerateDependencyFile>true</GenerateDependencyFile>
 
     <IsPackable>true</IsPackable>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage;CopyAssemblyToPackage</TargetsForTfmSpecificBuildOutput>
     <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
     <!--<DevelopmentDependency>true</DevelopmentDependency>-->
