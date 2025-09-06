@@ -27,6 +27,12 @@ internal class FileUtils
 
     internal static bool TryGetLicense(string mainAssemblyPath, string productName, out string licenseContent)
     {
+        if (string.IsNullOrWhiteSpace(mainAssemblyPath) || string.IsNullOrWhiteSpace(productName))
+        {
+            licenseContent = string.Empty;
+            return false;
+        }
+
         var licenseFileName = $"{productName}.license";
 
         try
