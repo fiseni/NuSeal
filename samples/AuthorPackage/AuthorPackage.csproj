@@ -7,8 +7,8 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
     <NuSealTransitiveBehavior>disable</NuSealTransitiveBehavior>
-    <NuSealIncludeProps>Test1.props</NuSealIncludeProps>
-    <NuSealIncludeTargets>Test2.targets</NuSealIncludeTargets>
+    <NuSealIncludeProps>build\Test1.props</NuSealIncludeProps>
+    <NuSealIncludeTargets>build\Test2.targets</NuSealIncludeTargets>
   </PropertyGroup>
 
   <ItemGroup>
