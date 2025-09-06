@@ -74,10 +74,15 @@ public class PrepareAssetsForConsumerTests : IDisposable
         var nuSealVersion = "1.0.0";
         var consumerPackageId = "TestConsumer";
         var consumerPropsFile = Path.Combine(_consumerDirectory, "consumer.props");
-        var consumerPropsContent = "<PropertyGroup><TestProperty>TestValue</TestProperty></PropertyGroup>";
-        var fileContent = $"<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">{consumerPropsContent}</Project>";
+        var consumerPropsContent = """
+            <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+                <PropertyGroup>
+                    <TestProperty>TestValue</TestProperty>
+                </PropertyGroup>
+            </Project>
+            """;
 
-        File.WriteAllText(consumerPropsFile, fileContent);
+        File.WriteAllText(consumerPropsFile, consumerPropsContent);
 
         // Act
         PrepareAssetsForConsumer.Execute(
@@ -90,7 +95,20 @@ public class PrepareAssetsForConsumerTests : IDisposable
 
         // Assert
         var outputPropsContent = File.ReadAllText(Path.Combine(_outputDirectory, $"{consumerPackageId}.props"));
-        outputPropsContent.Should().Contain(consumerPropsContent);
+        var expectedPropsContent = """
+            <Project>
+                <PropertyGroup>
+                    <NuSealVersion>1.0.0</NuSealVersion>
+                </PropertyGroup>
+
+                <PropertyGroup>
+                    <TestProperty>TestValue</TestProperty>
+                </PropertyGroup>
+
+            </Project>
+            """;
+
+        outputPropsContent.Should().Be(expectedPropsContent);
     }
 
     [Fact]
@@ -100,10 +118,15 @@ public class PrepareAssetsForConsumerTests : IDisposable
         var nuSealVersion = "1.0.0";
         var consumerPackageId = "TestConsumer";
         var consumerTargetsFile = Path.Combine(_consumerDirectory, "consumer.targets");
-        var consumerTargetsContent = "<Target Name=\"TestTarget\"><Message Text=\"Test message\" /></Target>";
-        var fileContent = $"<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">{consumerTargetsContent}</Project>";
+        var consumerTargetsContent = """
+            <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+                <Target Name="TestTarget">
+                    <Message Text="Test message" />
+                </Target>
+            </Project>
+            """;
 
-        File.WriteAllText(consumerTargetsFile, fileContent);
+        File.WriteAllText(consumerTargetsFile, consumerTargetsContent);
 
         // Act
         PrepareAssetsForConsumer.Execute(
@@ -116,7 +139,20 @@ public class PrepareAssetsForConsumerTests : IDisposable
 
         // Assert
         var outputTargetsContent = File.ReadAllText(Path.Combine(_outputDirectory, $"{consumerPackageId}.targets"));
-        outputTargetsContent.Should().Contain(consumerTargetsContent);
+        var expectedTargetsContent = """
+            <Project>
+                <Target Name="NuSealCheck">
+                    <Message Text="NuSeal is working" />
+                </Target>
+
+                <Target Name="TestTarget">
+                    <Message Text="Test message" />
+                </Target>
+
+            </Project>
+            """;
+
+        outputTargetsContent.Should().Be(expectedTargetsContent);
     }
 
     [Fact]
@@ -127,11 +163,23 @@ public class PrepareAssetsForConsumerTests : IDisposable
         var consumerPackageId = "TestConsumer";
         var consumerPropsFile = Path.Combine(_consumerDirectory, "consumer.props");
         var consumerTargetsFile = Path.Combine(_consumerDirectory, "consumer.targets");
-        var consumerPropsContent = "<PropertyGroup><TestProperty>TestValue</TestProperty></PropertyGroup>";
-        var consumerTargetsContent = "<Target Name=\"TestTarget\"><Message Text=\"Test message\" /></Target>";
+        var consumerPropsContent = """
+            <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+                <PropertyGroup>
+                    <TestProperty>TestValue</TestProperty>
+                </PropertyGroup>
+            </Project>
+            """;
+        var consumerTargetsContent = """
+            <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+                <Target Name="TestTarget">
+                    <Message Text="Test message" />
+                </Target>
+            </Project>
+            """;
 
-        File.WriteAllText(consumerPropsFile, $"<Project>{consumerPropsContent}</Project>");
-        File.WriteAllText(consumerTargetsFile, $"<Project>{consumerTargetsContent}</Project>");
+        File.WriteAllText(consumerPropsFile, consumerPropsContent);
+        File.WriteAllText(consumerTargetsFile, consumerTargetsContent);
 
         // Act
         PrepareAssetsForConsumer.Execute(
@@ -146,8 +194,33 @@ public class PrepareAssetsForConsumerTests : IDisposable
         var outputPropsContent = File.ReadAllText(Path.Combine(_outputDirectory, $"{consumerPackageId}.props"));
         var outputTargetsContent = File.ReadAllText(Path.Combine(_outputDirectory, $"{consumerPackageId}.targets"));
 
-        outputPropsContent.Should().Contain(consumerPropsContent);
-        outputTargetsContent.Should().Contain(consumerTargetsContent);
+        var expectedPropsContent = """
+            <Project>
+                <PropertyGroup>
+                    <NuSealVersion>1.0.0</NuSealVersion>
+                </PropertyGroup>
+
+                <PropertyGroup>
+                    <TestProperty>TestValue</TestProperty>
+                </PropertyGroup>
+
+            </Project>
+            """;
+        var expectedTargetsContent = """
+            <Project>
+                <Target Name="NuSealCheck">
+                    <Message Text="NuSeal is working" />
+                </Target>
+
+                <Target Name="TestTarget">
+                    <Message Text="Test message" />
+                </Target>
+
+            </Project>
+            """;
+
+        outputPropsContent.Should().Be(expectedPropsContent);
+        outputTargetsContent.Should().Be(expectedTargetsContent);
     }
 
     [Fact]
@@ -172,11 +245,28 @@ public class PrepareAssetsForConsumerTests : IDisposable
             consumerTargetsFile: consumerTargetsFile);
 
         // Assert
-        var propsOutputFile = Path.Combine(_outputDirectory, $"{consumerPackageId}.props");
-        var targetsOutputFile = Path.Combine(_outputDirectory, $"{consumerPackageId}.targets");
+        var outputPropsContent = File.ReadAllText(Path.Combine(_outputDirectory, $"{consumerPackageId}.props"));
+        var outputTargetsContent = File.ReadAllText(Path.Combine(_outputDirectory, $"{consumerPackageId}.targets"));
 
-        File.Exists(propsOutputFile).Should().BeTrue();
-        File.Exists(targetsOutputFile).Should().BeTrue();
+        var expectedPropsContent = """
+            <Project>
+                <PropertyGroup>
+                    <NuSealVersion>1.0.0</NuSealVersion>
+                </PropertyGroup>
+
+            </Project>
+            """;
+        var expectedTargetsContent = """
+            <Project>
+                <Target Name="NuSealCheck">
+                    <Message Text="NuSeal is working" />
+                </Target>
+
+            </Project>
+            """;
+
+        outputPropsContent.Should().Be(expectedPropsContent);
+        outputTargetsContent.Should().Be(expectedTargetsContent);
     }
 
     [Fact]
@@ -198,11 +288,26 @@ public class PrepareAssetsForConsumerTests : IDisposable
             consumerTargetsFile: nonExistentTargetsFile);
 
         // Assert
-        var propsOutputFile = Path.Combine(_outputDirectory, $"{consumerPackageId}.props");
-        var targetsOutputFile = Path.Combine(_outputDirectory, $"{consumerPackageId}.targets");
+        var outputPropsContent = File.ReadAllText(Path.Combine(_outputDirectory, $"{consumerPackageId}.props"));
+        var outputTargetsContent = File.ReadAllText(Path.Combine(_outputDirectory, $"{consumerPackageId}.targets"));
 
-        File.Exists(propsOutputFile).Should().BeTrue();
-        File.Exists(targetsOutputFile).Should().BeTrue();
+        var expectedPropsContent = """
+            <Project>
+                <PropertyGroup>
+                    <NuSealVersion>1.0.0</NuSealVersion>
+                </PropertyGroup>
+            </Project>
+            """;
+        var expectedTargetsContent = """
+            <Project>
+                <Target Name="NuSealCheck">
+                    <Message Text="NuSeal is working" />
+                </Target>
+            </Project>
+            """;
+
+        outputPropsContent.Should().Be(expectedPropsContent);
+        outputTargetsContent.Should().Be(expectedTargetsContent);
     }
 
     [Fact]
@@ -213,7 +318,7 @@ public class PrepareAssetsForConsumerTests : IDisposable
         var consumerPackageId = "TestConsumer";
         var consumerPropsFile = Path.Combine(_consumerDirectory, "complex.props");
         var consumerPropsContent = """
-            <Project Sdk=""Microsoft.NET.Sdk"">
+            <Project Sdk="Microsoft.NET.Sdk">
                 <PropertyGroup>
                     <TestProperty>TestValue</TestProperty>
                 </PropertyGroup>
@@ -233,10 +338,145 @@ public class PrepareAssetsForConsumerTests : IDisposable
 
         // Assert
         var outputPropsContent = File.ReadAllText(Path.Combine(_outputDirectory, $"{consumerPackageId}.props"));
-        outputPropsContent.Should().Contain(@"<TestProperty>TestValue</TestProperty>");
-        outputPropsContent.Should().NotContain(@"<Project Sdk=""Microsoft.NET.Sdk"">");
-        // Should only have one Project tag (from the original NuSeal.Direct.props)
-        outputPropsContent.Count(c => c == '<').Should().Be(outputPropsContent.Count(c => c == '>'));
+        var expectedContent = """
+            <Project>
+                <PropertyGroup>
+                    <NuSealVersion>1.0.0</NuSealVersion>
+                </PropertyGroup>
+
+                <PropertyGroup>
+                    <TestProperty>TestValue</TestProperty>
+                </PropertyGroup>
+
+            </Project>
+            """;
+        outputPropsContent.Should().Be(expectedContent);
+    }
+
+    [Fact]
+    public void ThrowsArgumentException_GivenFileWithNoProjectStartTag()
+    {
+        // Arrange
+        var nuSealVersion = "1.0.0";
+        var consumerPackageId = "TestConsumer";
+        var consumerPropsFile = Path.Combine(_consumerDirectory, "no-project-start.props");
+        var consumerPropsContent = """
+                <PropertyGroup>
+                    <TestProperty>TestValue</TestProperty>
+                </PropertyGroup>
+            </Project>
+            """;
+
+        File.WriteAllText(consumerPropsFile, consumerPropsContent);
+
+        // Act
+        var action = () =>
+        {
+            PrepareAssetsForConsumer.Execute(
+                nusealAssetsPath: _assetsDirectory,
+                nusealVersion: nuSealVersion,
+                outputPath: _outputDirectory,
+                consumerPackageId: consumerPackageId,
+                consumerPropsFile: consumerPropsFile,
+                consumerTargetsFile: "");
+        };
+
+        // Assert
+        action.Should().Throw<ArgumentException>();
+    }
+
+    [Fact]
+    public void ThrowsArgumentException_GivenFileWithProjectStartTagButNoEndTag()
+    {
+        // Arrange
+        var nuSealVersion = "1.0.0";
+        var consumerPackageId = "TestConsumer";
+        var consumerPropsFile = Path.Combine(_consumerDirectory, "no-end-tag.props");
+        var consumerPropsContent = """
+            <Project Sdk=""Microsoft.NET.Sdk"">
+                <PropertyGroup>
+                    <TestProperty>TestValue</TestProperty>
+                </PropertyGroup>
+            """;
+
+        File.WriteAllText(consumerPropsFile, consumerPropsContent);
+
+        // Act
+        var action = () =>
+        {
+            PrepareAssetsForConsumer.Execute(
+                nusealAssetsPath: _assetsDirectory,
+                nusealVersion: nuSealVersion,
+                outputPath: _outputDirectory,
+                consumerPackageId: consumerPackageId,
+                consumerPropsFile: consumerPropsFile,
+                consumerTargetsFile: "");
+        };
+
+        // Assert
+        action.Should().Throw<ArgumentException>();
+    }
+
+    [Fact]
+    public void ThrowsArgumentException_GivenFileWithProjectStartTagButNoClosingTags()
+    {
+        // Arrange
+        var nuSealVersion = "1.0.0";
+        var consumerPackageId = "TestConsumer";
+        var consumerPropsFile = Path.Combine(_consumerDirectory, "no-end-tag.props");
+        var consumerPropsContent = """
+            <Project Sdk=""Microsoft.NET.Sdk""
+                <PropertyGroup
+            """;
+
+        File.WriteAllText(consumerPropsFile, consumerPropsContent);
+
+        // Act
+        var action = () =>
+        {
+            PrepareAssetsForConsumer.Execute(
+                nusealAssetsPath: _assetsDirectory,
+                nusealVersion: nuSealVersion,
+                outputPath: _outputDirectory,
+                consumerPackageId: consumerPackageId,
+                consumerPropsFile: consumerPropsFile,
+                consumerTargetsFile: "");
+        };
+
+        // Assert
+        action.Should().Throw<ArgumentException>();
+    }
+
+    [Fact]
+    public void ThrowsArgumentException_GivenFileWithOpenAngleBracketButNoProjectTag()
+    {
+        // Arrange
+        var nuSealVersion = "1.0.0";
+        var consumerPackageId = "TestConsumer";
+        var consumerPropsFile = Path.Combine(_consumerDirectory, "no-project-tag.props");
+        var consumerPropsContent = """
+            <This is not a project tag but has an open angle bracket
+                <PropertyGroup>
+                    <TestProperty>TestValue</TestProperty>
+                </PropertyGroup>
+            """;
+
+        File.WriteAllText(consumerPropsFile, consumerPropsContent);
+
+        // Act
+        var action = () =>
+        {
+            PrepareAssetsForConsumer.Execute(
+                nusealAssetsPath: _assetsDirectory,
+                nusealVersion: nuSealVersion,
+                outputPath: _outputDirectory,
+                consumerPackageId: consumerPackageId,
+                consumerPropsFile: consumerPropsFile,
+                consumerTargetsFile: "");
+        };
+
+        // Assert
+        action.Should().Throw<ArgumentException>();
     }
 
     private void CreateTestNuSealFiles()
@@ -253,8 +493,8 @@ public class PrepareAssetsForConsumerTests : IDisposable
         // Create NuSeal.Direct.targets
         var targetsContent = """
             <Project>
-                <Target Name=""NuSealCheck"">
-                    <Message Text=""NuSeal is working"" />
+                <Target Name="NuSealCheck">
+                    <Message Text="NuSeal is working" />
                 </Target>
             </Project>
             """;

@@ -6,7 +6,7 @@ public class AssemblyUtils_ExtractPemsTests : IDisposable
 {
     private readonly string _testDirectory;
     private readonly string _testAssemblyPath;
-    private AssemblyDefinition _testAssembly;
+    private readonly AssemblyDefinition _testAssembly;
 
     public AssemblyUtils_ExtractPemsTests()
     {
@@ -73,8 +73,8 @@ public class AssemblyUtils_ExtractPemsTests : IDisposable
     public void ReturnsPemData_GivenAssemblyWithValidPemResource()
     {
         // Arrange
-        string productName = "TestProduct";
-        string pemContent = "-----BEGIN PUBLIC KEY-----\nMIIB...etc\n-----END PUBLIC KEY-----";
+        var productName = "TestProduct";
+        var pemContent = "-----BEGIN PUBLIC KEY-----\nMIIB...etc\n-----END PUBLIC KEY-----";
         var resource = new EmbeddedResource($"namespace.{productName}.nuseal.pem",
             ManifestResourceAttributes.Public,
             GetUtf8Bytes(pemContent));
@@ -95,10 +95,10 @@ public class AssemblyUtils_ExtractPemsTests : IDisposable
     public void ReturnsMultiplePemData_GivenAssemblyWithMultiplePemResources()
     {
         // Arrange
-        string product1 = "Product1";
-        string product2 = "Product2";
-        string pem1 = "PEM1 Content";
-        string pem2 = "PEM2 Content";
+        var product1 = "Product1";
+        var product2 = "Product2";
+        var pem1 = "PEM1 Content";
+        var pem2 = "PEM2 Content";
 
         var resource1 = new EmbeddedResource($"namespace.{product1}.nuseal.pem",
             ManifestResourceAttributes.Public,
@@ -131,8 +131,8 @@ public class AssemblyUtils_ExtractPemsTests : IDisposable
     public void ReturnsPemData_GivenResourceWithoutNamespace()
     {
         // Arrange
-        string productName = "TestProduct";
-        string pemContent = "PEM Content";
+        var productName = "TestProduct";
+        var pemContent = "PEM Content";
 
         // Use uppercase in the suffix
         var resource = new EmbeddedResource($"{productName}.nuseal.pem",
@@ -155,8 +155,8 @@ public class AssemblyUtils_ExtractPemsTests : IDisposable
     public void IsCaseInsensitive_GivenResourceWithDifferentCase()
     {
         // Arrange
-        string productName = "TestProduct";
-        string pemContent = "PEM Content";
+        var productName = "TestProduct";
+        var pemContent = "PEM Content";
 
         // Use uppercase in the suffix
         var resource = new EmbeddedResource($"namespace.{productName}.NUSEAL.PEM",
@@ -179,8 +179,8 @@ public class AssemblyUtils_ExtractPemsTests : IDisposable
     public void HandlesLongerResourceNames_GivenComplexResourceName()
     {
         // Arrange
-        string productName = "TestProduct";
-        string pemContent = "PEM Content";
+        var productName = "TestProduct";
+        var pemContent = "PEM Content";
 
         // Use a longer resource name with more dots
         var resource = new EmbeddedResource($"some.complex.namespace.{productName}.nuseal.pem",
@@ -203,8 +203,8 @@ public class AssemblyUtils_ExtractPemsTests : IDisposable
     public void ExtractsPemContent_GivenResourceWithMultilineContent()
     {
         // Arrange
-        string productName = "TestProduct";
-        string pemContent = "Line1\nLine2\nLine3";
+        var productName = "TestProduct";
+        var pemContent = "Line1\nLine2\nLine3";
 
         var resource = new EmbeddedResource($"namespace.{productName}.nuseal.pem",
             ManifestResourceAttributes.Public,

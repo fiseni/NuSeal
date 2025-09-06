@@ -124,6 +124,18 @@ public class LicenseValidatorTests
     }
 
     [Fact]
+    public void ReturnsFalse_GivenInvalidPem()
+    {
+        var invalidPublicKeyPem = "invalid-public-key-pem";
+        var pemData = new PemData(_productName, invalidPublicKeyPem);
+        var license = GenerateValidLicense();
+
+        var result = LicenseValidator.IsValid(pemData, license);
+
+        result.Should().BeFalse();
+    }
+
+    [Fact]
     public void ReturnsFalse_GivenExpiredLicense()
     {
         var pemData = new PemData(_productName, _keyPair.PublicKeyPem);

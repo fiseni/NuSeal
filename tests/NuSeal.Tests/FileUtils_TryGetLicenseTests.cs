@@ -29,7 +29,7 @@ public class FileUtils_TryGetLicenseTests : IDisposable
     public void ReturnsFalse_GivenNoLicenseFile()
     {
         // Act
-        bool result = FileUtils.TryGetLicense(_mainAssemblyPath, _productName, out string licenseContent);
+        var result = FileUtils.TryGetLicense(_mainAssemblyPath, _productName, out string licenseContent);
 
         // Assert
         result.Should().BeFalse();
@@ -40,12 +40,12 @@ public class FileUtils_TryGetLicenseTests : IDisposable
     public void ReturnsTrue_GivenLicenseFileInSameDirectory()
     {
         // Arrange
-        string licenseContent = "license-content";
-        string licenseFilePath = Path.Combine(_subSubDirectory, $"{_productName}.license");
+        var licenseContent = "license-content";
+        var licenseFilePath = Path.Combine(_subSubDirectory, $"{_productName}.license");
         File.WriteAllText(licenseFilePath, licenseContent);
 
         // Act
-        bool result = FileUtils.TryGetLicense(_mainAssemblyPath, _productName, out string retrievedContent);
+        var result = FileUtils.TryGetLicense(_mainAssemblyPath, _productName, out string retrievedContent);
 
         // Assert
         result.Should().BeTrue();
@@ -56,12 +56,12 @@ public class FileUtils_TryGetLicenseTests : IDisposable
     public void ReturnsTrue_GivenLicenseFileInParentDirectory()
     {
         // Arrange
-        string licenseContent = "license-content";
-        string licenseFilePath = Path.Combine(_subDirectory, $"{_productName}.license");
+        var licenseContent = "license-content";
+        var licenseFilePath = Path.Combine(_subDirectory, $"{_productName}.license");
         File.WriteAllText(licenseFilePath, licenseContent);
 
         // Act
-        bool result = FileUtils.TryGetLicense(_mainAssemblyPath, _productName, out string retrievedContent);
+        var result = FileUtils.TryGetLicense(_mainAssemblyPath, _productName, out string retrievedContent);
 
         // Assert
         result.Should().BeTrue();
@@ -72,12 +72,12 @@ public class FileUtils_TryGetLicenseTests : IDisposable
     public void ReturnsTrue_GivenLicenseFileInRootDirectory()
     {
         // Arrange
-        string licenseContent = "license-content";
-        string licenseFilePath = Path.Combine(_testRootDirectory, $"{_productName}.license");
+        var licenseContent = "license-content";
+        var licenseFilePath = Path.Combine(_testRootDirectory, $"{_productName}.license");
         File.WriteAllText(licenseFilePath, licenseContent);
 
         // Act
-        bool result = FileUtils.TryGetLicense(_mainAssemblyPath, _productName, out string retrievedContent);
+        var result = FileUtils.TryGetLicense(_mainAssemblyPath, _productName, out string retrievedContent);
 
         // Assert
         result.Should().BeTrue();
@@ -88,9 +88,9 @@ public class FileUtils_TryGetLicenseTests : IDisposable
     public void ReturnsFirstLicenseFound_GivenMultipleLicenseFiles()
     {
         // Arrange
-        string licenseContentRoot = "license-content-root";
-        string licenseContentParent = "license-content-parent";
-        string licenseContentSame = "license-content-same";
+        var licenseContentRoot = "license-content-root";
+        var licenseContentParent = "license-content-parent";
+        var licenseContentSame = "license-content-same";
 
         // Create license files in all directories
         File.WriteAllText(Path.Combine(_testRootDirectory, $"{_productName}.license"), licenseContentRoot);
@@ -98,7 +98,7 @@ public class FileUtils_TryGetLicenseTests : IDisposable
         File.WriteAllText(Path.Combine(_subSubDirectory, $"{_productName}.license"), licenseContentSame);
 
         // Act
-        bool result = FileUtils.TryGetLicense(_mainAssemblyPath, _productName, out string retrievedContent);
+        var result = FileUtils.TryGetLicense(_mainAssemblyPath, _productName, out string retrievedContent);
 
         // Assert
         result.Should().BeTrue();
@@ -110,12 +110,12 @@ public class FileUtils_TryGetLicenseTests : IDisposable
     public void TrimsLicenseContent_GivenLicenseWithWhitespace()
     {
         // Arrange
-        string licenseContent = "  license-content-with-whitespace  \r\n  ";
-        string licenseFilePath = Path.Combine(_subSubDirectory, $"{_productName}.license");
+        var licenseContent = "  license-content-with-whitespace  \r\n  ";
+        var licenseFilePath = Path.Combine(_subSubDirectory, $"{_productName}.license");
         File.WriteAllText(licenseFilePath, licenseContent);
 
         // Act
-        bool result = FileUtils.TryGetLicense(_mainAssemblyPath, _productName, out string retrievedContent);
+        var result = FileUtils.TryGetLicense(_mainAssemblyPath, _productName, out string retrievedContent);
 
         // Assert
         result.Should().BeTrue();
@@ -126,10 +126,10 @@ public class FileUtils_TryGetLicenseTests : IDisposable
     public void ReturnsFalse_GivenInvalidMainAssemblyPath()
     {
         // Arrange
-        string invalidPath = Path.Combine(_subSubDirectory, "NonExistent.dll");
+        var invalidPath = Path.Combine(_subSubDirectory, "NonExistent.dll");
 
         // Act
-        bool result = FileUtils.TryGetLicense(invalidPath, _productName, out string licenseContent);
+        var result = FileUtils.TryGetLicense(invalidPath, _productName, out string licenseContent);
 
         // Assert
         result.Should().BeFalse();
@@ -140,7 +140,7 @@ public class FileUtils_TryGetLicenseTests : IDisposable
     public void ReturnsFalse_GivenNullMainAssemblyPath()
     {
         // Act
-        bool result = FileUtils.TryGetLicense(null!, _productName, out string licenseContent);
+        var result = FileUtils.TryGetLicense(null!, _productName, out string licenseContent);
 
         // Assert
         result.Should().BeFalse();
@@ -151,7 +151,7 @@ public class FileUtils_TryGetLicenseTests : IDisposable
     public void ReturnsFalse_GivenEmptyMainAssemblyPath()
     {
         // Act
-        bool result = FileUtils.TryGetLicense("", _productName, out string licenseContent);
+        var result = FileUtils.TryGetLicense("", _productName, out string licenseContent);
 
         // Assert
         result.Should().BeFalse();
@@ -162,14 +162,14 @@ public class FileUtils_TryGetLicenseTests : IDisposable
     public void UsesProductNameForLicenseFile_GivenDifferentProductNames()
     {
         // Arrange
-        string licenseContent = "license-content";
-        string otherProductName = "OtherProduct";
+        var licenseContent = "license-content";
+        var otherProductName = "OtherProduct";
 
         // Create license file for a different product
         File.WriteAllText(Path.Combine(_subSubDirectory, $"{otherProductName}.license"), licenseContent);
 
         // Act
-        bool result = FileUtils.TryGetLicense(_mainAssemblyPath, _productName, out string retrievedContent);
+        var result = FileUtils.TryGetLicense(_mainAssemblyPath, _productName, out string retrievedContent);
 
         // Assert
         result.Should().BeFalse();
@@ -180,12 +180,12 @@ public class FileUtils_TryGetLicenseTests : IDisposable
     public void ReturnsFalse_GivenEmptyProductName()
     {
         // Arrange
-        string licenseContent = "license-content";
+        var licenseContent = "license-content";
         // Create license file with empty name
         File.WriteAllText(Path.Combine(_subSubDirectory, ".license"), licenseContent);
 
         // Act
-        bool result = FileUtils.TryGetLicense(_mainAssemblyPath, "", out string retrievedContent);
+        var result = FileUtils.TryGetLicense(_mainAssemblyPath, "", out string retrievedContent);
 
         // Assert
         result.Should().BeFalse();

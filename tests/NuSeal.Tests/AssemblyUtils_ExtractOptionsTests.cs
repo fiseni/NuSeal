@@ -4,7 +4,7 @@ namespace Tests;
 
 public class AssemblyUtils_ExtractOptionsTests : IDisposable
 {
-    private AssemblyDefinition _testAssembly;
+    private readonly AssemblyDefinition _testAssembly;
 
     public AssemblyUtils_ExtractOptionsTests()
     {
