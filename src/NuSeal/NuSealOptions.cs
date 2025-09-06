@@ -1,6 +1,8 @@
 ﻿namespace NuSeal;
 
-public class NuSealOptions
+internal class NuSealOptions
 {
-    public string ValidationBehavior { get; set; } = "Error";
+    public bool IsProtected { get; set; } = false;
+    public NuSealValidationBehavior ValidationBehavior { get; set; } = NuSealValidationBehavior.Error;
+    public NuSealTransitiveBehavior TransitiveBehavior { get; set; } = NuSealTransitiveBehavior.Enabled;
 }

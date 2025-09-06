@@ -1,9 +1,13 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <!-- These targets will run for author's packages (packages that have installed the NuSeal package). -->
+
+  <!-- ############################################################################################### -->
   <ItemGroup Condition="'$(NuSealTransitiveBehavior)' == 'disable'">
     <PackageReference Update="NuSeal" PrivateAssets="contentfiles;analyzers;build;buildTransitive" />
   </ItemGroup>
 
+  <!-- ############################################################################################### -->
   <Target Name="NuSealCheckDirectReference"
           BeforeTargets="BeforeCompile">
 
@@ -14,6 +18,7 @@
 
   </Target>
 
+  <!-- ############################################################################################### -->
   <Target Name="NuSealInjectProtectedAttribute"
           BeforeTargets="BeforeCompile"
           DependsOnTargets="NuSealCheckDirectReference"
@@ -25,6 +30,7 @@
 
   </Target>
 
+  <!-- ############################################################################################### -->
   <Target Name="NuSealInjectValidationBehaviorAttribute"
           BeforeTargets="BeforeCompile"
           DependsOnTargets="NuSealCheckDirectReference"
@@ -38,13 +44,21 @@
 
   </Target>
 
-  <Target Name="NuSealLicenseValidation"
-          AfterTargets="AfterBuild"
-          Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'">
+  <!-- ############################################################################################### -->
+  <Target Name="NuSealInjectTransitiveBehaviorAttribute"
+          BeforeTargets="BeforeCompile"
+          DependsOnTargets="NuSealCheckDirectReference"
+          Condition="$(NuSealIsPackageReferenced) != 0 And '$(NuSealTransitiveBehavior)' != ''">
 
-    <NuSeal.LicenseValidationTask MainAssemblyPath="$(TargetPath)" />
+    <ItemGroup>
+      <AssemblyAttribute Include="NuSeal.NuSealTransitiveBehaviorAttribute">
+        <_Parameter1>$(NuSealTransitiveBehavior)</_Parameter1>
+      </AssemblyAttribute>
+    </ItemGroup>
+
   </Target>
 
+  <!-- ############################################################################################### -->
   <Target Name="NuSealDisableTransitiveBehavior"
           BeforeTargets="Build"
           DependsOnTargets="NuSealCheckDirectReference"
@@ -64,4 +78,13 @@
     </ItemGroup>
   </Target>
 
+  <!-- ############################################################################################### -->
+  <!-- This target will run for the end user -->
+  <Target Name="NuSealLicenseValidation"
+        AfterTargets="AfterBuild"
+        Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'">
+
+    <NuSeal.LicenseValidationTask MainAssemblyPath="$(TargetPath)" />
+  </Target>
+  
 </Project>

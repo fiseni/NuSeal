@@ -54,34 +54,34 @@ internal class AssemblyUtils
 
         foreach (var attribute in assembly.CustomAttributes)
         {
-            if (attribute.AttributeType.FullName == typeof(NuSealValidationBehaviorAttribute).FullName)
+            if (attribute.AttributeType.FullName == typeof(NuSealProtectedAttribute).FullName)
+            {
+                options.IsProtected = true;
+            }
+            else if (attribute.AttributeType.FullName == typeof(NuSealValidationBehaviorAttribute).FullName)
             {
                 if (attribute.ConstructorArguments.Count == 1
                     && attribute.ConstructorArguments[0].Value is string behavior)
                 {
-                    options.ValidationBehavior = behavior;
+                    if (behavior.Equals("Warning", StringComparison.OrdinalIgnoreCase))
+                    {
+                        options.ValidationBehavior = NuSealValidationBehavior.Warning;
+                    }
+                }
+            }
+            else if (attribute.AttributeType.FullName == typeof(NuSealTransitiveBehaviorAttribute).FullName)
+            {
+                if (attribute.ConstructorArguments.Count == 1
+                    && attribute.ConstructorArguments[0].Value is string behavior)
+                {
+                    if (behavior.Equals("disable", StringComparison.OrdinalIgnoreCase))
+                    {
+                        options.TransitiveBehavior = NuSealTransitiveBehavior.Disabled;
+                    }
                 }
             }
         }
 
         return options;
-    }
-
-    internal static bool IsNuSealProtected(AssemblyDefinition assembly)
-    {
-        if (assembly.HasCustomAttributes is false)
-        {
-            return false;
-        }
-
-        foreach (var attribute in assembly.CustomAttributes)
-        {
-            if (attribute.AttributeType.FullName == typeof(NuSealProtectedAttribute).FullName)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

@@ -3,13 +3,13 @@ using Microsoft.Build.Utilities;
 
 namespace NuSeal;
 
-public partial class LicenseValidationTask : Task
+public partial class LicenseValidationDirectTask : Task
 {
     [Required]
     public string MainAssemblyPath { get; set; } = "";
 
     public override bool Execute()
     {
-        return LicenseValidation.Execute(Log, MainAssemblyPath, NuSealTransitiveBehavior.Enabled);
+        return LicenseValidation.Execute(Log, MainAssemblyPath, NuSealTransitiveBehavior.Disabled);
     }
 }
