@@ -3,7 +3,6 @@ using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
 using System;
 using System.IO;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
@@ -64,14 +63,32 @@ internal class LicenseValidator
         return string.Equals(alg.GetString(), "RS256", StringComparison.OrdinalIgnoreCase);
     }
 
+    // Note: RSA ImportFromPem is available in .NET 5.0 and later
+    // We'll use BouncyCastle for netstandard2.0
     private static bool VerifySignature(PemData pem, string[] parts)
     {
         var signatureBytes = Base64UrlDecode(parts[2]);
         var data = Encoding.UTF8.GetBytes($"{parts[0]}.{parts[1]}");
-        using var rsa = CreateRsaFromPem(pem.PublicKeyPem);
-        using var sha256 = SHA256.Create();
-        var hash = sha256.ComputeHash(data);
-        return rsa.VerifyHash(hash, signatureBytes, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+
+        var publicKey = GetRsaPublicKeyParameters(pem.PublicKeyPem);
+        var verifier = SignerUtilities.GetSigner("SHA256withRSA");
+        verifier.Init(false, publicKey);
+        verifier.BlockUpdate(data, 0, data.Length);
+
+        return verifier.VerifySignature(signatureBytes);
+
+        static RsaKeyParameters GetRsaPublicKeyParameters(string pemKey)
+        {
+            using var reader = new StringReader(pemKey);
+            var pemReader = new PemReader(reader);
+            var obj = pemReader.ReadObject();
+
+            if (obj is RsaKeyParameters rsaKeyParams && !rsaKeyParams.IsPrivate)
+            {
+                return rsaKeyParams;
+            }
+            throw new ArgumentException("PEM string does not contain a valid RSA public key.", nameof(pemKey));
+        }
     }
 
     private static bool VerifyProductName(JsonElement payload, string productName)
@@ -110,19 +127,5 @@ internal class LicenseValidator
             case 3: padded += "="; break;
         }
         return Convert.FromBase64String(padded);
-    }
-
-    private static RSA CreateRsaFromPem(string pem)
-    {
-        using var reader = new StringReader(pem);
-        var pemReader = new PemReader(reader);
-        var obj = pemReader.ReadObject();
-
-        if (obj is RsaKeyParameters rsaKeyParams)
-        {
-            return DotNetUtilities.ToRSA(rsaKeyParams);
-        }
-
-        throw new ArgumentException("PEM string does not contain a valid RSA public key.", nameof(pem));
     }
 }
