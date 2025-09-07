@@ -103,16 +103,18 @@ internal class LicenseValidator
     {
         var clockSkewInMinutes = 5;
 
-        if (payload.TryGetProperty("nbf", out var nbf)
-            && nbf.GetInt64() > DateTimeOffset.UtcNow.AddMinutes(-1 * clockSkewInMinutes).ToUnixTimeSeconds())
+        if (payload.TryGetProperty("nbf", out var nbf))
         {
-            return false;
+            var nbfUtc = DateTimeOffset.FromUnixTimeSeconds(nbf.GetInt64()).UtcDateTime;
+            if (DateTimeOffset.UtcNow < nbfUtc.AddMinutes(-1 * clockSkewInMinutes))
+                return false;
         }
 
-        if (payload.TryGetProperty("exp", out var exp)
-            && exp.GetInt64() < DateTimeOffset.UtcNow.AddMinutes(clockSkewInMinutes).ToUnixTimeSeconds())
+        if (payload.TryGetProperty("exp", out var exp))
         {
-            return false;
+            var expUtc = DateTimeOffset.FromUnixTimeSeconds(exp.GetInt64()).UtcDateTime;
+            if (DateTimeOffset.UtcNow > expUtc.AddMinutes(clockSkewInMinutes))
+                return false;
         }
 
         return true;
