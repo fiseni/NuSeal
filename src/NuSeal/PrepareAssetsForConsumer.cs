@@ -30,14 +30,22 @@ internal class PrepareAssetsForConsumer
         {
             var content = File.ReadAllText(consumerPropsFile);
             content = RemoveProjectTags(content, consumerPropsFile);
-            props = props.Replace("</Project>", $"{content}{Environment.NewLine}</Project>");
+            if (!string.IsNullOrEmpty(content))
+            {
+                var linedEnding = DetectLineEnding(content);
+                props = props.Replace("</Project>", $"{content}{linedEnding}</Project>");
+            }
         }
 
         if (!string.IsNullOrEmpty(consumerTargetsFile) && File.Exists(consumerTargetsFile))
         {
             var content = File.ReadAllText(consumerTargetsFile);
             content = RemoveProjectTags(content, consumerTargetsFile);
-            targets = targets.Replace("</Project>", $"{content}{Environment.NewLine}</Project>");
+            if (!string.IsNullOrEmpty(content))
+            {
+                var linedEnding = DetectLineEnding(content);
+                targets = targets.Replace("</Project>", $"{content}{linedEnding}</Project>");
+            }
         }
 
         File.WriteAllText(propsOutputFile, props);
@@ -63,5 +71,13 @@ internal class PrepareAssetsForConsumer
 
         string projectTag = content.Substring(startIndex, endIndex - startIndex + 1);
         return content.Replace(projectTag, "").Replace("</Project>", "");
+    }
+
+    private static string DetectLineEnding(string content)
+    {
+        var index = content.IndexOf('\n');
+        if (index > 0 && content[index - 1] == '\r')
+            return "\r\n";
+        return "\n";
     }
 }

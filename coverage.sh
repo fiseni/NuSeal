@@ -13,7 +13,7 @@ find . -type d -name TestResults -exec rm -rf {} \; > /dev/null 2>&1
 testtarget="$1"
 
 if [ "$testtarget" = "" ]; then
-testtarget="*.sln"
+testtarget="ci.slnf"
 fi
 
 dotnet build $testtarget --configuration Release
