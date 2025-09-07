@@ -272,7 +272,6 @@ public class LicenseValidationTests : IDisposable
 
     private void CreateValidLicense(string productName)
     {
-        CryptoProviderFactory.Default.CacheSignatureProviders = false;
         var licenseParams = new LicenseParameters
         {
             ProductName = productName,
