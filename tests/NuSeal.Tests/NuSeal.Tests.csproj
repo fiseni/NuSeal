@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <PackageReference Include="Mono.Cecil" />
-    <PackageReference Include="Portable.BouncyCastle" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" />
     <PackageReference Include="Microsoft.Build.Utilities.Core" />
     <PackageReference Include="FluentAssertions" />
