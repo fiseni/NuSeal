@@ -113,17 +113,6 @@ public class LicenseValidatorTests
     }
 
     [Fact]
-    public void ReturnsFalse_GivenInvalidLicenseFormat()
-    {
-        var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
-        var invalidLicense = "not-a-valid-jwt-token";
-
-        var result = LicenseValidator.IsValid(pemData, invalidLicense);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
     public void ReturnsFalse_GivenInvalidPem()
     {
         var invalidPublicKeyPem = "invalid-public-key-pem";
@@ -136,12 +125,23 @@ public class LicenseValidatorTests
     }
 
     [Fact]
+    public void ReturnsFalse_GivenInvalidLicenseFormat()
+    {
+        var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
+        var invalidLicense = "not-a-valid-jwt-token";
+
+        var result = LicenseValidator.IsValid(pemData, invalidLicense);
+
+        result.Should().BeFalse();
+    }
+
+    [Fact]
     public void ReturnsFalse_GivenExpiredLicense()
     {
         var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
         var expiredLicense = GenerateLicense(
-            expirationDate: DateTimeOffset.UtcNow.AddDays(-1),
-            startDate: DateTimeOffset.UtcNow.AddDays(-10));
+            startDate: DateTimeOffset.UtcNow.AddDays(-10),
+            expirationDate: DateTimeOffset.UtcNow.AddDays(-1));
 
         var result = LicenseValidator.IsValid(pemData, expiredLicense);
 
@@ -159,6 +159,32 @@ public class LicenseValidatorTests
         var result = LicenseValidator.IsValid(pemData, futureLicense);
 
         result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void ReturnsTrue_GivenExpiredLicenseWithinClockSkew()
+    {
+        var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
+        var expiredLicense = GenerateLicense(
+            startDate: DateTimeOffset.UtcNow.AddDays(-10),
+            expirationDate: DateTimeOffset.UtcNow.AddMinutes(-1));
+
+        var result = LicenseValidator.IsValid(pemData, expiredLicense);
+
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public void ReturnsTrue_GivenFutureLicenseWithinClockSkew()
+    {
+        var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
+        var futureLicense = GenerateLicense(
+            startDate: DateTimeOffset.UtcNow.AddMinutes(1),
+            expirationDate: DateTimeOffset.UtcNow.AddDays(20));
+
+        var result = LicenseValidator.IsValid(pemData, futureLicense);
+
+        result.Should().BeTrue();
     }
 
     [Fact]
@@ -248,7 +274,7 @@ public class LicenseValidatorTests
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            NotBefore = startDate?.UtcDateTime ?? DateTimeOffset.UtcNow.AddMinutes(-5).UtcDateTime,
+            NotBefore = startDate?.UtcDateTime ?? DateTimeOffset.UtcNow.UtcDateTime,
             Expires = expirationDate?.UtcDateTime ?? DateTimeOffset.UtcNow.AddYears(1).UtcDateTime,
             SigningCredentials = credentials
         };
