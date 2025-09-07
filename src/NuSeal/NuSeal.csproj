@@ -49,7 +49,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Build.Utilities.Core" PrivateAssets="all" ExcludeAssets="runtime" />
-    <PackageReference Include="System.Text.Json" PrivateAssets="all" />
+    <PackageReference Include="System.Text.Json" PrivateAssets="all" ExcludeAssets="runtime" />
     <PackageReference Include="Portable.BouncyCastle" PrivateAssets="all" />
     <PackageReference Include="Mono.Cecil" PrivateAssets="all" />
   </ItemGroup>
@@ -62,11 +62,14 @@
     Name="CopyProjectReferencesToPackage"
     DependsOnTargets="ResolveReferences">
 
+    <PropertyGroup>
+      <_ExcludeReferences>Mono.Cecil.Mdb;Mono.Cecil.Pdb;Mono.Cecil.rocks</_ExcludeReferences>
+    </PropertyGroup>
     <ItemGroup>
       <BuildOutputInPackage
         Include="@(ReferenceCopyLocalPaths)"
-        TargetPath="%(ReferenceCopyLocalPaths.DestinationSubPath)" />
-
+        TargetPath="%(ReferenceCopyLocalPaths.DestinationSubPath)"
+        Condition="!$(_ExcludeReferences.Contains('%(ReferenceCopyLocalPaths.Filename)'))" />
     </ItemGroup>
   </Target>
 
