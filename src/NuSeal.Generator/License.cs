@@ -10,7 +10,7 @@ namespace NuSeal;
 
 public class License
 {
-    private static readonly ConcurrentDictionary<string, RsaSecurityKey> _publicKeysCache = new();
+    private static readonly ConcurrentDictionary<string, SigningCredentials> _credentialCache = new();
 
     public static string Create(LicenseParameters parameters)
     {
@@ -18,16 +18,16 @@ public class License
         ArgumentException.ThrowIfNullOrWhiteSpace(parameters.PrivateKeyPem);
         ArgumentException.ThrowIfNullOrWhiteSpace(parameters.ProductName);
 
-        var rsaSecurityKey = _publicKeysCache.GetOrAdd(parameters.PrivateKeyPem, static key =>
+        var credentials = _credentialCache.GetOrAdd(parameters.PrivateKeyPem, static key =>
         {
             var rsa = RSA.Create();
             rsa.ImportFromPem(key.AsSpan());
-            return new RsaSecurityKey(rsa);
+            var rsaSecurityKey = new RsaSecurityKey(rsa);
+            var credentials = new SigningCredentials(
+                rsaSecurityKey,
+                SecurityAlgorithms.RsaSha256);
+            return credentials;
         });
-
-        var credentials = new SigningCredentials(
-            rsaSecurityKey,
-            SecurityAlgorithms.RsaSha256);
 
         var claims = new List<Claim>()
         {
