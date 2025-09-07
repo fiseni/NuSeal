@@ -1,5 +1,4 @@
-﻿using AuthorPackage;
-
-_ = new Foo();
+﻿
+_ = new AuthorPackage.Foo();
 
 Console.WriteLine("Hello, World!");

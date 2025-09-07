@@ -13,8 +13,4 @@
     <ProjectReference Include="..\AuthorPackage\AuthorPackage.csproj" />
   </ItemGroup>
 
-  <!--Ignore this. It's used for debugging locally.-->
-  <!--<Import Project="..\..\src\NuSeal\buildTransitive\NuSeal.props" />
-  <Import Project="..\..\src\NuSeal\buildTransitive\NuSeal.targets" />-->
-
 </Project>
