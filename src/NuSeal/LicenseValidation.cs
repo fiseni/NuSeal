@@ -37,7 +37,7 @@ internal class LicenseValidation
             {
                 try
                 {
-                    var assembly = AssemblyDefinition.ReadAssembly(dllFile);
+                    using var assembly = AssemblyDefinition.ReadAssembly(dllFile);
                     var options = AssemblyUtils.ExtractOptions(assembly);
 
                     if (options.IsProtected is false)
