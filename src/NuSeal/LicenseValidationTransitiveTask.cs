@@ -3,7 +3,7 @@ using Microsoft.Build.Utilities;
 
 namespace NuSeal;
 
-public partial class LicenseValidationTask : Task
+public partial class LicenseValidationTransitiveTask : Task
 {
     [Required]
     public string MainAssemblyPath { get; set; } = "";

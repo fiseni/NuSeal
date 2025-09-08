@@ -84,7 +84,7 @@
         AfterTargets="AfterBuild"
         Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'">
 
-    <NuSeal.LicenseValidationTask MainAssemblyPath="$(TargetPath)" />
+    <NuSeal.LicenseValidationTransitiveTask MainAssemblyPath="$(TargetPath)" />
   </Target>
   
 </Project>
