@@ -26,7 +26,7 @@ public class AssemblyUtils_ExtractOptionsTests : IDisposable
         result.Should().NotBeNull();
         result.IsProtected.Should().BeFalse();
         result.ValidationMode.Should().Be(NuSealValidationMode.Error);
-        result.TransitiveBehavior.Should().Be(NuSealTransitiveBehavior.Enabled);
+        result.ValidationScope.Should().Be(NuSealValidationScope.Transitive);
     }
 
     [Fact]
@@ -42,11 +42,11 @@ public class AssemblyUtils_ExtractOptionsTests : IDisposable
         result.Should().NotBeNull();
         result.IsProtected.Should().BeTrue();
         result.ValidationMode.Should().Be(NuSealValidationMode.Error); // Default
-        result.TransitiveBehavior.Should().Be(NuSealTransitiveBehavior.Enabled); // Default
+        result.ValidationScope.Should().Be(NuSealValidationScope.Transitive); // Default
     }
 
     [Fact]
-    public void SetsWarningValidationMode_GivenAssemblyWithWarningAttribute()
+    public void SetsWarningValidationMode_GivenAssemblyWithWarningModeAttribute()
     {
         // Arrange
         AddCustomAttributeWithValue(_testAssembly, typeof(NuSealValidationModeAttribute).Name, "Warning");
@@ -58,7 +58,7 @@ public class AssemblyUtils_ExtractOptionsTests : IDisposable
         result.Should().NotBeNull();
         result.IsProtected.Should().BeFalse(); // Default
         result.ValidationMode.Should().Be(NuSealValidationMode.Warning);
-        result.TransitiveBehavior.Should().Be(NuSealTransitiveBehavior.Enabled); // Default
+        result.ValidationScope.Should().Be(NuSealValidationScope.Transitive); // Default
     }
 
     [Fact]
@@ -76,10 +76,10 @@ public class AssemblyUtils_ExtractOptionsTests : IDisposable
     }
 
     [Fact]
-    public void SetsDisabledTransitiveBehavior_GivenAssemblyWithDisabledAttribute()
+    public void SetsDirectValidationScope_GivenAssemblyWithDirectScopeAttribute()
     {
         // Arrange
-        AddCustomAttributeWithValue(_testAssembly, typeof(NuSealTransitiveBehaviorAttribute).Name, "disable");
+        AddCustomAttributeWithValue(_testAssembly, typeof(NuSealValidationScopeAttribute).Name, "Direct");
 
         // Act
         var result = AssemblyUtils.ExtractOptions(_testAssembly);
@@ -88,21 +88,21 @@ public class AssemblyUtils_ExtractOptionsTests : IDisposable
         result.Should().NotBeNull();
         result.IsProtected.Should().BeFalse(); // Default
         result.ValidationMode.Should().Be(NuSealValidationMode.Error); // Default
-        result.TransitiveBehavior.Should().Be(NuSealTransitiveBehavior.Disabled);
+        result.ValidationScope.Should().Be(NuSealValidationScope.Direct);
     }
 
     [Fact]
-    public void KeepsDefaultTransitiveBehavior_GivenAssemblyWithInvalidTransitiveBehavior()
+    public void KeepsDefaultValidationScope_GivenAssemblyWithInvalidValidationScope()
     {
         // Arrange
-        AddCustomAttributeWithValue(_testAssembly, typeof(NuSealTransitiveBehaviorAttribute).Name, "InvalidValue");
+        AddCustomAttributeWithValue(_testAssembly, typeof(NuSealValidationScopeAttribute).Name, "InvalidValue");
 
         // Act
         var result = AssemblyUtils.ExtractOptions(_testAssembly);
 
         // Assert
         result.Should().NotBeNull();
-        result.TransitiveBehavior.Should().Be(NuSealTransitiveBehavior.Enabled); // Default unchanged
+        result.ValidationScope.Should().Be(NuSealValidationScope.Transitive); // Default unchanged
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class AssemblyUtils_ExtractOptionsTests : IDisposable
         // Arrange
         AddCustomAttribute(_testAssembly, typeof(NuSealProtectedAttribute).Name);
         AddCustomAttributeWithValue(_testAssembly, typeof(NuSealValidationModeAttribute).Name, "Warning");
-        AddCustomAttributeWithValue(_testAssembly, typeof(NuSealTransitiveBehaviorAttribute).Name, "disable");
+        AddCustomAttributeWithValue(_testAssembly, typeof(NuSealValidationScopeAttribute).Name, "Direct");
 
         // Act
         var result = AssemblyUtils.ExtractOptions(_testAssembly);
@@ -120,7 +120,7 @@ public class AssemblyUtils_ExtractOptionsTests : IDisposable
         result.Should().NotBeNull();
         result.IsProtected.Should().BeTrue();
         result.ValidationMode.Should().Be(NuSealValidationMode.Warning);
-        result.TransitiveBehavior.Should().Be(NuSealTransitiveBehavior.Disabled);
+        result.ValidationScope.Should().Be(NuSealValidationScope.Direct);
     }
 
     [Fact]
@@ -137,7 +137,7 @@ public class AssemblyUtils_ExtractOptionsTests : IDisposable
         result.Should().NotBeNull();
         result.IsProtected.Should().BeTrue();
         result.ValidationMode.Should().Be(NuSealValidationMode.Error); // Default
-        result.TransitiveBehavior.Should().Be(NuSealTransitiveBehavior.Enabled); // Default
+        result.ValidationScope.Should().Be(NuSealValidationScope.Transitive); // Default
     }
 
     [Fact]
@@ -145,7 +145,7 @@ public class AssemblyUtils_ExtractOptionsTests : IDisposable
     {
         // Arrange
         AddCustomAttributeWithValue(_testAssembly, typeof(NuSealValidationModeAttribute).Name, "warning"); // lowercase
-        AddCustomAttributeWithValue(_testAssembly, typeof(NuSealTransitiveBehaviorAttribute).Name, "DISABLE"); // uppercase
+        AddCustomAttributeWithValue(_testAssembly, typeof(NuSealValidationScopeAttribute).Name, "DIRECT"); // uppercase
 
         // Act
         var result = AssemblyUtils.ExtractOptions(_testAssembly);
@@ -153,7 +153,7 @@ public class AssemblyUtils_ExtractOptionsTests : IDisposable
         // Assert
         result.Should().NotBeNull();
         result.ValidationMode.Should().Be(NuSealValidationMode.Warning);
-        result.TransitiveBehavior.Should().Be(NuSealTransitiveBehavior.Disabled);
+        result.ValidationScope.Should().Be(NuSealValidationScope.Direct);
     }
 
     private static void AddCustomAttribute(AssemblyDefinition assembly, string attributeTypeName)

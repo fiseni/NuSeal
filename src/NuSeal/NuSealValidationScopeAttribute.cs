@@ -3,11 +3,11 @@
 namespace NuSeal;
 
 [AttributeUsage(AttributeTargets.Assembly)]
-public sealed class NuSealTransitiveBehaviorAttribute : Attribute
+public sealed class NuSealValidationScopeAttribute : Attribute
 {
     public string Value { get; }
 
-    public NuSealTransitiveBehaviorAttribute(string value)
+    public NuSealValidationScopeAttribute(string value)
     {
         Value = value;
     }

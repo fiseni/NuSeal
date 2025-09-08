@@ -13,7 +13,7 @@ internal class LicenseValidation
     public static bool Execute(
         TaskLoggingHelper log,
         string mainAssemblyPath,
-        NuSealTransitiveBehavior transitiveBehavior)
+        NuSealValidationScope validationScope)
     {
         //Debugger.Launch();
 
@@ -43,7 +43,7 @@ internal class LicenseValidation
                     if (options.IsProtected is false)
                         continue;
 
-                    if (transitiveBehavior != options.TransitiveBehavior)
+                    if (validationScope != options.ValidationScope)
                         continue;
 
                     var pems = AssemblyUtils.ExtractPems(assembly);

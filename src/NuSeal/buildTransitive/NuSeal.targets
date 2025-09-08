@@ -3,7 +3,7 @@
   <!-- These targets will run for author's packages (packages that have installed the NuSeal package). -->
 
   <!-- ############################################################################################### -->
-  <ItemGroup Condition="'$(NuSealTransitiveBehavior)' == 'disable'">
+  <ItemGroup Condition="'$(NuSealValidationScope)' == 'Direct'">
     <PackageReference Update="NuSeal" PrivateAssets="contentfiles;analyzers;build;buildTransitive" />
   </ItemGroup>
 
@@ -45,24 +45,24 @@
   </Target>
 
   <!-- ############################################################################################### -->
-  <Target Name="NuSealInjectTransitiveBehaviorAttribute"
+  <Target Name="NuSealInjectValidationScopeAttribute"
           BeforeTargets="BeforeCompile"
           DependsOnTargets="NuSealCheckDirectReference"
-          Condition="$(NuSealIsPackageReferenced) != 0 And '$(NuSealTransitiveBehavior)' != ''">
+          Condition="$(NuSealIsPackageReferenced) != 0 And '$(NuSealValidationScope)' != ''">
 
     <ItemGroup>
-      <AssemblyAttribute Include="NuSeal.NuSealTransitiveBehaviorAttribute">
-        <_Parameter1>$(NuSealTransitiveBehavior)</_Parameter1>
+      <AssemblyAttribute Include="NuSeal.NuSealValidationScopeAttribute">
+        <_Parameter1>$(NuSealValidationScope)</_Parameter1>
       </AssemblyAttribute>
     </ItemGroup>
 
   </Target>
 
   <!-- ############################################################################################### -->
-  <Target Name="NuSealDisableTransitiveBehavior"
+  <Target Name="NuSealDirectValidationScope"
           BeforeTargets="Build"
           DependsOnTargets="NuSealCheckDirectReference"
-          Condition="$(NuSealIsPackageReferenced) != 0 And '$(NuSealTransitiveBehavior)' == 'disable'">
+          Condition="$(NuSealIsPackageReferenced) != 0 And '$(NuSealValidationScope)' == 'Direct'">
 
     <NuSeal.PrepareAssetsForConsumerTask
         NuSealAssetsPath="$(MSBuildThisFileDirectory)"

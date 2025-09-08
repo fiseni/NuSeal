@@ -69,14 +69,14 @@ internal class AssemblyUtils
                     }
                 }
             }
-            else if (attribute.AttributeType.FullName == typeof(NuSealTransitiveBehaviorAttribute).FullName)
+            else if (attribute.AttributeType.FullName == typeof(NuSealValidationScopeAttribute).FullName)
             {
                 if (attribute.ConstructorArguments.Count == 1
                     && attribute.ConstructorArguments[0].Value is string value)
                 {
-                    if (value.Equals("disable", StringComparison.OrdinalIgnoreCase))
+                    if (value.Equals("Direct", StringComparison.OrdinalIgnoreCase))
                     {
-                        options.TransitiveBehavior = NuSealTransitiveBehavior.Disabled;
+                        options.ValidationScope = NuSealValidationScope.Direct;
                     }
                 }
             }
