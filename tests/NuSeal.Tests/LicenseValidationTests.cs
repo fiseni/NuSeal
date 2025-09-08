@@ -21,99 +21,54 @@ public class LicenseValidationTests : IDisposable
     }
 
     [Fact]
-    public void ReturnsTrue_LogsInfo_GivenInvalidMainAssemblyPath()
-    {
-        var invalidPath = " % \\ //";
-
-        var result = LicenseValidation.Execute(_log, invalidPath, NuSealValidationScope.Transitive);
-
-        result.Should().BeTrue();
-        _log.Messages.Should().NotBeEmpty();
-        _log.Warnings.Should().BeEmpty();
-        _log.Errors.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void ReturnsTrue_LogsInfo_GivenEmptyOutputDirectory()
-    {
-        var noDirectoryPath = "InvalidPath.dll";
-
-        var result = LicenseValidation.Execute(_log, noDirectoryPath, NuSealValidationScope.Transitive);
-
-        result.Should().BeTrue();
-        _log.Messages.Should().NotBeEmpty();
-        _log.Warnings.Should().BeEmpty();
-        _log.Errors.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void ReturnsTrue_LogsInfo_GivenNoDllFilesInOutputDirectory()
-    {
-        // Arrange - only mainAssembly exists in the directory, no other dlls
-
-        var result = LicenseValidation.Execute(_log, _mainAssemblyPath, NuSealValidationScope.Transitive);
-
-        result.Should().BeTrue();
-        _log.Messages.Should().NotBeEmpty();
-        _log.Warnings.Should().BeEmpty();
-        _log.Errors.Should().BeEmpty();
-    }
-
-    [Fact]
     public void ReturnsTrue_GivenDllWithoutProtection()
     {
-        var asm = CreateNonProtectedDll();
+        var dll = CreateNonProtectedDll();
 
-        var result = LicenseValidation.Execute(_log, _mainAssemblyPath, NuSealValidationScope.Transitive);
+        var result = LicenseValidation.Execute(_log, _mainAssemblyPath, [dll], NuSealValidationScope.Transitive);
 
         result.Should().BeTrue();
         _log.Messages.Should().BeEmpty();
         _log.Warnings.Should().BeEmpty();
         _log.Errors.Should().BeEmpty();
-
-        asm.Dispose();
     }
 
     [Fact]
     public void ReturnsTrue_GivenDllWithDifferentValidationScope()
     {
-        var asm = CreateProtectedDll(
+        var dll = CreateProtectedDll(
             validationScope: NuSealValidationScope.Transitive,
             validationMode: NuSealValidationMode.Error);
 
-        var result = LicenseValidation.Execute(_log, _mainAssemblyPath, NuSealValidationScope.Direct);
+        var result = LicenseValidation.Execute(_log, _mainAssemblyPath, [dll], NuSealValidationScope.Direct);
 
         result.Should().BeTrue();
         _log.Messages.Should().BeEmpty();
         _log.Warnings.Should().BeEmpty();
         _log.Errors.Should().BeEmpty();
-
-        asm.Dispose();
     }
 
     [Fact]
     public void ReturnsTrue_LogsInfo_GivenDllWithoutPems()
     {
-        var asm = CreateProtectedDll(
+        var dll = CreateProtectedDll(
             validationScope: NuSealValidationScope.Transitive,
             validationMode: NuSealValidationMode.Error,
             includePems: false);
 
-        var result = LicenseValidation.Execute(_log, _mainAssemblyPath, NuSealValidationScope.Transitive);
+        var result = LicenseValidation.Execute(_log, _mainAssemblyPath, [dll], NuSealValidationScope.Transitive);
 
         result.Should().BeTrue();
         _log.Messages.Should().NotBeEmpty();
         _log.Warnings.Should().BeEmpty();
         _log.Errors.Should().BeEmpty();
-
-        asm.Dispose();
     }
 
     [Fact]
     public void ReturnsFalse_LogsError_GivenDllWithoutValidLicenseAndErrorMode()
     {
         var productName = "TestProduct";
-        var asm = CreateProtectedDll(
+        var dll = CreateProtectedDll(
             validationScope: NuSealValidationScope.Transitive,
             validationMode: NuSealValidationMode.Error,
             includePems: true,
@@ -121,21 +76,19 @@ public class LicenseValidationTests : IDisposable
 
         // No license file created
 
-        var result = LicenseValidation.Execute(_log, _mainAssemblyPath, NuSealValidationScope.Transitive);
+        var result = LicenseValidation.Execute(_log, _mainAssemblyPath, [dll], NuSealValidationScope.Transitive);
 
         result.Should().BeFalse();
         _log.Messages.Should().BeEmpty();
         _log.Warnings.Should().BeEmpty();
         _log.Errors.Should().NotBeEmpty();
-
-        asm.Dispose();
     }
 
     [Fact]
     public void ReturnsTrue_LogsWarning_GivenDllWithoutValidLicenseAndWarningMode()
     {
         var productName = "TestProduct";
-        var asm = CreateProtectedDll(
+        var dll = CreateProtectedDll(
             validationScope: NuSealValidationScope.Transitive,
             validationMode: NuSealValidationMode.Warning,
             includePems: true,
@@ -143,14 +96,12 @@ public class LicenseValidationTests : IDisposable
 
         // No license file created
 
-        var result = LicenseValidation.Execute(_log, _mainAssemblyPath, NuSealValidationScope.Transitive);
+        var result = LicenseValidation.Execute(_log, _mainAssemblyPath, [dll], NuSealValidationScope.Transitive);
 
         result.Should().BeTrue();
         _log.Messages.Should().BeEmpty();
         _log.Warnings.Should().NotBeEmpty();
         _log.Errors.Should().BeEmpty();
-
-        asm.Dispose();
     }
 
     [Fact]
@@ -160,7 +111,7 @@ public class LicenseValidationTests : IDisposable
         var invalidDllPath = Path.Combine(_tempDir, "Invalid.dll");
         File.WriteAllText(invalidDllPath, "Not a valid DLL");
 
-        var result = LicenseValidation.Execute(_log, _mainAssemblyPath, NuSealValidationScope.Transitive);
+        var result = LicenseValidation.Execute(_log, _mainAssemblyPath, [invalidDllPath], NuSealValidationScope.Transitive);
 
         result.Should().BeTrue();
         _log.Messages.Should().NotBeEmpty();
@@ -172,7 +123,7 @@ public class LicenseValidationTests : IDisposable
     public void ReturnsTrue_GivenDllWithValidLicense()
     {
         var productName = "TestProduct";
-        var asm = CreateProtectedDll(
+        var dll = CreateProtectedDll(
             validationScope: NuSealValidationScope.Transitive,
             validationMode: NuSealValidationMode.Error,
             includePems: true,
@@ -180,14 +131,12 @@ public class LicenseValidationTests : IDisposable
 
         CreateValidLicense(productName);
 
-        var result = LicenseValidation.Execute(_log, _mainAssemblyPath, NuSealValidationScope.Transitive);
+        var result = LicenseValidation.Execute(_log, _mainAssemblyPath, [dll], NuSealValidationScope.Transitive);
 
         result.Should().BeTrue();
         _log.Messages.Should().BeEmpty();
         _log.Errors.Should().BeEmpty();
         _log.Warnings.Should().BeEmpty();
-
-        asm.Dispose();
     }
 
     [Fact]
@@ -198,21 +147,21 @@ public class LicenseValidationTests : IDisposable
         var productName3 = "Product3";
 
         // Create three DLLs with different configurations
-        var asm1 = CreateProtectedDll(
+        var dll1 = CreateProtectedDll(
             validationScope: NuSealValidationScope.Transitive,
             validationMode: NuSealValidationMode.Error,
             includePems: true,
             productName: productName1,
             fileName: "Library1.dll");
 
-        var asm2 = CreateProtectedDll(
+        var dll2 = CreateProtectedDll(
             validationScope: NuSealValidationScope.Transitive,
             validationMode: NuSealValidationMode.Warning,
             includePems: true,
             productName: productName2,
             fileName: "Library2.dll");
 
-        var asm3 = CreateProtectedDll(
+        var dll3 = CreateProtectedDll(
             validationScope: NuSealValidationScope.Transitive,
             validationMode: NuSealValidationMode.Error,
             includePems: true,
@@ -223,16 +172,12 @@ public class LicenseValidationTests : IDisposable
         CreateValidLicense(productName1);
         CreateValidLicense(productName3);
 
-        var result = LicenseValidation.Execute(_log, _mainAssemblyPath, NuSealValidationScope.Transitive);
+        var result = LicenseValidation.Execute(_log, _mainAssemblyPath, [dll1, dll2, dll3], NuSealValidationScope.Transitive);
 
         result.Should().BeTrue("since the DLL with missing license has Warning mode");
         _log.Messages.Should().BeEmpty();
         _log.Warnings.Should().NotBeEmpty();
         _log.Errors.Should().BeEmpty();
-
-        asm1.Dispose();
-        asm2.Dispose();
-        asm3.Dispose();
     }
 
     [Fact]
@@ -242,14 +187,14 @@ public class LicenseValidationTests : IDisposable
         var productName2 = "Product2";
 
         // Create two DLLs with different configurations
-        var asm1 = CreateProtectedDll(
+        var dll1 = CreateProtectedDll(
             validationScope: NuSealValidationScope.Transitive,
             validationMode: NuSealValidationMode.Error,
             includePems: true,
             productName: productName1,
             fileName: "Library1.dll");
 
-        var asm2 = CreateProtectedDll(
+        var dll2 = CreateProtectedDll(
             validationScope: NuSealValidationScope.Transitive,
             validationMode: NuSealValidationMode.Error,
             includePems: true,
@@ -258,15 +203,12 @@ public class LicenseValidationTests : IDisposable
 
         // We're not creating valid licenses - all should fail validation
 
-        var result = LicenseValidation.Execute(_log, _mainAssemblyPath, NuSealValidationScope.Transitive);
+        var result = LicenseValidation.Execute(_log, _mainAssemblyPath, [dll1, dll2], NuSealValidationScope.Transitive);
 
         result.Should().BeFalse();
         _log.Messages.Should().BeEmpty();
         _log.Warnings.Should().BeEmpty();
         _log.Errors.Should().NotBeEmpty();
-
-        asm1.Dispose();
-        asm2.Dispose();
     }
 
     private void CreateValidLicense(string productName)
@@ -281,7 +223,7 @@ public class LicenseValidationTests : IDisposable
         File.WriteAllText(licenseFilePath, license);
     }
 
-    private AssemblyDefinition CreateNonProtectedDll(string fileName = "Library.dll")
+    private string CreateNonProtectedDll(string fileName = "Library.dll")
     {
         var dllPath = Path.Combine(_tempDir, fileName);
 
@@ -293,10 +235,10 @@ public class LicenseValidationTests : IDisposable
         // Save the assembly
         assemblyDef.Write(dllPath);
 
-        return assemblyDef;
+        return dllPath;
     }
 
-    private AssemblyDefinition CreateProtectedDll(
+    private string CreateProtectedDll(
         NuSealValidationScope validationScope,
         NuSealValidationMode validationMode,
         bool includePems = true,
@@ -352,7 +294,7 @@ public class LicenseValidationTests : IDisposable
         // Save the assembly
         assemblyDef.Write(dllPath);
 
-        return assemblyDef;
+        return dllPath;
     }
 
     private static MethodReference GetAttributeConstructor(Type attributeType, params Type[] parameterTypes)
