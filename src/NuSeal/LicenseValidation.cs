@@ -63,7 +63,7 @@ internal class LicenseValidation
                     {
                         var fileName = Path.GetFileNameWithoutExtension(dllFile);
 
-                        if (options.ValidationBehavior == NuSealValidationBehavior.Warning)
+                        if (options.ValidationMode == NuSealValidationMode.Warning)
                         {
                             log.LogWarning("NuSeal: No valid license found for {0}. Path: {1}.", fileName, dllFile);
                         }

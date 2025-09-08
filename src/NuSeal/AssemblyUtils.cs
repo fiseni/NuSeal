@@ -58,23 +58,23 @@ internal class AssemblyUtils
             {
                 options.IsProtected = true;
             }
-            else if (attribute.AttributeType.FullName == typeof(NuSealValidationBehaviorAttribute).FullName)
+            else if (attribute.AttributeType.FullName == typeof(NuSealValidationModeAttribute).FullName)
             {
                 if (attribute.ConstructorArguments.Count == 1
-                    && attribute.ConstructorArguments[0].Value is string behavior)
+                    && attribute.ConstructorArguments[0].Value is string value)
                 {
-                    if (behavior.Equals("Warning", StringComparison.OrdinalIgnoreCase))
+                    if (value.Equals("Warning", StringComparison.OrdinalIgnoreCase))
                     {
-                        options.ValidationBehavior = NuSealValidationBehavior.Warning;
+                        options.ValidationMode = NuSealValidationMode.Warning;
                     }
                 }
             }
             else if (attribute.AttributeType.FullName == typeof(NuSealTransitiveBehaviorAttribute).FullName)
             {
                 if (attribute.ConstructorArguments.Count == 1
-                    && attribute.ConstructorArguments[0].Value is string behavior)
+                    && attribute.ConstructorArguments[0].Value is string value)
                 {
-                    if (behavior.Equals("disable", StringComparison.OrdinalIgnoreCase))
+                    if (value.Equals("disable", StringComparison.OrdinalIgnoreCase))
                     {
                         options.TransitiveBehavior = NuSealTransitiveBehavior.Disabled;
                     }
