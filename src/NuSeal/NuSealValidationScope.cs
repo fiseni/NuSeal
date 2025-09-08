@@ -1,6 +1,6 @@
 ﻿namespace NuSeal;
 
-internal enum NuSealTransitiveBehavior
+internal enum NuSealValidationScope
 {
     Enabled = 1,
     Disabled = 2,
