@@ -62,14 +62,13 @@
     Name="CopyProjectReferencesToPackage"
     DependsOnTargets="ResolveReferences">
 
-    <PropertyGroup>
-      <_ExcludeReferences>Mono.Cecil.Mdb;Mono.Cecil.Pdb;Mono.Cecil.rocks</_ExcludeReferences>
-    </PropertyGroup>
     <ItemGroup>
       <BuildOutputInPackage
         Include="@(ReferenceCopyLocalPaths)"
         TargetPath="%(ReferenceCopyLocalPaths.DestinationSubPath)"
-        Condition="!$(_ExcludeReferences.Contains('%(ReferenceCopyLocalPaths.Filename)'))" />
+        Condition="'%(ReferenceCopyLocalPaths.Filename)' != 'Mono.Cecil.Mdb' AND 
+                   '%(ReferenceCopyLocalPaths.Filename)' != 'Mono.Cecil.Pdb' AND 
+                   '%(ReferenceCopyLocalPaths.Filename)' != 'Mono.Cecil.Rocks'" />
     </ItemGroup>
   </Target>
 
