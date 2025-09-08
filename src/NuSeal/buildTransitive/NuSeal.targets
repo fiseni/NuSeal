@@ -59,7 +59,7 @@
   </Target>
 
   <!-- ############################################################################################### -->
-  <Target Name="NuSealDirectValidationScope"
+  <Target Name="NuSealPrepareAssetsForDirectScope"
           BeforeTargets="Build"
           DependsOnTargets="NuSealCheckDirectReference"
           Condition="$(NuSealIsPackageReferenced) != 0 And '$(NuSealValidationScope)' == 'Direct'">
@@ -81,10 +81,15 @@
   <!-- ############################################################################################### -->
   <!-- This target will run for the end user -->
   <Target Name="NuSealLicenseValidation"
-        AfterTargets="AfterBuild"
-        Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'">
+          DependsOnTargets="ResolvePackageAssets"
+          AfterTargets="AfterBuild"
+          Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'">
 
-    <NuSeal.LicenseValidationTransitiveTask MainAssemblyPath="$(TargetPath)" />
+    <NuSeal.LicenseValidationTransitiveTask
+      MainAssemblyPath="$(TargetPath)"
+      PackageReferences="@(PackageReference)"
+      ResolvedCompileFileDefinitions="@(ResolvedCompileFileDefinitions)"
+      />
   </Target>
   
 </Project>
