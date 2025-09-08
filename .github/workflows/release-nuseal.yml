@@ -1,6 +1,7 @@
 name: Release NuSeal
 
 on:
+  workflow_dispatch:
   release:
     types: [published]
 
