@@ -74,9 +74,9 @@ internal class AssemblyUtils
                 if (attribute.ConstructorArguments.Count == 1
                     && attribute.ConstructorArguments[0].Value is string value)
                 {
-                    if (value.Equals("disable", StringComparison.OrdinalIgnoreCase))
+                    if (value.Equals("Direct", StringComparison.OrdinalIgnoreCase))
                     {
-                        options.ValidationScope = NuSealValidationScope.Disabled;
+                        options.ValidationScope = NuSealValidationScope.Direct;
                     }
                 }
             }

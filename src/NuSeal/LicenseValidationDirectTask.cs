@@ -10,6 +10,6 @@ public partial class LicenseValidationDirectTask : Task
 
     public override bool Execute()
     {
-        return LicenseValidation.Execute(Log, MainAssemblyPath, NuSealValidationScope.Disabled);
+        return LicenseValidation.Execute(Log, MainAssemblyPath, NuSealValidationScope.Direct);
     }
 }

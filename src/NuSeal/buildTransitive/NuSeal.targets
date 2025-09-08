@@ -3,7 +3,7 @@
   <!-- These targets will run for author's packages (packages that have installed the NuSeal package). -->
 
   <!-- ############################################################################################### -->
-  <ItemGroup Condition="'$(NuSealValidationScope)' == 'disable'">
+  <ItemGroup Condition="'$(NuSealValidationScope)' == 'Direct'">
     <PackageReference Update="NuSeal" PrivateAssets="contentfiles;analyzers;build;buildTransitive" />
   </ItemGroup>
 
@@ -62,7 +62,7 @@
   <Target Name="NuSealDirectValidationScope"
           BeforeTargets="Build"
           DependsOnTargets="NuSealCheckDirectReference"
-          Condition="$(NuSealIsPackageReferenced) != 0 And '$(NuSealValidationScope)' == 'disable'">
+          Condition="$(NuSealIsPackageReferenced) != 0 And '$(NuSealValidationScope)' == 'Direct'">
 
     <NuSeal.PrepareAssetsForConsumerTask
         NuSealAssetsPath="$(MSBuildThisFileDirectory)"

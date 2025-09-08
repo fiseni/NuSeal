@@ -2,6 +2,6 @@
 
 internal enum NuSealValidationScope
 {
-    Enabled = 1,
-    Disabled = 2,
+    Direct = 1,
+    Transitive = 2,
 }
