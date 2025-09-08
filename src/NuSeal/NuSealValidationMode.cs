@@ -1,6 +1,6 @@
 ﻿namespace NuSeal;
 
-internal enum NuSealValidationBehavior
+internal enum NuSealValidationMode
 {
     Error = 1,
     Warning = 2

@@ -31,14 +31,14 @@
   </Target>
 
   <!-- ############################################################################################### -->
-  <Target Name="NuSealInjectValidationBehaviorAttribute"
+  <Target Name="NuSealInjectValidationModeAttribute"
           BeforeTargets="BeforeCompile"
           DependsOnTargets="NuSealCheckDirectReference"
-          Condition="$(NuSealIsPackageReferenced) != 0 And '$(NuSealValidationBehavior)' != ''">
+          Condition="$(NuSealIsPackageReferenced) != 0 And '$(NuSealValidationMode)' != ''">
 
     <ItemGroup>
-      <AssemblyAttribute Include="NuSeal.NuSealValidationBehaviorAttribute">
-        <_Parameter1>$(NuSealValidationBehavior)</_Parameter1>
+      <AssemblyAttribute Include="NuSeal.NuSealValidationModeAttribute">
+        <_Parameter1>$(NuSealValidationMode)</_Parameter1>
       </AssemblyAttribute>
     </ItemGroup>
 

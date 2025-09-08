@@ -1,5 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using Mono.Cecil;
+﻿using Mono.Cecil;
 using System.Reflection;
 
 namespace Tests;
@@ -80,7 +79,7 @@ public class LicenseValidationTests : IDisposable
     {
         var asm = CreateProtectedDll(
             transitiveBehavior: NuSealTransitiveBehavior.Enabled,
-            validationBehavior: NuSealValidationBehavior.Error);
+            validationMode: NuSealValidationMode.Error);
 
         var result = LicenseValidation.Execute(_log, _mainAssemblyPath, NuSealTransitiveBehavior.Disabled);
 
@@ -97,7 +96,7 @@ public class LicenseValidationTests : IDisposable
     {
         var asm = CreateProtectedDll(
             transitiveBehavior: NuSealTransitiveBehavior.Enabled,
-            validationBehavior: NuSealValidationBehavior.Error,
+            validationMode: NuSealValidationMode.Error,
             includePems: false);
 
         var result = LicenseValidation.Execute(_log, _mainAssemblyPath, NuSealTransitiveBehavior.Enabled);
@@ -116,7 +115,7 @@ public class LicenseValidationTests : IDisposable
         var productName = "TestProduct";
         var asm = CreateProtectedDll(
             transitiveBehavior: NuSealTransitiveBehavior.Enabled,
-            validationBehavior: NuSealValidationBehavior.Error,
+            validationMode: NuSealValidationMode.Error,
             includePems: true,
             productName: productName);
 
@@ -138,7 +137,7 @@ public class LicenseValidationTests : IDisposable
         var productName = "TestProduct";
         var asm = CreateProtectedDll(
             transitiveBehavior: NuSealTransitiveBehavior.Enabled,
-            validationBehavior: NuSealValidationBehavior.Warning,
+            validationMode: NuSealValidationMode.Warning,
             includePems: true,
             productName: productName);
 
@@ -175,7 +174,7 @@ public class LicenseValidationTests : IDisposable
         var productName = "TestProduct";
         var asm = CreateProtectedDll(
             transitiveBehavior: NuSealTransitiveBehavior.Enabled,
-            validationBehavior: NuSealValidationBehavior.Error,
+            validationMode: NuSealValidationMode.Error,
             includePems: true,
             productName: productName);
 
@@ -201,21 +200,21 @@ public class LicenseValidationTests : IDisposable
         // Create three DLLs with different configurations
         var asm1 = CreateProtectedDll(
             transitiveBehavior: NuSealTransitiveBehavior.Enabled,
-            validationBehavior: NuSealValidationBehavior.Error,
+            validationMode: NuSealValidationMode.Error,
             includePems: true,
             productName: productName1,
             fileName: "Library1.dll");
 
         var asm2 = CreateProtectedDll(
             transitiveBehavior: NuSealTransitiveBehavior.Enabled,
-            validationBehavior: NuSealValidationBehavior.Warning,
+            validationMode: NuSealValidationMode.Warning,
             includePems: true,
             productName: productName2,
             fileName: "Library2.dll");
 
         var asm3 = CreateProtectedDll(
             transitiveBehavior: NuSealTransitiveBehavior.Enabled,
-            validationBehavior: NuSealValidationBehavior.Error,
+            validationMode: NuSealValidationMode.Error,
             includePems: true,
             productName: productName3,
             fileName: "Library3.dll");
@@ -245,14 +244,14 @@ public class LicenseValidationTests : IDisposable
         // Create two DLLs with different configurations
         var asm1 = CreateProtectedDll(
             transitiveBehavior: NuSealTransitiveBehavior.Enabled,
-            validationBehavior: NuSealValidationBehavior.Error,
+            validationMode: NuSealValidationMode.Error,
             includePems: true,
             productName: productName1,
             fileName: "Library1.dll");
 
         var asm2 = CreateProtectedDll(
             transitiveBehavior: NuSealTransitiveBehavior.Enabled,
-            validationBehavior: NuSealValidationBehavior.Error,
+            validationMode: NuSealValidationMode.Error,
             includePems: true,
             productName: productName2,
             fileName: "Library2.dll");
@@ -299,7 +298,7 @@ public class LicenseValidationTests : IDisposable
 
     private AssemblyDefinition CreateProtectedDll(
         NuSealTransitiveBehavior transitiveBehavior,
-        NuSealValidationBehavior validationBehavior,
+        NuSealValidationMode validationMode,
         bool includePems = true,
         string productName = "TestProduct",
         string fileName = "Library.dll")
@@ -318,15 +317,15 @@ public class LicenseValidationTests : IDisposable
         var protectedAttr = new CustomAttribute(protectedAttrRef);
         assemblyDef.CustomAttributes.Add(protectedAttr);
 
-        // Add NuSealValidationBehaviorAttribute
-        var validationBehaviorAttrCtor = GetAttributeConstructor(typeof(NuSealValidationBehaviorAttribute), typeof(string));
-        var validationBehaviorAttrRef = assemblyDef.MainModule.ImportReference(validationBehaviorAttrCtor);
-        var validationBehaviorAttr = new CustomAttribute(validationBehaviorAttrRef);
-        validationBehaviorAttr.ConstructorArguments.Add(
+        // Add NuSealValidationModeAttribute
+        var validationModeAttrCtor = GetAttributeConstructor(typeof(NuSealValidationModeAttribute), typeof(string));
+        var validationModeAttrRef = assemblyDef.MainModule.ImportReference(validationModeAttrCtor);
+        var validationModeAttr = new CustomAttribute(validationModeAttrRef);
+        validationModeAttr.ConstructorArguments.Add(
             new CustomAttributeArgument(
                 assemblyDef.MainModule.ImportReference(typeof(string)),
-                validationBehavior == NuSealValidationBehavior.Warning ? "Warning" : "Error"));
-        assemblyDef.CustomAttributes.Add(validationBehaviorAttr);
+                validationMode == NuSealValidationMode.Warning ? "Warning" : "Error"));
+        assemblyDef.CustomAttributes.Add(validationModeAttr);
 
         // Add NuSealTransitiveBehaviorAttribute
         var transitiveBehaviorAttrCtor = GetAttributeConstructor(typeof(NuSealTransitiveBehaviorAttribute), typeof(string));
