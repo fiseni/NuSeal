@@ -23,8 +23,8 @@ NuSeal provides the infrastructure for creating and validating NuGet package lic
 - [For End Users](#for-end-users)
 - [NuSeal Default Behavior](#nuseal-default-behavior)
 - [NuSeal Customization Options](#nuseal-customization-options)
-  - [1. NuSealValidationBehavior](#1-nusealvalidationbehavior)
-  - [2. NuSealTransitiveBehavior](#2-nusealtransitivebehavior)
+  - [1. Validation Mode](#1-validation-mode)
+  - [2. Validation Scope](#2-validation-scope)
 
 ## TL;DR
 
@@ -51,7 +51,7 @@ Then generate the keys.
 ```csharp
 var keys = NuSeal.RsaKeyGenerator.GeneratePem();
 File.WriteAllText("private_key.pem", keys.PrivateKey);
-File.WriteAllText("public_key.pem", keys.PublicKey);
+File.WriteAllText("YourProductName.nuseal.pem", keys.PublicKey);
 ```
 
 Keep the private key secure and confidential, as it will be used to sign licenses.
