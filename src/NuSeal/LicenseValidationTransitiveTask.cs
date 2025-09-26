@@ -19,8 +19,7 @@ public partial class LicenseValidationTransitiveTask : Task
     public override bool Execute()
     {
         var packageDlls = ResolvedCompileFileDefinitions
-            .Select(x => x.ItemSpec)
-            .ToArray();
+            .Select(x => x.ItemSpec);
 
         return LicenseValidation.Execute(Log, MainAssemblyPath, packageDlls, NuSealValidationScope.Transitive);
     }

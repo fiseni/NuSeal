@@ -22,8 +22,7 @@ public partial class LicenseValidationDirectTask : Task
 
         var directPackageDlls = ResolvedCompileFileDefinitions
             .Where(x => directPackageIds.Contains(x.GetMetadata("NuGetPackageId")))
-            .Select(x => x.ItemSpec)
-            .ToArray();
+            .Select(x => x.ItemSpec);
 
         return LicenseValidation.Execute(Log, MainAssemblyPath, directPackageDlls, NuSealValidationScope.Direct);
     }
