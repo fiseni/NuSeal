@@ -2,6 +2,7 @@
 using Microsoft.Build.Utilities;
 using Mono.Cecil;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -12,7 +13,7 @@ internal class LicenseValidation
     public static bool Execute(
         TaskLoggingHelper log,
         string mainAssemblyPath,
-        string[] dllFiles,
+        IEnumerable<string> dllFiles,
         NuSealValidationScope validationScope)
     {
         foreach (var dllFile in dllFiles)
