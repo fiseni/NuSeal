@@ -387,3 +387,4 @@ FodyWeavers.xsd
 # Developer config files
 **/appsettings.Development*.json
 !/samples/SampleNuGetFeed/*.nupkg
+/.idea
