@@ -1,0 +1,65 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- ############################################################################################### -->
+  <Target Name="NuSealInjectProtectedAttribute"
+          BeforeTargets="BeforeCompile">
+
+    <ItemGroup>
+      <AssemblyAttribute Include="NuSeal.NuSealProtectedAttribute" />
+    </ItemGroup>
+
+  </Target>
+
+  <!-- ############################################################################################### -->
+  <Target Name="NuSealInjectValidationModeAttribute"
+          BeforeTargets="BeforeCompile"
+          Condition="'$(NuSealValidationMode)' != ''">
+
+    <ItemGroup>
+      <AssemblyAttribute Include="NuSeal.NuSealValidationModeAttribute">
+        <_Parameter1>$(NuSealValidationMode)</_Parameter1>
+      </AssemblyAttribute>
+    </ItemGroup>
+
+  </Target>
+
+  <!-- ############################################################################################### -->
+  <Target Name="NuSealInjectValidationScopeAttribute"
+          BeforeTargets="BeforeCompile"
+          Condition="'$(NuSealValidationScope)' != ''">
+
+    <ItemGroup>
+      <AssemblyAttribute Include="NuSeal.NuSealValidationScopeAttribute">
+        <_Parameter1>$(NuSealValidationScope)</_Parameter1>
+      </AssemblyAttribute>
+    </ItemGroup>
+
+  </Target>
+
+  <!-- ############################################################################################### -->
+  <Target Name="NuSealPrepareAssetsForConsumer"
+          BeforeTargets="Build">
+
+    <NuSeal.PrepareAssetsForConsumerTask
+        NuSealAssetsPath="$(MSBuildThisFileDirectory)"
+        NuSealVersion="@(PackageReference->WithMetadataValue('Identity', 'NuSeal')->'%(Version)')"
+        OutputPath="$(OutputPath)"
+        ConsumerPackageId="$(PackageId)"
+        ConsumerPropsFile="$(NuSealIncludePropsFile)"
+        ConsumerTargetsFile="$(NuSealIncludeTargetsFile)"
+        ValidationScope ="$(NuSealValidationScope)"
+        />
+
+    <ItemGroup Label="Package build assets">
+      <None Include="$(OutputPath)\$(PackageId).props" Pack="true" PackagePath="build\$(PackageId).props" Visible="false"/>
+      <None Include="$(OutputPath)\$(PackageId).targets" Pack="true" PackagePath="build\$(PackageId).targets" Visible="false"/>
+    </ItemGroup>
+
+    <ItemGroup Label="Package buildTransitive assets" Condition="'$(NuSealValidationScope)' == 'Transitive'">
+      <None Include="$(OutputPath)\$(PackageId).props" Pack="true" PackagePath="buildTransitive\$(PackageId).props" Visible="false"/>
+      <None Include="$(OutputPath)\$(PackageId).targets" Pack="true" PackagePath="buildTransitive\$(PackageId).targets" Visible="false"/>
+    </ItemGroup>
+    
+  </Target>
+  
+</Project>

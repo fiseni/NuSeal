@@ -1,14 +1,16 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <Target Name="NuSealLicenseValidationForDirectConsumers"
+  <Target Name="NuSealLicenseValidation"
           DependsOnTargets="ResolvePackageAssets"
-          AfterTargets="AfterBuild">
-    
-    <NuSeal.LicenseValidationDirectTask
+          AfterTargets="AfterBuild"
+          Condition="_Condition_">
+
+    <NuSeal._ValidationTask_
       MainAssemblyPath="$(TargetPath)"
       PackageReferences="@(PackageReference)"
       ResolvedCompileFileDefinitions="@(ResolvedCompileFileDefinitions)"
       />
+    
   </Target>
 
 </Project>

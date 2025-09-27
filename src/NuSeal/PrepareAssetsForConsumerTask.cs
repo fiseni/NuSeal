@@ -22,6 +22,8 @@ public partial class PrepareAssetsForConsumerTask : Task
 
     public string ConsumerTargetsFile { get; set; } = "";
 
+    public string ValidationScope { get; set; } = "";
+
     public override bool Execute()
     {
         try
@@ -32,7 +34,8 @@ public partial class PrepareAssetsForConsumerTask : Task
                 OutputPath,
                 ConsumerPackageId,
                 ConsumerPropsFile,
-                ConsumerTargetsFile);
+                ConsumerTargetsFile,
+                ValidationScope);
 
         }
         catch (Exception ex)
