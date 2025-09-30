@@ -12,7 +12,7 @@ internal class FileUtils
             return false;
         }
 
-        var licenseFileName = $"{productName}.license";
+        var licenseFileName = $"{productName}.lic";
 
         try
         {

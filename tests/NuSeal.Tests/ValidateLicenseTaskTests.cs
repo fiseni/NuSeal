@@ -707,7 +707,7 @@ public class ValidateLicenseTaskTests : IDisposable
             PrivateKeyPem = _rsaPemPair.PrivateKey,
         };
         var license = License.Create(licenseParams);
-        var licenseFilePath = Path.Combine(_tempDir, $"{productName}.license");
+        var licenseFilePath = Path.Combine(_tempDir, $"{productName}.lic");
         File.WriteAllText(licenseFilePath, license);
     }
 
