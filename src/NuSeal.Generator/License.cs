@@ -35,6 +35,11 @@ public class License
             new("product", parameters.ProductName),
         };
 
+        if (parameters.AdditionalClaims.Length > 0)
+        {
+            claims.AddRange(parameters.AdditionalClaims);
+        }
+
         if (!string.IsNullOrWhiteSpace(parameters.Edition))
         {
             claims.Add(new Claim("edition", parameters.Edition));

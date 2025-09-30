@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 
 namespace NuSeal;
 
@@ -13,4 +14,5 @@ public record LicenseParameters
     public string? Edition { get; init; }
     public DateTimeOffset StartDate { get; init; } = DateTimeOffset.UtcNow;
     public DateTimeOffset ExpirationDate { get; init; } = DateTimeOffset.UtcNow.AddYears(1);
+    public Claim[] AdditionalClaims { get; init; } = Array.Empty<Claim>();
 }
