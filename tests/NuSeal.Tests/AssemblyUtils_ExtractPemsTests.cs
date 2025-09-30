@@ -5,17 +5,13 @@ namespace Tests;
 public class AssemblyUtils_ExtractPemsTests : IDisposable
 {
     private readonly string _testDirectory;
-    private readonly string _testAssemblyPath;
     private readonly AssemblyDefinition _testAssembly;
 
     public AssemblyUtils_ExtractPemsTests()
     {
-        // Create a unique test directory for each test run
         _testDirectory = Path.Combine(Path.GetTempPath(), $"NuSealTests_{Guid.NewGuid()}");
         Directory.CreateDirectory(_testDirectory);
-        _testAssemblyPath = Path.Combine(_testDirectory, "TestAssembly.dll");
 
-        // Create a simple assembly definition for testing
         var assemblyName = new AssemblyNameDefinition("TestAssembly", new Version(1, 0, 0, 0));
         _testAssembly = AssemblyDefinition.CreateAssembly(
             assemblyName,
@@ -26,10 +22,8 @@ public class AssemblyUtils_ExtractPemsTests : IDisposable
     [Fact]
     public void ReturnsEmptyList_GivenAssemblyWithNoResources()
     {
-        // Act
         var result = AssemblyUtils.ExtractPems(_testAssembly);
 
-        // Assert
         result.Should().NotBeNull();
         result.Should().BeEmpty();
     }
@@ -37,16 +31,13 @@ public class AssemblyUtils_ExtractPemsTests : IDisposable
     [Fact]
     public void ReturnsEmptyList_GivenAssemblyWithNonPemResources()
     {
-        // Arrange
         var resource = new EmbeddedResource("TestResource.txt",
             ManifestResourceAttributes.Public,
             new byte[] { 1, 2, 3 });
         _testAssembly.MainModule.Resources.Add(resource);
 
-        // Act
         var result = AssemblyUtils.ExtractPems(_testAssembly);
 
-        // Assert
         result.Should().NotBeNull();
         result.Should().BeEmpty();
     }
@@ -54,17 +45,14 @@ public class AssemblyUtils_ExtractPemsTests : IDisposable
     [Fact]
     public void ReturnsEmptyList_GivenAssemblyWithPemResourceButInvalidNameFormat()
     {
-        // Arrange
         // Resource name doesn't have enough parts separated by dots
         var resource = new EmbeddedResource("nuseal.pem",
             ManifestResourceAttributes.Public,
             GetUtf8Bytes("test content"));
         _testAssembly.MainModule.Resources.Add(resource);
 
-        // Act
         var result = AssemblyUtils.ExtractPems(_testAssembly);
 
-        // Assert
         result.Should().NotBeNull();
         result.Should().BeEmpty();
     }
@@ -72,7 +60,6 @@ public class AssemblyUtils_ExtractPemsTests : IDisposable
     [Fact]
     public void ReturnsPemData_GivenAssemblyWithValidPemResource()
     {
-        // Arrange
         var productName = "TestProduct";
         var pemContent = "-----BEGIN PUBLIC KEY-----\nMIIB...etc\n-----END PUBLIC KEY-----";
         var resource = new EmbeddedResource($"namespace.{productName}.nuseal.pem",
@@ -81,10 +68,8 @@ public class AssemblyUtils_ExtractPemsTests : IDisposable
 
         _testAssembly.MainModule.Resources.Add(resource);
 
-        // Act
         var result = AssemblyUtils.ExtractPems(_testAssembly);
 
-        // Assert
         result.Should().NotBeNull();
         result.Should().HaveCount(1);
         result[0].ProductName.Should().Be(productName);
@@ -94,7 +79,6 @@ public class AssemblyUtils_ExtractPemsTests : IDisposable
     [Fact]
     public void ReturnsMultiplePemData_GivenAssemblyWithMultiplePemResources()
     {
-        // Arrange
         var product1 = "Product1";
         var product2 = "Product2";
         var pem1 = "PEM1 Content";
@@ -111,10 +95,8 @@ public class AssemblyUtils_ExtractPemsTests : IDisposable
         _testAssembly.MainModule.Resources.Add(resource1);
         _testAssembly.MainModule.Resources.Add(resource2);
 
-        // Act
         var result = AssemblyUtils.ExtractPems(_testAssembly);
 
-        // Assert
         result.Should().NotBeNull();
         result.Should().HaveCount(2);
 
@@ -130,7 +112,6 @@ public class AssemblyUtils_ExtractPemsTests : IDisposable
     [Fact]
     public void ReturnsPemData_GivenResourceWithoutNamespace()
     {
-        // Arrange
         var productName = "TestProduct";
         var pemContent = "PEM Content";
 
@@ -141,10 +122,8 @@ public class AssemblyUtils_ExtractPemsTests : IDisposable
 
         _testAssembly.MainModule.Resources.Add(resource);
 
-        // Act
         var result = AssemblyUtils.ExtractPems(_testAssembly);
 
-        // Assert
         result.Should().NotBeNull();
         result.Should().HaveCount(1);
         result[0].ProductName.Should().Be(productName);
@@ -154,21 +133,17 @@ public class AssemblyUtils_ExtractPemsTests : IDisposable
     [Fact]
     public void IsCaseInsensitive_GivenResourceWithDifferentCase()
     {
-        // Arrange
         var productName = "TestProduct";
         var pemContent = "PEM Content";
 
-        // Use uppercase in the suffix
         var resource = new EmbeddedResource($"namespace.{productName}.NUSEAL.PEM",
             ManifestResourceAttributes.Public,
             GetUtf8Bytes(pemContent));
 
         _testAssembly.MainModule.Resources.Add(resource);
 
-        // Act
         var result = AssemblyUtils.ExtractPems(_testAssembly);
 
-        // Assert
         result.Should().NotBeNull();
         result.Should().HaveCount(1);
         result[0].ProductName.Should().Be(productName);
@@ -178,7 +153,6 @@ public class AssemblyUtils_ExtractPemsTests : IDisposable
     [Fact]
     public void HandlesLongerResourceNames_GivenComplexResourceName()
     {
-        // Arrange
         var productName = "TestProduct";
         var pemContent = "PEM Content";
 
@@ -189,10 +163,8 @@ public class AssemblyUtils_ExtractPemsTests : IDisposable
 
         _testAssembly.MainModule.Resources.Add(resource);
 
-        // Act
         var result = AssemblyUtils.ExtractPems(_testAssembly);
 
-        // Assert
         result.Should().NotBeNull();
         result.Should().HaveCount(1);
         result[0].ProductName.Should().Be(productName);
@@ -202,7 +174,6 @@ public class AssemblyUtils_ExtractPemsTests : IDisposable
     [Fact]
     public void ExtractsPemContent_GivenResourceWithMultilineContent()
     {
-        // Arrange
         var productName = "TestProduct";
         var pemContent = "Line1\nLine2\nLine3";
 
@@ -212,10 +183,8 @@ public class AssemblyUtils_ExtractPemsTests : IDisposable
 
         _testAssembly.MainModule.Resources.Add(resource);
 
-        // Act
         var result = AssemblyUtils.ExtractPems(_testAssembly);
 
-        // Assert
         result.Should().NotBeNull();
         result.Should().HaveCount(1);
         result[0].PublicKeyPem.Should().Be(pemContent);
