@@ -7,11 +7,6 @@
   </PropertyGroup>
 
   <UsingTask
-    TaskName="NuSeal.LicenseValidationTransitiveTask"
-    AssemblyFile="$(NuSealAssembly)"
-    TaskFactory="TaskHostFactory" />
-
-  <UsingTask
     TaskName="NuSeal.PrepareAssetsForConsumerTask"
     AssemblyFile="$(NuSealAssembly)"
     TaskFactory="TaskHostFactory" />

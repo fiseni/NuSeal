@@ -12,19 +12,31 @@ internal class PrepareAssetsForConsumer
         string outputPath,
         string consumerPackageId,
         string consumerPropsFile,
-        string consumerTargetsFile)
+        string consumerTargetsFile,
+        string validationScope)
     {
         //Debugger.Launch();
 
-        var nusealPropsFile = Path.Combine(nusealAssetsPath, "NuSeal.Direct.props");
-        var nusealTargetsFile = Path.Combine(nusealAssetsPath, "NuSeal.Direct.targets");
+        var nusealPropsFile = Path.Combine(nusealAssetsPath, "NuSeal.Stub.props");
+        var nusealTargetsFile = Path.Combine(nusealAssetsPath, "NuSeal.Stub.targets");
         var propsOutputFile = Path.Combine(outputPath, $"{consumerPackageId}.props");
         var targetsOutputFile = Path.Combine(outputPath, $"{consumerPackageId}.targets");
 
         var props = File.ReadAllText(nusealPropsFile);
         var targets = File.ReadAllText(nusealTargetsFile);
 
+        var taskName = string.Equals(validationScope, "Transitive", StringComparison.OrdinalIgnoreCase)
+            ? nameof(LicenseValidationTransitiveTask)
+            : nameof(LicenseValidationDirectTask);
+
+        var condition = string.Equals(validationScope, "Transitive", StringComparison.OrdinalIgnoreCase)
+            ? @"'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'"
+            : "";
+
         props = props.Replace("_NuSealVersion_", nusealVersion);
+        props = props.Replace("_ValidationTask_", taskName);
+        targets = targets.Replace("_ValidationTask_", taskName);
+        targets = targets.Replace("_Condition_", condition);
 
         if (!string.IsNullOrEmpty(consumerPropsFile) && File.Exists(consumerPropsFile))
         {

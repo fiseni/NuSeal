@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <UsingTask
-    TaskName="NuSeal.LicenseValidationDirectTask"
+    TaskName="NuSeal._ValidationTask_"
     AssemblyFile="$(NuSealAssembly)"
     TaskFactory="TaskHostFactory" />
 
