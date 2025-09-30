@@ -25,7 +25,7 @@ public partial class ValidateLicenseTask : Task
             || string.IsNullOrWhiteSpace(ValidationMode)
             || string.IsNullOrWhiteSpace(ValidationScope))
         {
-            // This should never happen as we always pass alll arguments while preparing assets for authors.
+            // This should never happen as we always pass all arguments while preparing assets for authors.
             // If that's the case, something went really wrong, and we won't break end users' builds.
             Log.LogMessage(MessageImportance.High, "NuSeal: Invalid arguments for {0}", nameof(ValidateLicenseTask));
             return true;

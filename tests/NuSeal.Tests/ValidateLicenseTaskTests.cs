@@ -489,7 +489,7 @@ public class ValidateLicenseTaskTests : IDisposable
     }
 
     [Fact]
-    public void ReturnsTrue_LogsInfo_GivenhitespaceProtectedPackageId()
+    public void ReturnsTrue_LogsInfo_GivenWhitespaceProtectedPackageId()
     {
         var task = new ValidateLicenseTask
         {
@@ -552,7 +552,7 @@ public class ValidateLicenseTaskTests : IDisposable
     }
 
     [Fact]
-    public void ReturnsTrue_LogsInfo_GivenhitespaceProtectedAssemblyName()
+    public void ReturnsTrue_LogsInfo_GivenWhitespaceProtectedAssemblyName()
     {
         var task = new ValidateLicenseTask
         {
@@ -615,7 +615,7 @@ public class ValidateLicenseTaskTests : IDisposable
     }
 
     [Fact]
-    public void ReturnsTrue_LogsInfo_GivenhitespaceValidationMode()
+    public void ReturnsTrue_LogsInfo_GivenWhitespaceValidationMode()
     {
         var task = new ValidateLicenseTask
         {
