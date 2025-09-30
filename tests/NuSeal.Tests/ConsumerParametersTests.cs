@@ -17,7 +17,7 @@ public class ConsumerParametersTests
             null);
 
         parameters.ValidationMode.Should().Be("Error");
-        parameters.ValidationScope.Should().Be("Transitive");
+        parameters.ValidationScope.Should().Be("Direct");
         parameters.Options.Should().NotBeNull();
     }
 
@@ -79,7 +79,7 @@ public class ConsumerParametersTests
     [InlineData("warning", "direct", "Warning", "Direct")]
     [InlineData("ERROR", "TRANSITIVE", "Error", "Transitive")]
     [InlineData("Error", "Transitive", "Error", "Transitive")]
-    [InlineData("Unknown", "Unknown", "Error", "Transitive")]
+    [InlineData("Unknown", "Unknown", "Error", "Direct")]
     public void Constructor_HandlesValidationModeAndScopeCorrectly(
         string inputValidationMode,
         string inputValidationScope,

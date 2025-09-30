@@ -20,7 +20,7 @@
       <None Include="$(OutputPath)\$(PackageId).targets" Pack="true" PackagePath="build\$(PackageId).targets" Visible="false"/>
     </ItemGroup>
 
-    <ItemGroup Label="Package buildTransitive assets" Condition="'$(NuSealValidationScope)' != 'Direct'">
+    <ItemGroup Label="Package buildTransitive assets" Condition="'$(NuSealValidationScope)' == 'Transitive'">
       <None Include="$(OutputPath)\$(PackageId).props" Pack="true" PackagePath="buildTransitive\$(PackageId).props" Visible="false"/>
       <None Include="$(OutputPath)\$(PackageId).targets" Pack="true" PackagePath="buildTransitive\$(PackageId).targets" Visible="false"/>
     </ItemGroup>

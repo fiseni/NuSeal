@@ -215,8 +215,8 @@ public class GenerateConsumerAssetsTaskTests : IDisposable
             ConsumerAssemblyName = "Assembly1",
             ConsumerPropsFile = consumerPropsFile,
             ConsumerTargetsFile = consumerTargetsFile,
-            ValidationMode = null,
-            ValidationScope = null,
+            ValidationMode = "Error",
+            ValidationScope = "Transitive",
         };
         var result = task.Execute();
 

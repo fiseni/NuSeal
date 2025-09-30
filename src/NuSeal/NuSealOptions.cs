@@ -15,8 +15,8 @@ internal class NuSealOptions
             ? NuSealValidationMode.Warning
             : NuSealValidationMode.Error;
 
-        ValidationScope = string.Equals(validationScope, "Direct", StringComparison.OrdinalIgnoreCase)
-            ? NuSealValidationScope.Direct
-            : NuSealValidationScope.Transitive;
+        ValidationScope = string.Equals(validationScope, "Transitive", StringComparison.OrdinalIgnoreCase)
+            ? NuSealValidationScope.Transitive
+            : NuSealValidationScope.Direct;
     }
 }
