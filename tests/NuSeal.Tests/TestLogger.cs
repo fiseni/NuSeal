@@ -1,35 +1,7 @@
 ﻿using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 using System.Collections;
 
 namespace Tests;
-
-public class TestLogger : TaskLoggingHelper
-{
-    private readonly TestBuildEngine _buildEngine;
-    public TestLogger() : base(CreateTask(out var buildEngine))
-        => _buildEngine = buildEngine;
-
-    static TestTask CreateTask(out TestBuildEngine buildEngine)
-    {
-        buildEngine = new TestBuildEngine();
-        return new TestTask(buildEngine);
-    }
-
-    public List<BuildMessageEventArgs> Messages => _buildEngine.Messages;
-    public List<BuildWarningEventArgs> Warnings => _buildEngine.Warnings;
-    public List<BuildErrorEventArgs> Errors => _buildEngine.Errors;
-    public List<CustomBuildEventArgs> CustomEvents => _buildEngine.CustomEvents;
-}
-
-public class TestTask : ITask
-{
-    public TestTask(IBuildEngine buildEngine)
-        => BuildEngine = buildEngine;
-    public IBuildEngine BuildEngine { get; set; }
-    public ITaskHost HostObject { get; set; } = null!;
-    public bool Execute() => true;
-}
 
 public class TestBuildEngine : IBuildEngine
 {

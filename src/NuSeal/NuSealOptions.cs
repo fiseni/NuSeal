@@ -1,8 +1,22 @@
-﻿namespace NuSeal;
+﻿using System;
+
+namespace NuSeal;
 
 internal class NuSealOptions
 {
-    public bool IsProtected { get; set; } = false;
-    public NuSealValidationMode ValidationMode { get; set; } = NuSealValidationMode.Error;
-    public NuSealValidationScope ValidationScope { get; set; } = NuSealValidationScope.Transitive;
+    public NuSealValidationMode ValidationMode { get; }
+    public NuSealValidationScope ValidationScope { get; }
+
+    public NuSealOptions(
+        string? validationMode,
+        string? validationScope)
+    {
+        ValidationMode = string.Equals(validationMode, "Warning", StringComparison.OrdinalIgnoreCase)
+            ? NuSealValidationMode.Warning
+            : NuSealValidationMode.Error;
+
+        ValidationScope = string.Equals(validationScope, "Direct", StringComparison.OrdinalIgnoreCase)
+            ? NuSealValidationScope.Direct
+            : NuSealValidationScope.Transitive;
+    }
 }

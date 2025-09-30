@@ -42,46 +42,4 @@ internal class AssemblyUtils
 
         return pems;
     }
-
-    internal static NuSealOptions ExtractOptions(AssemblyDefinition assembly)
-    {
-        var options = new NuSealOptions();
-
-        if (assembly.HasCustomAttributes is false)
-        {
-            return options;
-        }
-
-        foreach (var attribute in assembly.CustomAttributes)
-        {
-            if (attribute.AttributeType.FullName == typeof(NuSealProtectedAttribute).FullName)
-            {
-                options.IsProtected = true;
-            }
-            else if (attribute.AttributeType.FullName == typeof(NuSealValidationModeAttribute).FullName)
-            {
-                if (attribute.ConstructorArguments.Count == 1
-                    && attribute.ConstructorArguments[0].Value is string value)
-                {
-                    if (value.Equals("Warning", StringComparison.OrdinalIgnoreCase))
-                    {
-                        options.ValidationMode = NuSealValidationMode.Warning;
-                    }
-                }
-            }
-            else if (attribute.AttributeType.FullName == typeof(NuSealValidationScopeAttribute).FullName)
-            {
-                if (attribute.ConstructorArguments.Count == 1
-                    && attribute.ConstructorArguments[0].Value is string value)
-                {
-                    if (value.Equals("Direct", StringComparison.OrdinalIgnoreCase))
-                    {
-                        options.ValidationScope = NuSealValidationScope.Direct;
-                    }
-                }
-            }
-        }
-
-        return options;
-    }
 }
