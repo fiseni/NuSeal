@@ -38,7 +38,7 @@ public class FileUtils_TryGetLicenseTests : IDisposable
     public void ReturnsTrue_GivenLicenseFileInSameDirectory()
     {
         var licenseContent = "license-content";
-        var licenseFilePath = Path.Combine(_subSubDirectory, $"{_productName}.license");
+        var licenseFilePath = Path.Combine(_subSubDirectory, $"{_productName}.lic");
         File.WriteAllText(licenseFilePath, licenseContent);
 
         var result = FileUtils.TryGetLicense(_mainAssemblyPath, _productName, out string retrievedContent);
@@ -51,7 +51,7 @@ public class FileUtils_TryGetLicenseTests : IDisposable
     public void ReturnsTrue_GivenLicenseFileInParentDirectory()
     {
         var licenseContent = "license-content";
-        var licenseFilePath = Path.Combine(_subDirectory, $"{_productName}.license");
+        var licenseFilePath = Path.Combine(_subDirectory, $"{_productName}.lic");
         File.WriteAllText(licenseFilePath, licenseContent);
 
         var result = FileUtils.TryGetLicense(_mainAssemblyPath, _productName, out string retrievedContent);
@@ -64,7 +64,7 @@ public class FileUtils_TryGetLicenseTests : IDisposable
     public void ReturnsTrue_GivenLicenseFileInRootDirectory()
     {
         var licenseContent = "license-content";
-        var licenseFilePath = Path.Combine(_testRootDirectory, $"{_productName}.license");
+        var licenseFilePath = Path.Combine(_testRootDirectory, $"{_productName}.lic");
         File.WriteAllText(licenseFilePath, licenseContent);
 
         var result = FileUtils.TryGetLicense(_mainAssemblyPath, _productName, out string retrievedContent);
@@ -80,9 +80,9 @@ public class FileUtils_TryGetLicenseTests : IDisposable
         var licenseContentParent = "license-content-parent";
         var licenseContentSame = "license-content-same";
 
-        File.WriteAllText(Path.Combine(_testRootDirectory, $"{_productName}.license"), licenseContentRoot);
-        File.WriteAllText(Path.Combine(_subDirectory, $"{_productName}.license"), licenseContentParent);
-        File.WriteAllText(Path.Combine(_subSubDirectory, $"{_productName}.license"), licenseContentSame);
+        File.WriteAllText(Path.Combine(_testRootDirectory, $"{_productName}.lic"), licenseContentRoot);
+        File.WriteAllText(Path.Combine(_subDirectory, $"{_productName}.lic"), licenseContentParent);
+        File.WriteAllText(Path.Combine(_subSubDirectory, $"{_productName}.lic"), licenseContentSame);
 
         var result = FileUtils.TryGetLicense(_mainAssemblyPath, _productName, out string retrievedContent);
 
@@ -95,7 +95,7 @@ public class FileUtils_TryGetLicenseTests : IDisposable
     public void TrimsLicenseContent_GivenLicenseWithWhitespace()
     {
         var licenseContent = "  license-content-with-whitespace  \r\n  ";
-        var licenseFilePath = Path.Combine(_subSubDirectory, $"{_productName}.license");
+        var licenseFilePath = Path.Combine(_subSubDirectory, $"{_productName}.lic");
         File.WriteAllText(licenseFilePath, licenseContent);
 
         var result = FileUtils.TryGetLicense(_mainAssemblyPath, _productName, out string retrievedContent);
@@ -140,7 +140,7 @@ public class FileUtils_TryGetLicenseTests : IDisposable
         var otherProductName = "OtherProduct";
 
         // Create license file for a different product
-        File.WriteAllText(Path.Combine(_subSubDirectory, $"{otherProductName}.license"), licenseContent);
+        File.WriteAllText(Path.Combine(_subSubDirectory, $"{otherProductName}.lic"), licenseContent);
 
         var result = FileUtils.TryGetLicense(_mainAssemblyPath, _productName, out string retrievedContent);
 
@@ -153,7 +153,7 @@ public class FileUtils_TryGetLicenseTests : IDisposable
     {
         var licenseContent = "license-content";
         // Create license file with empty name
-        File.WriteAllText(Path.Combine(_subSubDirectory, ".license"), licenseContent);
+        File.WriteAllText(Path.Combine(_subSubDirectory, ".lic"), licenseContent);
 
         var result = FileUtils.TryGetLicense(_mainAssemblyPath, "", out string retrievedContent);
 
