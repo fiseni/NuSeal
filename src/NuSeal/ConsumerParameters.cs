@@ -8,6 +8,7 @@ internal class ConsumerParameters
         string outputPath,
         string packageId,
         string assemblyName,
+        PemData[] pems,
         string? propsFile,
         string? targetsFile,
         string? validationMode,
@@ -18,6 +19,7 @@ internal class ConsumerParameters
         OutputPath = outputPath;
         PackageId = packageId;
         AssemblyName = assemblyName;
+        Pems = pems;
         PropsFile = string.IsNullOrWhiteSpace(propsFile) ? null : propsFile;
         TargetsFile = string.IsNullOrWhiteSpace(targetsFile) ? null : targetsFile;
 
@@ -32,6 +34,7 @@ internal class ConsumerParameters
     public string OutputPath { get; }
     public string PackageId { get; }
     public string AssemblyName { get; }
+    public PemData[] Pems { get; }
     public string? PropsFile { get; }
     public string? TargetsFile { get; }
     public string ValidationMode { get; }

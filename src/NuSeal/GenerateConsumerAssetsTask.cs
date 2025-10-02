@@ -1,7 +1,9 @@
 ﻿using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace NuSeal;
 
@@ -21,6 +23,9 @@ public partial class GenerateConsumerAssetsTask : Task
 
     [Required]
     public string ConsumerAssemblyName { get; set; } = "";
+
+    [Required]
+    public ITaskItem[] ConsumerPems { get; set; } = Array.Empty<ITaskItem>();
 
     public string? ConsumerPropsFile { get; set; }
 
@@ -56,6 +61,26 @@ public partial class GenerateConsumerAssetsTask : Task
             return false;
         }
 
+        if (ConsumerPems.Length == 0)
+        {
+            Log.LogError("NuSeal: No public PEM files are defined.");
+            return false;
+        }
+
+        var pems = ConsumerPems.Select(x =>
+        {
+            var pemFileName = x.ItemSpec;
+            var publicKeyPem = File.ReadAllText(pemFileName);
+            var productName = x.GetMetadata("ProductName");
+            return new PemData(productName, publicKeyPem);
+        }).ToArray();
+
+        if (pems.Any(x => string.IsNullOrEmpty(x.ProductName)))
+        {
+            Log.LogError("NuSeal: The `NuSealPem` items must contain `ProductName` metadata.");
+            return false;
+        }
+
         try
         {
             var parameters = new ConsumerParameters(
@@ -64,6 +89,7 @@ public partial class GenerateConsumerAssetsTask : Task
                 outputPath: ConsumerOutputPath,
                 packageId: ConsumerPackageId,
                 assemblyName: ConsumerAssemblyName,
+                pems: pems,
                 propsFile: ConsumerPropsFile,
                 targetsFile: ConsumerTargetsFile,
                 validationMode: ValidationMode,

@@ -1,4 +1,7 @@
-﻿namespace Tests;
+﻿using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
+
+namespace Tests;
 
 public class GenerateConsumerAssetsTaskTests : IDisposable
 {
@@ -25,6 +28,7 @@ public class GenerateConsumerAssetsTaskTests : IDisposable
             ConsumerOutputPath = nonExistentPath,
             ConsumerPackageId = "Prefix.PackageId1",
             ConsumerAssemblyName = "Assembly1",
+            ConsumerPems = GeneratePemTaskItems("ProductA"),
             ConsumerPropsFile = null,
             ConsumerTargetsFile = null,
             ValidationMode = null,
@@ -49,6 +53,7 @@ public class GenerateConsumerAssetsTaskTests : IDisposable
             ConsumerOutputPath = _testDirectory,
             ConsumerPackageId = "Prefix.PackageId1",
             ConsumerAssemblyName = "Assembly1",
+            ConsumerPems = GeneratePemTaskItems("ProductA"),
             ConsumerPropsFile = null,
             ConsumerTargetsFile = null,
             ValidationMode = null,
@@ -73,6 +78,7 @@ public class GenerateConsumerAssetsTaskTests : IDisposable
             ConsumerOutputPath = "",
             ConsumerPackageId = "Prefix.PackageId1",
             ConsumerAssemblyName = "Assembly1",
+            ConsumerPems = GeneratePemTaskItems("ProductA"),
             ConsumerPropsFile = null,
             ConsumerTargetsFile = null,
             ValidationMode = null,
@@ -97,6 +103,7 @@ public class GenerateConsumerAssetsTaskTests : IDisposable
             ConsumerOutputPath = _testDirectory,
             ConsumerPackageId = "",
             ConsumerAssemblyName = "Assembly1",
+            ConsumerPems = GeneratePemTaskItems("ProductA"),
             ConsumerPropsFile = null,
             ConsumerTargetsFile = null,
             ValidationMode = null,
@@ -121,6 +128,57 @@ public class GenerateConsumerAssetsTaskTests : IDisposable
             ConsumerOutputPath = _testDirectory,
             ConsumerPackageId = "Prefix.PackageId1",
             ConsumerAssemblyName = "",
+            ConsumerPems = GeneratePemTaskItems("ProductA"),
+            ConsumerPropsFile = null,
+            ConsumerTargetsFile = null,
+            ValidationMode = null,
+            ValidationScope = null,
+        };
+        var result = task.Execute();
+
+        result.Should().BeFalse();
+        _buildEngine.Messages.Should().BeEmpty();
+        _buildEngine.Warnings.Should().BeEmpty();
+        _buildEngine.Errors.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public void ReturnsFalse_LogsError_GivenEmptyPems()
+    {
+        var task = new GenerateConsumerAssetsTask()
+        {
+            BuildEngine = _buildEngine,
+            NuSealAssetsPath = "path/to/nuseal/assets",
+            NuSealVersion = "1.2.3",
+            ConsumerOutputPath = _testDirectory,
+            ConsumerPackageId = "Prefix.PackageId1",
+            ConsumerAssemblyName = "Assembly1",
+            ConsumerPems = Array.Empty<ITaskItem>(),
+            ConsumerPropsFile = null,
+            ConsumerTargetsFile = null,
+            ValidationMode = null,
+            ValidationScope = null,
+        };
+        var result = task.Execute();
+
+        result.Should().BeFalse();
+        _buildEngine.Messages.Should().BeEmpty();
+        _buildEngine.Warnings.Should().BeEmpty();
+        _buildEngine.Errors.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public void ReturnsFalse_LogsError_GivenPemWithMissingProductName()
+    {
+        var task = new GenerateConsumerAssetsTask()
+        {
+            BuildEngine = _buildEngine,
+            NuSealAssetsPath = "path/to/nuseal/assets",
+            NuSealVersion = "1.2.3",
+            ConsumerOutputPath = _testDirectory,
+            ConsumerPackageId = "Prefix.PackageId1",
+            ConsumerAssemblyName = "Assembly1",
+            ConsumerPems = GeneratePemTaskItems("Product1", ""),
             ConsumerPropsFile = null,
             ConsumerTargetsFile = null,
             ValidationMode = null,
@@ -164,6 +222,31 @@ public class GenerateConsumerAssetsTaskTests : IDisposable
                 <NuSealAssembly_PrefixPackageId1>$([MSBuild]::NormalizePath('$(NugetPackageRoot)', 'nuseal', '1.2.3', 'tasks', 'netstandard2.0', 'NuSeal.dll'))</NuSealAssembly_PrefixPackageId1>
               </PropertyGroup>
 
+              <ItemGroup>
+            <Pem_PrefixPackageId1 Include="
+            -----BEGIN PUBLIC KEY-----
+            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAygsSRxp1MInUqDz2nPk+
+            +BPP8ojPdydEg8inQbx7SonV+HBuUfRnbhp/0w298bQP0X1fz+RwnjUDdakV9vsa
+            zrK3RH/Ulq0tLrQXKBRZVP2rot4SWWYcdncnvYIiXSpAK2kisxYX1BL56wAEigKX
+            CoCmQl8YleATGf2EEZ80tOmL6eEtJZ3rFxcaIbdx6z10XwIkvMM4CgbEPIpGZqva
+            lceYsQ/KioeoxbyjBiNOu3DnkjpzhgbDg/dMKMVvZ1DiJBWvaKkToVDpfGFFpwUs
+            OEvTfMysHGQ/YqQU+AoGjQJr3/n4X9+THSsXF+Ga7mxMc9x9SwOMebM9q6LDUoG7
+            cQIDAQAB
+            -----END PUBLIC KEY-----
+            " ProductName="ProductA" />
+            <Pem_PrefixPackageId1 Include="
+            -----BEGIN PUBLIC KEY-----
+            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAygsSRxp1MInUqDz2nPk+
+            +BPP8ojPdydEg8inQbx7SonV+HBuUfRnbhp/0w298bQP0X1fz+RwnjUDdakV9vsa
+            zrK3RH/Ulq0tLrQXKBRZVP2rot4SWWYcdncnvYIiXSpAK2kisxYX1BL56wAEigKX
+            CoCmQl8YleATGf2EEZ80tOmL6eEtJZ3rFxcaIbdx6z10XwIkvMM4CgbEPIpGZqva
+            lceYsQ/KioeoxbyjBiNOu3DnkjpzhgbDg/dMKMVvZ1DiJBWvaKkToVDpfGFFpwUs
+            OEvTfMysHGQ/YqQU+AoGjQJr3/n4X9+THSsXF+Ga7mxMc9x9SwOMebM9q6LDUoG7
+            cQIDAQAB
+            -----END PUBLIC KEY-----
+            " ProductName="ProductB" />
+              </ItemGroup>
+
               <UsingTask
                 TaskName="NuSeal.ValidateLicenseTask"
                 AssemblyFile="$(NuSealAssembly_PrefixPackageId1)"
@@ -191,6 +274,7 @@ public class GenerateConsumerAssetsTaskTests : IDisposable
                   MainAssemblyPath="$(TargetPath)"
                   ProtectedPackageId="Prefix.PackageId1"
                   ProtectedAssemblyName="Assembly1"
+                  Pems="@(Pem_PrefixPackageId1)"
                   ValidationMode="Error"
                   ValidationScope="Transitive"
                   />
@@ -213,6 +297,7 @@ public class GenerateConsumerAssetsTaskTests : IDisposable
             ConsumerOutputPath = _testDirectory,
             ConsumerPackageId = "Prefix.PackageId1",
             ConsumerAssemblyName = "Assembly1",
+            ConsumerPems = GeneratePemTaskItems("ProductA", "ProductB"),
             ConsumerPropsFile = consumerPropsFile,
             ConsumerTargetsFile = consumerTargetsFile,
             ValidationMode = "Error",
@@ -229,6 +314,33 @@ public class GenerateConsumerAssetsTaskTests : IDisposable
         _buildEngine.Messages.Should().BeEmpty();
         _buildEngine.Warnings.Should().BeEmpty();
         _buildEngine.Errors.Should().BeEmpty();
+    }
+
+    private ITaskItem[] GeneratePemTaskItems(params string[] productNames)
+    {
+        return productNames.Select(productName =>
+        {
+            var publicKeyPem = """
+            -----BEGIN PUBLIC KEY-----
+            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAygsSRxp1MInUqDz2nPk+
+            +BPP8ojPdydEg8inQbx7SonV+HBuUfRnbhp/0w298bQP0X1fz+RwnjUDdakV9vsa
+            zrK3RH/Ulq0tLrQXKBRZVP2rot4SWWYcdncnvYIiXSpAK2kisxYX1BL56wAEigKX
+            CoCmQl8YleATGf2EEZ80tOmL6eEtJZ3rFxcaIbdx6z10XwIkvMM4CgbEPIpGZqva
+            lceYsQ/KioeoxbyjBiNOu3DnkjpzhgbDg/dMKMVvZ1DiJBWvaKkToVDpfGFFpwUs
+            OEvTfMysHGQ/YqQU+AoGjQJr3/n4X9+THSsXF+Ga7mxMc9x9SwOMebM9q6LDUoG7
+            cQIDAQAB
+            -----END PUBLIC KEY-----
+            """;
+
+            var path = Path.Combine(_testDirectory, $"{Guid.NewGuid().ToString()}.pem");
+            File.WriteAllText(path, publicKeyPem);
+            var taskItem = new TaskItem(path);
+            if (!string.IsNullOrWhiteSpace(productName))
+            {
+                taskItem.SetMetadata("ProductName", productName);
+            }
+            return taskItem;
+        }).ToArray();
     }
 
     public void Dispose()

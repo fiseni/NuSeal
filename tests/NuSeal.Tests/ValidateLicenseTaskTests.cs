@@ -22,45 +22,12 @@ public class ValidateLicenseTaskTests : IDisposable
     }
 
     [Fact]
-    public void ReturnsTrue_LogsInfo_GivenExceptionDuringDllProcessing()
-    {
-        var packageId = "TestPackageId";
-        var assemblyName = "TestAssembly";
-
-        var invalidDllPath = Path.Combine(_tempDir, "Invalid.dll");
-        File.WriteAllText(invalidDllPath, "Not a valid DLL");
-        var taskItem1 = new TaskItem(invalidDllPath);
-        taskItem1.SetMetadata("NuGetPackageId", packageId);
-
-        var task = new ValidateLicenseTask
-        {
-            BuildEngine = _buildEngine,
-            PackageReferences = [new TaskItem(packageId)],
-            ResolvedCompileFileDefinitions = [taskItem1],
-            MainAssemblyPath = _mainAssemblyPath,
-            ProtectedPackageId = packageId,
-            ProtectedAssemblyName = assemblyName,
-            ValidationMode = "Error",
-            ValidationScope = "Direct",
-        };
-
-        var result = task.Execute();
-
-        result.Should().BeTrue();
-        _buildEngine.Messages.Should().NotBeEmpty();
-        _buildEngine.Warnings.Should().BeEmpty();
-        _buildEngine.Errors.Should().BeEmpty();
-    }
-
-    [Fact]
     public void ReturnsTrue_LogsWarning_GivenNoLicenseAndWarningMode()
     {
         var productName = "TestProduct";
         var packageId = "TestPackageId";
         var assemblyName = "TestAssembly";
         var taskItem1 = CreateResolvedCompileFile(
-            includePems: true,
-            productName: productName,
             packageId: packageId,
             assemblyName: assemblyName);
 
@@ -72,6 +39,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = _mainAssemblyPath,
             ProtectedPackageId = packageId,
             ProtectedAssemblyName = assemblyName,
+            Pems = GeneratePemTaskItems(productName),
             ValidationMode = "Warning",
             ValidationScope = "Direct",
         };
@@ -91,8 +59,6 @@ public class ValidateLicenseTaskTests : IDisposable
         var packageId = "TestPackageId";
         var assemblyName = "TestAssembly";
         var taskItem1 = CreateResolvedCompileFile(
-            includePems: true,
-            productName: productName,
             packageId: packageId,
             assemblyName: assemblyName);
 
@@ -104,6 +70,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = _mainAssemblyPath,
             ProtectedPackageId = packageId,
             ProtectedAssemblyName = assemblyName,
+            Pems = GeneratePemTaskItems(productName),
             ValidationMode = "Error",
             ValidationScope = "Direct",
         };
@@ -123,8 +90,6 @@ public class ValidateLicenseTaskTests : IDisposable
         var packageId = "TestPackageId";
         var assemblyName = "TestAssembly";
         var taskItem1 = CreateResolvedCompileFile(
-            includePems: false,
-            productName: productName,
             packageId: packageId,
             assemblyName: assemblyName);
 
@@ -138,6 +103,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = _mainAssemblyPath,
             ProtectedPackageId = packageId,
             ProtectedAssemblyName = assemblyName,
+            Pems = Array.Empty<ITaskItem>(),
             ValidationMode = "Error",
             ValidationScope = "Direct",
         };
@@ -157,14 +123,10 @@ public class ValidateLicenseTaskTests : IDisposable
         var packageId = "TestPackageId";
         var assemblyName = "TestAssembly";
         var taskItem1 = CreateResolvedCompileFile(
-            includePems: false,
-            productName: "x",
             packageId: "x",
             assemblyName: "x");
 
         var taskItem2 = CreateResolvedCompileFile(
-            includePems: true,
-            productName: productName,
             packageId: packageId,
             assemblyName: assemblyName);
 
@@ -178,6 +140,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = _mainAssemblyPath,
             ProtectedPackageId = packageId,
             ProtectedAssemblyName = assemblyName,
+            Pems = GeneratePemTaskItems(productName),
             ValidationMode = "Error",
             ValidationScope = "Direct",
         };
@@ -197,8 +160,6 @@ public class ValidateLicenseTaskTests : IDisposable
         var packageId = "TestPackageId";
         var assemblyName = "TestAssembly";
         var taskItem1 = CreateResolvedCompileFile(
-            includePems: true,
-            productName: productName,
             packageId: packageId,
             assemblyName: assemblyName);
 
@@ -212,6 +173,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = _mainAssemblyPath,
             ProtectedPackageId = packageId,
             ProtectedAssemblyName = assemblyName,
+            Pems = GeneratePemTaskItems(productName),
             ValidationMode = "Error",
             ValidationScope = "Transitive",
         };
@@ -231,8 +193,6 @@ public class ValidateLicenseTaskTests : IDisposable
         var packageId = "TestPackageId";
         var assemblyName = "TestAssembly";
         var taskItem1 = CreateResolvedCompileFile(
-            includePems: true,
-            productName: productName,
             packageId: packageId,
             assemblyName: assemblyName);
 
@@ -246,6 +206,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = _mainAssemblyPath,
             ProtectedPackageId = packageId,
             ProtectedAssemblyName = assemblyName,
+            Pems = GeneratePemTaskItems(productName),
             ValidationMode = "Error",
             ValidationScope = "Transitive",
         };
@@ -265,8 +226,6 @@ public class ValidateLicenseTaskTests : IDisposable
         var packageId = "TestPackageId";
         var assemblyName = "TestAssembly";
         var taskItem1 = CreateResolvedCompileFile(
-            includePems: true,
-            productName: productName,
             packageId: "x",
             assemblyName: assemblyName);
 
@@ -280,6 +239,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = _mainAssemblyPath,
             ProtectedPackageId = packageId,
             ProtectedAssemblyName = assemblyName,
+            Pems = GeneratePemTaskItems(productName),
             ValidationMode = "Error",
             ValidationScope = "Transitive",
         };
@@ -299,8 +259,6 @@ public class ValidateLicenseTaskTests : IDisposable
         var packageId = "TestPackageId";
         var assemblyName = "TestAssembly";
         var taskItem1 = CreateResolvedCompileFile(
-            includePems: true,
-            productName: productName,
             packageId: packageId,
             assemblyName: assemblyName);
 
@@ -314,6 +272,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = _mainAssemblyPath,
             ProtectedPackageId = packageId,
             ProtectedAssemblyName = assemblyName,
+            Pems = GeneratePemTaskItems(productName),
             ValidationMode = "Error",
             ValidationScope = "Direct",
         };
@@ -333,8 +292,6 @@ public class ValidateLicenseTaskTests : IDisposable
         var packageId = "TestPackageId";
         var assemblyName = "TestAssembly";
         var taskItem1 = CreateResolvedCompileFile(
-            includePems: true,
-            productName: productName,
             packageId: packageId,
             assemblyName: assemblyName);
 
@@ -348,6 +305,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = _mainAssemblyPath,
             ProtectedPackageId = packageId,
             ProtectedAssemblyName = assemblyName,
+            Pems = GeneratePemTaskItems(productName),
             ValidationMode = "Error",
             ValidationScope = "Direct",
         };
@@ -371,6 +329,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = _mainAssemblyPath,
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "x",
+            Pems = GeneratePemTaskItems("x"),
             ValidationMode = "Error",
             ValidationScope = "Direct",
         };
@@ -390,8 +349,6 @@ public class ValidateLicenseTaskTests : IDisposable
         var packageId = "TestPackageId";
         var assemblyName = "TestAssembly";
         var taskItem1 = CreateResolvedCompileFile(
-            includePems: true,
-            productName: productName,
             packageId: packageId,
             assemblyName: assemblyName);
 
@@ -413,6 +370,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = _mainAssemblyPath,
             ProtectedPackageId = packageId,
             ProtectedAssemblyName = assemblyName,
+            Pems = GeneratePemTaskItems(productName),
             ValidationMode = "Warning",
             ValidationScope = "Direct",
         };
@@ -432,8 +390,6 @@ public class ValidateLicenseTaskTests : IDisposable
         var packageId = "TestPackageId";
         var assemblyName = "TestAssembly";
         var taskItem1 = CreateResolvedCompileFile(
-            includePems: true,
-            productName: productName,
             packageId: packageId,
             assemblyName: assemblyName);
 
@@ -455,6 +411,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = _mainAssemblyPath,
             ProtectedPackageId = packageId,
             ProtectedAssemblyName = assemblyName,
+            Pems = GeneratePemTaskItems(productName),
             ValidationMode = "Error",
             ValidationScope = "Direct",
         };
@@ -474,8 +431,6 @@ public class ValidateLicenseTaskTests : IDisposable
         var packageId = "TestPackageId";
         var assemblyName = "TestAssembly";
         var taskItem1 = CreateResolvedCompileFile(
-            includePems: true,
-            productName: productName,
             packageId: packageId,
             assemblyName: assemblyName);
 
@@ -497,6 +452,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = _mainAssemblyPath,
             ProtectedPackageId = packageId,
             ProtectedAssemblyName = assemblyName,
+            Pems = GeneratePemTaskItems(productName),
             ValidationMode = "Warning",
             ValidationScope = "Direct",
         };
@@ -516,8 +472,6 @@ public class ValidateLicenseTaskTests : IDisposable
         var packageId = "TestPackageId";
         var assemblyName = "TestAssembly";
         var taskItem1 = CreateResolvedCompileFile(
-            includePems: true,
-            productName: productName,
             packageId: packageId,
             assemblyName: assemblyName);
 
@@ -539,6 +493,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = _mainAssemblyPath,
             ProtectedPackageId = packageId,
             ProtectedAssemblyName = assemblyName,
+            Pems = GeneratePemTaskItems(productName),
             ValidationMode = "Error",
             ValidationScope = "Direct",
         };
@@ -560,6 +515,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = null!,
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "x",
+            Pems = GeneratePemTaskItems("x"),
             ValidationMode = "x",
             ValidationScope = "x",
         };
@@ -581,6 +537,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = "",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "x",
+            Pems = GeneratePemTaskItems("x"),
             ValidationMode = "x",
             ValidationScope = "x",
         };
@@ -602,6 +559,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = "  ",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "x",
+            Pems = GeneratePemTaskItems("x"),
             ValidationMode = "x",
             ValidationScope = "x",
         };
@@ -623,6 +581,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = "x",
             ProtectedPackageId = null!,
             ProtectedAssemblyName = "x",
+            Pems = GeneratePemTaskItems("x"),
             ValidationMode = "x",
             ValidationScope = "x",
         };
@@ -644,6 +603,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = "x",
             ProtectedPackageId = "",
             ProtectedAssemblyName = "x",
+            Pems = GeneratePemTaskItems("x"),
             ValidationMode = "x",
             ValidationScope = "x",
         };
@@ -665,6 +625,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = "x",
             ProtectedPackageId = "  ",
             ProtectedAssemblyName = "x",
+            Pems = GeneratePemTaskItems("x"),
             ValidationMode = "x",
             ValidationScope = "x",
         };
@@ -686,6 +647,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = "x",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = null!,
+            Pems = GeneratePemTaskItems("x"),
             ValidationMode = "x",
             ValidationScope = "x",
         };
@@ -707,6 +669,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = "x",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "",
+            Pems = GeneratePemTaskItems("x"),
             ValidationMode = "x",
             ValidationScope = "x",
         };
@@ -728,6 +691,51 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = "x",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "  ",
+            Pems = GeneratePemTaskItems("x"),
+            ValidationMode = "x",
+            ValidationScope = "x",
+        };
+
+        var result = task.Execute();
+
+        result.Should().BeTrue();
+        _buildEngine.Messages.Should().NotBeEmpty();
+        _buildEngine.Warnings.Should().BeEmpty();
+        _buildEngine.Errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void ReturnsTrue_LogsInfo_GivenNullPems()
+    {
+        var task = new ValidateLicenseTask
+        {
+            BuildEngine = _buildEngine,
+            MainAssemblyPath = "x",
+            ProtectedPackageId = "x",
+            ProtectedAssemblyName = "x",
+            Pems = null!,
+            ValidationMode = "x",
+            ValidationScope = "x",
+        };
+
+        var result = task.Execute();
+
+        result.Should().BeTrue();
+        _buildEngine.Messages.Should().NotBeEmpty();
+        _buildEngine.Warnings.Should().BeEmpty();
+        _buildEngine.Errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void ReturnsTrue_LogsInfo_GivenEmptyPems()
+    {
+        var task = new ValidateLicenseTask
+        {
+            BuildEngine = _buildEngine,
+            MainAssemblyPath = "x",
+            ProtectedPackageId = "x",
+            ProtectedAssemblyName = "x",
+            Pems = Array.Empty<ITaskItem>(),
             ValidationMode = "x",
             ValidationScope = "x",
         };
@@ -749,6 +757,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = "x",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "x",
+            Pems = GeneratePemTaskItems("x"),
             ValidationMode = null!,
             ValidationScope = "x",
         };
@@ -770,6 +779,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = "x",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "x",
+            Pems = GeneratePemTaskItems("x"),
             ValidationMode = "",
             ValidationScope = "x",
         };
@@ -791,6 +801,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = "x",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "x",
+            Pems = GeneratePemTaskItems("x"),
             ValidationMode = "  ",
             ValidationScope = "x",
         };
@@ -812,6 +823,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = "x",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "x",
+            Pems = GeneratePemTaskItems("x"),
             ValidationMode = "x",
             ValidationScope = null!,
         };
@@ -833,6 +845,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = "x",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "x",
+            Pems = GeneratePemTaskItems("x"),
             ValidationMode = "x",
             ValidationScope = "",
         };
@@ -854,6 +867,7 @@ public class ValidateLicenseTaskTests : IDisposable
             MainAssemblyPath = "x",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "x",
+            Pems = GeneratePemTaskItems("x"),
             ValidationMode = "x",
             ValidationScope = "  ",
         };
@@ -887,20 +901,7 @@ public class ValidateLicenseTaskTests : IDisposable
     }
 
     private ITaskItem CreateResolvedCompileFile(
-        bool includePems = true,
-        string productName = "TestProduct",
         string packageId = "TestPackageId",
-        string assemblyName = "TestAssembly")
-    {
-        var dllPath = CreateDll(includePems, productName, assemblyName);
-        var taskItem = new TaskItem(dllPath);
-        taskItem.SetMetadata("NuGetPackageId", packageId);
-        return taskItem;
-    }
-
-    private string CreateDll(
-        bool includePems = true,
-        string productName = "TestProduct",
         string assemblyName = "TestAssembly")
     {
         var dllPath = Path.Combine(_tempDir, $"{assemblyName}.dll");
@@ -910,23 +911,22 @@ public class ValidateLicenseTaskTests : IDisposable
             new AssemblyNameDefinition(assemblyName, new Version(1, 0, 0, 0)),
             "TestModule",
             ModuleKind.Dll);
-
-        // Add PEM resource if needed
-        if (includePems)
-        {
-            var pemContent = _rsaPemPair.PublicKey;
-            var resourceName = $"TestCompany.{productName}.nuseal.pem";
-            var resource = new EmbeddedResource(
-                resourceName,
-                Mono.Cecil.ManifestResourceAttributes.Public,
-                System.Text.Encoding.UTF8.GetBytes(pemContent));
-            assemblyDef.MainModule.Resources.Add(resource);
-        }
-
-        // Save the assembly
         assemblyDef.Write(dllPath);
 
-        return dllPath;
+
+        var taskItem = new TaskItem(dllPath);
+        taskItem.SetMetadata("NuGetPackageId", packageId);
+        return taskItem;
+    }
+
+    private ITaskItem[] GeneratePemTaskItems(params string[] productNames)
+    {
+        return productNames.Select(productName =>
+        {
+            var taskItem = new TaskItem(_rsaPemPair.PublicKey);
+            taskItem.SetMetadata("ProductName", productName);
+            return taskItem;
+        }).ToArray();
     }
 
     public void Dispose()
