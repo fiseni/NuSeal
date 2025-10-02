@@ -50,6 +50,11 @@ public class License
             claims.Add(new Claim("client", parameters.ClientId));
         }
 
+        if (parameters.GracePeriodInDays.HasValue)
+        {
+            claims.Add(new Claim("grace_period_days", parameters.GracePeriodInDays.Value.ToString(), ClaimValueTypes.Integer32));
+        }
+
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),

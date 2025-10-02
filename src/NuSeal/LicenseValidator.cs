@@ -14,41 +14,38 @@ namespace NuSeal;
 // We'll parse and validate the token manually.
 internal class LicenseValidator
 {
-    internal static bool IsValid(PemData pem, string license)
+    internal static LicenseValidationResult Validate(PemData pem, string license)
     {
         if (string.IsNullOrWhiteSpace(pem.PublicKeyPem)
             || string.IsNullOrWhiteSpace(pem.ProductName)
             || string.IsNullOrWhiteSpace(license))
         {
-            return false;
+            return LicenseValidationResult.Invalid;
         }
 
         try
         {
             var parts = license.Split('.');
             if (parts.Length != 3)
-                return false;
+                return LicenseValidationResult.Invalid;
 
             if (VerifyHeader(parts) is false)
-                return false;
+                return LicenseValidationResult.Invalid;
 
             if (VerifySignature(pem, parts) is false)
-                return false;
+                return LicenseValidationResult.Invalid;
 
             var payloadBytes = Base64UrlDecode(parts[1]);
             var payload = JsonDocument.Parse(payloadBytes).RootElement;
 
             if (VerifyProductName(payload, pem.ProductName) is false)
-                return false;
+                return LicenseValidationResult.Invalid;
 
-            if (VerifyExpiration(payload) is false)
-                return false;
-
-            return true;
+            return VerifyLifetime(payload);
         }
         catch
         {
-            return false;
+            return LicenseValidationResult.Invalid;
         }
     }
 
@@ -99,25 +96,37 @@ internal class LicenseValidator
         return string.Equals(productClaim.GetString(), productName, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static bool VerifyExpiration(JsonElement payload)
+    private static LicenseValidationResult VerifyLifetime(JsonElement payload)
     {
         var clockSkewInMinutes = 5;
+        var now = DateTimeOffset.UtcNow;
 
-        if (payload.TryGetProperty("nbf", out var nbf))
+        if (!payload.TryGetProperty("nbf", out var nbf)
+            || !payload.TryGetProperty("exp", out var exp))
         {
-            var nbfUtc = DateTimeOffset.FromUnixTimeSeconds(nbf.GetInt64()).UtcDateTime;
-            if (DateTimeOffset.UtcNow < nbfUtc.AddMinutes(-1 * clockSkewInMinutes))
-                return false;
+            return LicenseValidationResult.Invalid;
         }
 
-        if (payload.TryGetProperty("exp", out var exp))
+        var nbfUtc = DateTimeOffset.FromUnixTimeSeconds(nbf.GetInt64()).UtcDateTime.AddMinutes(-1 * clockSkewInMinutes);
+        if (now < nbfUtc)
         {
-            var expUtc = DateTimeOffset.FromUnixTimeSeconds(exp.GetInt64()).UtcDateTime;
-            if (DateTimeOffset.UtcNow > expUtc.AddMinutes(clockSkewInMinutes))
-                return false;
+            return LicenseValidationResult.Invalid;
         }
 
-        return true;
+        var expUtc = DateTimeOffset.FromUnixTimeSeconds(exp.GetInt64()).UtcDateTime.AddMinutes(clockSkewInMinutes);
+        if (now > expUtc)
+        {
+            if (payload.TryGetProperty("grace_period_days", out var gracePeriodDaysElement))
+            {
+                var gracePeriodDays = gracePeriodDaysElement.GetInt32();
+                if (gracePeriodDays > 0 && now <= expUtc.AddDays(gracePeriodDays))
+                    return LicenseValidationResult.ExpiredWithinGracePeriod;
+            }
+
+            return LicenseValidationResult.ExpiredOutsideGracePeriod;
+        }
+
+        return LicenseValidationResult.Valid;
     }
 
     private static byte[] Base64UrlDecode(string input)
