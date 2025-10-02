@@ -9,6 +9,7 @@
         ConsumerOutputPath="$(OutputPath)"
         ConsumerPackageId="$(PackageId)"
         ConsumerAssemblyName="$(AssemblyName)"
+        ConsumerPems="@(NuSealPem)"
         ConsumerPropsFile="$(NuSealIncludePropsFile)"
         ConsumerTargetsFile="$(NuSealIncludeTargetsFile)"
         ValidationMode ="$(NuSealValidationMode)"

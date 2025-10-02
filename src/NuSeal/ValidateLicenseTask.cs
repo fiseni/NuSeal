@@ -13,6 +13,7 @@ public partial class ValidateLicenseTask : Task
     public string MainAssemblyPath { get; set; } = "";
     public string ProtectedPackageId { get; set; } = "";
     public string ProtectedAssemblyName { get; set; } = "";
+    public ITaskItem[] Pems { get; set; } = Array.Empty<ITaskItem>();
     public string ValidationMode { get; set; } = "";
     public string ValidationScope { get; set; } = "";
 
@@ -21,6 +22,8 @@ public partial class ValidateLicenseTask : Task
         if (string.IsNullOrWhiteSpace(MainAssemblyPath)
             || string.IsNullOrWhiteSpace(ProtectedPackageId)
             || string.IsNullOrWhiteSpace(ProtectedAssemblyName)
+            || Pems is null
+            || Pems.Length == 0
             || string.IsNullOrWhiteSpace(ValidationMode)
             || string.IsNullOrWhiteSpace(ValidationScope))
         {
@@ -43,13 +46,12 @@ public partial class ValidateLicenseTask : Task
 
         try
         {
-            using var assembly = AssemblyDefinition.ReadAssembly(protectedDll);
-            var pems = AssemblyUtils.ExtractPems(assembly);
-            if (pems.Count == 0)
+            var pems = Pems.Select(x =>
             {
-                Log.LogMessage(MessageImportance.High, "NuSeal: No public key resources found for NuGet Package: {0}.", ProtectedPackageId);
-                return true;
-            }
+                var publicKeyPem = x.ItemSpec.Trim();
+                var productName = x.GetMetadata("ProductName");
+                return new PemData(productName, publicKeyPem);
+            });
 
             var bestValidationResult = LicenseValidationResult.Invalid;
 

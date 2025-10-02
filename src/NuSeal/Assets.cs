@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 
 namespace NuSeal;
 
@@ -9,12 +10,26 @@ internal class Assets
 
     public static string GenerateProps(ConsumerParameters parameters)
     {
+        var pemItems = string.Join(Environment.NewLine, parameters.Pems.Select(x =>
+        {
+            var item = $"""
+            <Pem_{parameters.Suffix} Include="
+            {x.PublicKeyPem}
+            " ProductName="{x.ProductName}" />
+            """;
+            return item;
+        }));
+
         var output = $"""
             <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
               <PropertyGroup>
                 <NuSealAssembly_{parameters.Suffix}>$([MSBuild]::NormalizePath('$(NugetPackageRoot)', 'nuseal', '{parameters.NuSealVersion}', 'tasks', 'netstandard2.0', 'NuSeal.dll'))</NuSealAssembly_{parameters.Suffix}>
               </PropertyGroup>
+
+              <ItemGroup>
+            {pemItems}
+              </ItemGroup>
 
               <UsingTask
                 TaskName="NuSeal.{TASK_NAME}"
@@ -46,6 +61,7 @@ internal class Assets
                   MainAssemblyPath="$(TargetPath)"
                   ProtectedPackageId="{parameters.PackageId}"
                   ProtectedAssemblyName="{parameters.AssemblyName}"
+                  Pems="@(Pem_{parameters.Suffix})"
                   ValidationMode="{parameters.ValidationMode}"
                   ValidationScope="{parameters.ValidationScope}"
                   />

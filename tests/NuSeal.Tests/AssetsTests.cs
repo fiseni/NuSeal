@@ -19,6 +19,7 @@ public class AssetsTests : IDisposable
             outputPath: _testDirectory,
             packageId: "Prefix.PackageId1",
             assemblyName: "Assembly1",
+            pems: GeneratePemData("ProductA", "ProductB"),
             propsFile: null,
             targetsFile: null,
             validationMode: null,
@@ -30,6 +31,31 @@ public class AssetsTests : IDisposable
               <PropertyGroup>
                 <NuSealAssembly_PrefixPackageId1>$([MSBuild]::NormalizePath('$(NugetPackageRoot)', 'nuseal', '1.2.3', 'tasks', 'netstandard2.0', 'NuSeal.dll'))</NuSealAssembly_PrefixPackageId1>
               </PropertyGroup>
+
+              <ItemGroup>
+            <Pem_PrefixPackageId1 Include="
+            -----BEGIN PUBLIC KEY-----
+            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAygsSRxp1MInUqDz2nPk+
+            +BPP8ojPdydEg8inQbx7SonV+HBuUfRnbhp/0w298bQP0X1fz+RwnjUDdakV9vsa
+            zrK3RH/Ulq0tLrQXKBRZVP2rot4SWWYcdncnvYIiXSpAK2kisxYX1BL56wAEigKX
+            CoCmQl8YleATGf2EEZ80tOmL6eEtJZ3rFxcaIbdx6z10XwIkvMM4CgbEPIpGZqva
+            lceYsQ/KioeoxbyjBiNOu3DnkjpzhgbDg/dMKMVvZ1DiJBWvaKkToVDpfGFFpwUs
+            OEvTfMysHGQ/YqQU+AoGjQJr3/n4X9+THSsXF+Ga7mxMc9x9SwOMebM9q6LDUoG7
+            cQIDAQAB
+            -----END PUBLIC KEY-----
+            " ProductName="ProductA" />
+            <Pem_PrefixPackageId1 Include="
+            -----BEGIN PUBLIC KEY-----
+            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAygsSRxp1MInUqDz2nPk+
+            +BPP8ojPdydEg8inQbx7SonV+HBuUfRnbhp/0w298bQP0X1fz+RwnjUDdakV9vsa
+            zrK3RH/Ulq0tLrQXKBRZVP2rot4SWWYcdncnvYIiXSpAK2kisxYX1BL56wAEigKX
+            CoCmQl8YleATGf2EEZ80tOmL6eEtJZ3rFxcaIbdx6z10XwIkvMM4CgbEPIpGZqva
+            lceYsQ/KioeoxbyjBiNOu3DnkjpzhgbDg/dMKMVvZ1DiJBWvaKkToVDpfGFFpwUs
+            OEvTfMysHGQ/YqQU+AoGjQJr3/n4X9+THSsXF+Ga7mxMc9x9SwOMebM9q6LDUoG7
+            cQIDAQAB
+            -----END PUBLIC KEY-----
+            " ProductName="ProductB" />
+              </ItemGroup>
 
               <UsingTask
                 TaskName="NuSeal.ValidateLicenseTask"
@@ -53,6 +79,7 @@ public class AssetsTests : IDisposable
             outputPath: _testDirectory,
             packageId: "Prefix.PackageId1",
             assemblyName: "Assembly1",
+            pems: GeneratePemData("ProductA"),
             propsFile: null,
             targetsFile: null,
             validationMode: "Warning",
@@ -72,6 +99,7 @@ public class AssetsTests : IDisposable
                   MainAssemblyPath="$(TargetPath)"
                   ProtectedPackageId="Prefix.PackageId1"
                   ProtectedAssemblyName="Assembly1"
+                  Pems="@(Pem_PrefixPackageId1)"
                   ValidationMode="Warning"
                   ValidationScope="Direct"
                   />
@@ -95,6 +123,7 @@ public class AssetsTests : IDisposable
             outputPath: _testDirectory,
             packageId: "Prefix.PackageId1",
             assemblyName: "Assembly1",
+            pems: GeneratePemData("ProductA"),
             propsFile: null,
             targetsFile: null,
             validationMode: "Warning",
@@ -114,6 +143,7 @@ public class AssetsTests : IDisposable
                   MainAssemblyPath="$(TargetPath)"
                   ProtectedPackageId="Prefix.PackageId1"
                   ProtectedAssemblyName="Assembly1"
+                  Pems="@(Pem_PrefixPackageId1)"
                   ValidationMode="Warning"
                   ValidationScope="Transitive"
                   />
@@ -333,6 +363,26 @@ public class AssetsTests : IDisposable
         var result = Assets.DetectLineEnding(input);
 
         result.Should().Be("\n");
+    }
+
+    private static PemData[] GeneratePemData(params string[] productNames)
+    {
+        return productNames.Select(productName =>
+        {
+            var publicKeyPem = """
+            -----BEGIN PUBLIC KEY-----
+            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAygsSRxp1MInUqDz2nPk+
+            +BPP8ojPdydEg8inQbx7SonV+HBuUfRnbhp/0w298bQP0X1fz+RwnjUDdakV9vsa
+            zrK3RH/Ulq0tLrQXKBRZVP2rot4SWWYcdncnvYIiXSpAK2kisxYX1BL56wAEigKX
+            CoCmQl8YleATGf2EEZ80tOmL6eEtJZ3rFxcaIbdx6z10XwIkvMM4CgbEPIpGZqva
+            lceYsQ/KioeoxbyjBiNOu3DnkjpzhgbDg/dMKMVvZ1DiJBWvaKkToVDpfGFFpwUs
+            OEvTfMysHGQ/YqQU+AoGjQJr3/n4X9+THSsXF+Ga7mxMc9x9SwOMebM9q6LDUoG7
+            cQIDAQAB
+            -----END PUBLIC KEY-----
+            """;
+
+            return new PemData(productName, publicKeyPem);
+        }).ToArray();
     }
 
     public void Dispose()

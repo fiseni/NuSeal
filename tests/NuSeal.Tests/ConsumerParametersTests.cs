@@ -11,6 +11,7 @@ public class ConsumerParametersTests
             "path/to/output",
             "Package.Id",
             "Assembly",
+            Array.Empty<PemData>(),
             null,
             null,
             null,
@@ -30,6 +31,7 @@ public class ConsumerParametersTests
             "path/to/output", 
             "Package.Id",
             "Assembly",
+            Array.Empty<PemData>(),
             null,
             null,
             "Error",
@@ -48,6 +50,7 @@ public class ConsumerParametersTests
             "path/to/output",
             "Package.Id",
             "Assembly",
+            Array.Empty<PemData>(),
             "",
             "  ",
             "Error",
@@ -66,6 +69,7 @@ public class ConsumerParametersTests
             "path/to/output",
             "My.Complex.Package.Id",
             "Assembly",
+            Array.Empty<PemData>(),
             null,
             null,
             "Error",
@@ -92,6 +96,7 @@ public class ConsumerParametersTests
             "path/to/output",
             "Package.Id",
             "Assembly",
+            Array.Empty<PemData>(),
             null,
             null,
             inputValidationMode,
@@ -109,6 +114,7 @@ public class ConsumerParametersTests
         var outputPath = "path/to/output";
         var packageId = "Prefix.PackageId";
         var assemblyName = "AssemblyName";
+        var pems = new PemData[1];
         var propsFile = "props.props";
         var targetsFile = "targets.targets";
         var validationMode = "Warning";
@@ -120,6 +126,7 @@ public class ConsumerParametersTests
             outputPath,
             packageId,
             assemblyName,
+            pems,
             propsFile,
             targetsFile,
             validationMode,
@@ -130,6 +137,7 @@ public class ConsumerParametersTests
         parameters.OutputPath.Should().Be(outputPath);
         parameters.PackageId.Should().Be(packageId);
         parameters.AssemblyName.Should().Be(assemblyName);
+        parameters.Pems.Should().BeSameAs(pems);
         parameters.PropsFile.Should().Be(propsFile);
         parameters.TargetsFile.Should().Be(targetsFile);
         parameters.ValidationMode.Should().Be("Warning");
