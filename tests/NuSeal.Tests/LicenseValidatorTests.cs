@@ -1,8 +1,9 @@
 ﻿using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-using NuSeal;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
 
 namespace Tests;
 
@@ -17,230 +18,293 @@ public class LicenseValidatorTests
     }
 
     [Fact]
-    public void ReturnsFalse_GivenNullPublicKey()
-    {
-        var pemData = new PemData(_productName, null!);
-        var license = GenerateValidLicense();
-
-        var result = LicenseValidator.IsValid(pemData, license);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ReturnsFalse_GivenEmptyPublicKey()
-    {
-        var pemData = new PemData(_productName, "");
-        var license = GenerateValidLicense();
-
-        var result = LicenseValidator.IsValid(pemData, license);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ReturnsFalse_GivenWhitespacePublicKey()
-    {
-        var pemData = new PemData(_productName, "   ");
-        var license = GenerateValidLicense();
-
-        var result = LicenseValidator.IsValid(pemData, license);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ReturnsFalse_GivenNullProductName()
-    {
-        var pemData = new PemData(null!, _keyPair.PublicKeyPem);
-        var license = GenerateValidLicense();
-
-        var result = LicenseValidator.IsValid(pemData, license);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ReturnsFalse_GivenEmptyProductName()
-    {
-        var pemData = new PemData("", _keyPair.PublicKeyPem);
-        var license = GenerateValidLicense();
-
-        var result = LicenseValidator.IsValid(pemData, license);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ReturnsFalse_GivenWhitespaceProductName()
-    {
-        var pemData = new PemData("   ", _keyPair.PublicKeyPem);
-        var license = GenerateValidLicense();
-
-        var result = LicenseValidator.IsValid(pemData, license);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ReturnsFalse_GivenNullLicense()
+    public void ReturnsValid_GivenValidLicense()
     {
         var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
+        var validLicense = GenerateValidLicense();
 
-        var result = LicenseValidator.IsValid(pemData, null!);
+        var result = LicenseValidator.Validate(pemData, validLicense);
 
-        result.Should().BeFalse();
+        result.Should().Be(LicenseValidationResult.Valid);
     }
 
     [Fact]
-    public void ReturnsFalse_GivenEmptyLicense()
+    public void ReturnsValid_GivenValidLicenseWithDifferentProductCase()
     {
-        var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
+        var pemData = new PemData(_productName.ToUpper(), _keyPair.PublicKeyPem);
+        var validLicense = GenerateLicense(productName: _productName.ToLower());
 
-        var result = LicenseValidator.IsValid(pemData, "");
+        var result = LicenseValidator.Validate(pemData, validLicense);
 
-        result.Should().BeFalse();
+        result.Should().Be(LicenseValidationResult.Valid);
     }
 
     [Fact]
-    public void ReturnsFalse_GivenWhitespaceLicense()
-    {
-        var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
-
-        var result = LicenseValidator.IsValid(pemData, "   ");
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ReturnsFalse_GivenInvalidPem()
-    {
-        var invalidPublicKeyPem = "invalid-public-key-pem";
-        var pemData = new PemData(_productName, invalidPublicKeyPem);
-        var license = GenerateValidLicense();
-
-        var result = LicenseValidator.IsValid(pemData, license);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ReturnsFalse_GivenInvalidLicenseFormat()
-    {
-        var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
-        var invalidLicense = "not-a-valid-jwt-token";
-
-        var result = LicenseValidator.IsValid(pemData, invalidLicense);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ReturnsFalse_GivenExpiredLicense()
-    {
-        var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
-        var expiredLicense = GenerateLicense(
-            startDate: DateTimeOffset.UtcNow.AddDays(-10),
-            expirationDate: DateTimeOffset.UtcNow.AddDays(-1));
-
-        var result = LicenseValidator.IsValid(pemData, expiredLicense);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ReturnsFalse_GivenFutureLicense()
-    {
-        var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
-        var futureLicense = GenerateLicense(
-            startDate: DateTimeOffset.UtcNow.AddDays(10),
-            expirationDate: DateTimeOffset.UtcNow.AddDays(20));
-
-        var result = LicenseValidator.IsValid(pemData, futureLicense);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ReturnsTrue_GivenExpiredLicenseWithinClockSkew()
+    public void ReturnsValid_GivenExpiredLicenseWithinClockSkew()
     {
         var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
         var expiredLicense = GenerateLicense(
             startDate: DateTimeOffset.UtcNow.AddDays(-10),
             expirationDate: DateTimeOffset.UtcNow.AddMinutes(-1));
 
-        var result = LicenseValidator.IsValid(pemData, expiredLicense);
+        var result = LicenseValidator.Validate(pemData, expiredLicense);
 
-        result.Should().BeTrue();
+        result.Should().Be(LicenseValidationResult.Valid);
     }
 
     [Fact]
-    public void ReturnsTrue_GivenFutureLicenseWithinClockSkew()
+    public void ReturnsValid_GivenFutureLicenseWithinClockSkew()
     {
         var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
         var futureLicense = GenerateLicense(
             startDate: DateTimeOffset.UtcNow.AddMinutes(1),
             expirationDate: DateTimeOffset.UtcNow.AddDays(20));
 
-        var result = LicenseValidator.IsValid(pemData, futureLicense);
+        var result = LicenseValidator.Validate(pemData, futureLicense);
 
-        result.Should().BeTrue();
+        result.Should().Be(LicenseValidationResult.Valid);
     }
 
     [Fact]
-    public void ReturnsFalse_GivenLicenseWithDifferentProductName()
+    public void ReturnsInvalid_GivenFutureLicense()
+    {
+        var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
+        var futureLicense = GenerateLicense(
+            startDate: DateTimeOffset.UtcNow.AddDays(10),
+            expirationDate: DateTimeOffset.UtcNow.AddDays(20));
+
+        var result = LicenseValidator.Validate(pemData, futureLicense);
+
+        result.Should().Be(LicenseValidationResult.Invalid);
+    }
+
+    [Fact]
+    public void ReturnsExpiredOutsideGracePeriod_GivenExpiredLicense()
+    {
+        var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
+        var expiredLicense = GenerateLicense(
+            startDate: DateTimeOffset.UtcNow.AddDays(-10),
+            expirationDate: DateTimeOffset.UtcNow.AddDays(-1));
+
+        var result = LicenseValidator.Validate(pemData, expiredLicense);
+
+        result.Should().Be(LicenseValidationResult.ExpiredOutsideGracePeriod);
+    }
+
+    [Fact]
+    public void ReturnsExpiredOutsideGracePeriod_GivenExpiredLicenseOutsideGracePeriod()
+    {
+        var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
+        var expiredLicense = GenerateLicense(
+            startDate: DateTimeOffset.UtcNow.AddDays(-20),
+            expirationDate: DateTimeOffset.UtcNow.AddDays(-10),
+            gracePeriodDays: 7);
+
+        var result = LicenseValidator.Validate(pemData, expiredLicense);
+
+        result.Should().Be(LicenseValidationResult.ExpiredOutsideGracePeriod);
+    }
+
+    [Fact]
+    public void ReturnsExpiredWithinGracePeriod_GivenExpiredLicenseWithinGracePeriod()
+    {
+        var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
+        var expiredLicense = GenerateLicense(
+            startDate: DateTimeOffset.UtcNow.AddDays(-10),
+            expirationDate: DateTimeOffset.UtcNow.AddDays(-2),
+            gracePeriodDays: 7);
+
+        var result = LicenseValidator.Validate(pemData, expiredLicense);
+
+        result.Should().Be(LicenseValidationResult.ExpiredWithinGracePeriod);
+    }
+
+    [Fact]
+    public void ReturnsInvalid_GivenNoStartDate()
+    {
+        var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
+        var license = GenerateLicense(
+            includeStartDate: false);
+
+        var result = LicenseValidator.Validate(pemData, license);
+
+        result.Should().Be(LicenseValidationResult.Invalid);
+    }
+
+    [Fact]
+    public void ReturnsInvalid_GivenNoEndDate()
+    {
+        var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
+        var license = GenerateLicense(
+            includeEndDate: false);
+
+        var result = LicenseValidator.Validate(pemData, license);
+
+        result.Should().Be(LicenseValidationResult.Invalid);
+    }
+
+    [Fact]
+    public void ReturnsInvalid_GivenLicenseWithDifferentProductName()
     {
         var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
         var licenseWithDifferentProduct = GenerateLicense(productName: "DifferentProduct");
 
-        var result = LicenseValidator.IsValid(pemData, licenseWithDifferentProduct);
+        var result = LicenseValidator.Validate(pemData, licenseWithDifferentProduct);
 
-        result.Should().BeFalse();
+        result.Should().Be(LicenseValidationResult.Invalid);
     }
 
     [Fact]
-    public void ReturnsFalse_GivenLicenseWithMissingProductClaim()
+    public void ReturnsInvalid_GivenLicenseWithMissingProductClaim()
     {
         var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
         var licenseWithoutProductClaim = GenerateLicense(includeProductName: false);
 
-        var result = LicenseValidator.IsValid(pemData, licenseWithoutProductClaim);
+        var result = LicenseValidator.Validate(pemData, licenseWithoutProductClaim);
 
-        result.Should().BeFalse();
+        result.Should().Be(LicenseValidationResult.Invalid);
     }
 
     [Fact]
-    public void ReturnsFalse_GivenLicenseSignedWithDifferentKey()
+    public void ReturnsInvalid_GivenInvalidPem()
+    {
+        var invalidPublicKeyPem = "invalid-public-key-pem";
+        var pemData = new PemData(_productName, invalidPublicKeyPem);
+        var license = GenerateValidLicense();
+
+        var result = LicenseValidator.Validate(pemData, license);
+
+        result.Should().Be(LicenseValidationResult.Invalid);
+    }
+
+    [Fact]
+    public void ReturnsInvalid_GivenMissingAlgHeader()
+    {
+        var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
+        var license = GenerateJwtWithoutAlg();
+
+        var result = LicenseValidator.Validate(pemData, license);
+
+        result.Should().Be(LicenseValidationResult.Invalid);
+    }
+
+    [Fact]
+    public void ReturnsInvalid_GivenInvalidLicenseFormat()
+    {
+        var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
+        var invalidLicense = "not-a-valid-jwt-token";
+
+        var result = LicenseValidator.Validate(pemData, invalidLicense);
+
+        result.Should().Be(LicenseValidationResult.Invalid);
+    }
+
+    [Fact]
+    public void ReturnsInvalid_GivenLicenseSignedWithDifferentKey()
     {
         var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
         var differentKeyPair = GenerateRsaKeyPair();
         var licenseSignedWithDifferentKey = GenerateLicense(differentKeyPair.PrivateKeyPem);
 
-        var result = LicenseValidator.IsValid(pemData, licenseSignedWithDifferentKey);
+        var result = LicenseValidator.Validate(pemData, licenseSignedWithDifferentKey);
 
-        result.Should().BeFalse();
+        result.Should().Be(LicenseValidationResult.Invalid);
     }
 
     [Fact]
-    public void ReturnsTrue_GivenValidLicense()
+    public void ReturnsInvalid_GivenNullPublicKey()
+    {
+        var pemData = new PemData(_productName, null!);
+        var license = GenerateValidLicense();
+
+        var result = LicenseValidator.Validate(pemData, license);
+
+        result.Should().Be(LicenseValidationResult.Invalid);
+    }
+
+    [Fact]
+    public void ReturnsInvalid_GivenEmptyPublicKey()
+    {
+        var pemData = new PemData(_productName, "");
+        var license = GenerateValidLicense();
+
+        var result = LicenseValidator.Validate(pemData, license);
+
+        result.Should().Be(LicenseValidationResult.Invalid);
+    }
+
+    [Fact]
+    public void ReturnsInvalid_GivenWhitespacePublicKey()
+    {
+        var pemData = new PemData(_productName, "   ");
+        var license = GenerateValidLicense();
+
+        var result = LicenseValidator.Validate(pemData, license);
+
+        result.Should().Be(LicenseValidationResult.Invalid);
+    }
+
+    [Fact]
+    public void ReturnsInvalid_GivenNullProductName()
+    {
+        var pemData = new PemData(null!, _keyPair.PublicKeyPem);
+        var license = GenerateValidLicense();
+
+        var result = LicenseValidator.Validate(pemData, license);
+
+        result.Should().Be(LicenseValidationResult.Invalid);
+    }
+
+    [Fact]
+    public void ReturnsInvalid_GivenEmptyProductName()
+    {
+        var pemData = new PemData("", _keyPair.PublicKeyPem);
+        var license = GenerateValidLicense();
+
+        var result = LicenseValidator.Validate(pemData, license);
+
+        result.Should().Be(LicenseValidationResult.Invalid);
+    }
+
+    [Fact]
+    public void ReturnsInvalid_GivenWhitespaceProductName()
+    {
+        var pemData = new PemData("   ", _keyPair.PublicKeyPem);
+        var license = GenerateValidLicense();
+
+        var result = LicenseValidator.Validate(pemData, license);
+
+        result.Should().Be(LicenseValidationResult.Invalid);
+    }
+
+    [Fact]
+    public void ReturnsInvalid_GivenNullLicense()
     {
         var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
-        var validLicense = GenerateValidLicense();
 
-        var result = LicenseValidator.IsValid(pemData, validLicense);
+        var result = LicenseValidator.Validate(pemData, null!);
 
-        result.Should().BeTrue();
+        result.Should().Be(LicenseValidationResult.Invalid);
     }
 
     [Fact]
-    public void ReturnsTrue_GivenValidLicenseWithDifferentCase()
+    public void ReturnsInvalid_GivenEmptyLicense()
     {
-        var pemData = new PemData(_productName.ToUpper(), _keyPair.PublicKeyPem);
-        var validLicense = GenerateLicense(productName: _productName.ToLower());
+        var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
 
-        var result = LicenseValidator.IsValid(pemData, validLicense);
+        var result = LicenseValidator.Validate(pemData, "");
 
-        result.Should().BeTrue();
+        result.Should().Be(LicenseValidationResult.Invalid);
+    }
+
+    [Fact]
+    public void ReturnsInvalid_GivenWhitespaceLicense()
+    {
+        var pemData = new PemData(_productName, _keyPair.PublicKeyPem);
+
+        var result = LicenseValidator.Validate(pemData, "   ");
+
+        result.Should().Be(LicenseValidationResult.Invalid);
     }
 
     private string GenerateValidLicense() => GenerateLicense();
@@ -248,14 +312,19 @@ public class LicenseValidatorTests
     private string GenerateLicense(
         string? privateKeyPem = null,
         string? productName = null,
-        bool includeProductName = true,
         DateTimeOffset? startDate = null,
-        DateTimeOffset? expirationDate = null)
+        DateTimeOffset? expirationDate = null,
+        int? gracePeriodDays = null,
+        bool includeProductName = true,
+        bool includeStartDate = true,
+        bool includeEndDate = true)
     {
         using var rsa = RSA.Create();
 
         privateKeyPem ??= _keyPair.PrivateKeyPem;
         rsa.ImportFromPem(privateKeyPem.AsSpan());
+
+        var handler = new JsonWebTokenHandler();
 
         var credentials = new SigningCredentials(
             new RsaSecurityKey(rsa),
@@ -271,18 +340,66 @@ public class LicenseValidatorTests
             claims.Add(new("product", productName ?? _productName));
         }
 
+        if (gracePeriodDays.HasValue)
+        {
+            claims.Add(new("grace_period_days", gracePeriodDays.Value.ToString(), ClaimValueTypes.Integer32));
+        }
+
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            NotBefore = startDate?.UtcDateTime ?? DateTimeOffset.UtcNow.UtcDateTime,
-            Expires = expirationDate?.UtcDateTime ?? DateTimeOffset.UtcNow.AddYears(1).UtcDateTime,
-            SigningCredentials = credentials
+            SigningCredentials = credentials,
         };
 
-        var handler = new JsonWebTokenHandler();
+        if (includeStartDate)
+        {
+            tokenDescriptor.NotBefore = startDate?.UtcDateTime ?? DateTimeOffset.UtcNow.UtcDateTime;
+        }
+        else
+        {
+            handler.SetDefaultTimesOnTokenCreation = false;
+        }
+
+        if (includeEndDate)
+        {
+            tokenDescriptor.Expires = expirationDate?.UtcDateTime ?? DateTimeOffset.UtcNow.AddYears(1).UtcDateTime;
+        }
+        else
+        {
+            handler.SetDefaultTimesOnTokenCreation = false;
+        }
+
         var token = handler.CreateToken(tokenDescriptor);
 
         return token;
+    }
+
+    public static string GenerateJwtWithoutAlg()
+    {
+        var header = new Dictionary<string, object> { { "typ", "JWT" } }; // no "alg"
+        var payload = new Dictionary<string, object>
+        {
+            { "sub", "test-sub" },
+            { "iat", DateTimeOffset.UtcNow.ToUnixTimeSeconds() },
+            { "exp", DateTimeOffset.UtcNow.AddMinutes(5).ToUnixTimeSeconds() }
+        };
+
+        string headerJson = JsonSerializer.Serialize(header);
+        string payloadJson = JsonSerializer.Serialize(payload);
+
+        string headerPart = Base64UrlEncode(Encoding.UTF8.GetBytes(headerJson));
+        string payloadPart = Base64UrlEncode(Encoding.UTF8.GetBytes(payloadJson));
+        var signaturePart = Base64UrlEncode(RandomNumberGenerator.GetBytes(32));
+
+        return $"{headerPart}.{payloadPart}.{signaturePart}";
+
+        static string Base64UrlEncode(byte[] bytes)
+        {
+            string s = Convert.ToBase64String(bytes);
+            s = s.TrimEnd('=');
+            s = s.Replace('+', '-').Replace('/', '_');
+            return s;
+        }
     }
 
     private static RsaKeyPair GenerateRsaKeyPair()

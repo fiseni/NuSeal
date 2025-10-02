@@ -384,6 +384,174 @@ public class ValidateLicenseTaskTests : IDisposable
     }
 
     [Fact]
+    public void ReturnsTrue_LogsWarning_GivenWarningMode_ExpiredWithinGracePeriodLicense()
+    {
+        var productName = "TestProduct";
+        var packageId = "TestPackageId";
+        var assemblyName = "TestAssembly";
+        var taskItem1 = CreateResolvedCompileFile(
+            includePems: true,
+            productName: productName,
+            packageId: packageId,
+            assemblyName: assemblyName);
+
+        var licenseParameters = new LicenseParameters
+        {
+            ProductName = productName,
+            PrivateKeyPem = _rsaPemPair.PrivateKey,
+            ExpirationDate = DateTime.UtcNow.AddDays(-1),
+            GracePeriodInDays = 7
+        };
+
+        CreateLicense(licenseParameters);
+
+        var task = new ValidateLicenseTask
+        {
+            BuildEngine = _buildEngine,
+            PackageReferences = [new TaskItem(packageId)],
+            ResolvedCompileFileDefinitions = [taskItem1],
+            MainAssemblyPath = _mainAssemblyPath,
+            ProtectedPackageId = packageId,
+            ProtectedAssemblyName = assemblyName,
+            ValidationMode = "Warning",
+            ValidationScope = "Direct",
+        };
+
+        var result = task.Execute();
+
+        result.Should().BeTrue();
+        _buildEngine.Messages.Should().BeEmpty();
+        _buildEngine.Warnings.Should().NotBeEmpty();
+        _buildEngine.Errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void ReturnsTrue_LogsWarning_GivenErrorMode_ExpiredWithinGracePeriodLicense()
+    {
+        var productName = "TestProduct";
+        var packageId = "TestPackageId";
+        var assemblyName = "TestAssembly";
+        var taskItem1 = CreateResolvedCompileFile(
+            includePems: true,
+            productName: productName,
+            packageId: packageId,
+            assemblyName: assemblyName);
+
+        var licenseParameters = new LicenseParameters
+        {
+            ProductName = productName,
+            PrivateKeyPem = _rsaPemPair.PrivateKey,
+            ExpirationDate = DateTime.UtcNow.AddDays(-1),
+            GracePeriodInDays = 7
+        };
+
+        CreateLicense(licenseParameters);
+
+        var task = new ValidateLicenseTask
+        {
+            BuildEngine = _buildEngine,
+            PackageReferences = [new TaskItem(packageId)],
+            ResolvedCompileFileDefinitions = [taskItem1],
+            MainAssemblyPath = _mainAssemblyPath,
+            ProtectedPackageId = packageId,
+            ProtectedAssemblyName = assemblyName,
+            ValidationMode = "Error",
+            ValidationScope = "Direct",
+        };
+
+        var result = task.Execute();
+
+        result.Should().BeTrue();
+        _buildEngine.Messages.Should().BeEmpty();
+        _buildEngine.Warnings.Should().NotBeEmpty();
+        _buildEngine.Errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void ReturnsTrue_LogsWarning_GivenWarningMode_ExpiredOutsideGracePeriodLicense()
+    {
+        var productName = "TestProduct";
+        var packageId = "TestPackageId";
+        var assemblyName = "TestAssembly";
+        var taskItem1 = CreateResolvedCompileFile(
+            includePems: true,
+            productName: productName,
+            packageId: packageId,
+            assemblyName: assemblyName);
+
+        var licenseParameters = new LicenseParameters
+        {
+            ProductName = productName,
+            PrivateKeyPem = _rsaPemPair.PrivateKey,
+            ExpirationDate = DateTime.UtcNow.AddDays(-10),
+            GracePeriodInDays = 1
+        };
+
+        CreateLicense(licenseParameters);
+
+        var task = new ValidateLicenseTask
+        {
+            BuildEngine = _buildEngine,
+            PackageReferences = [new TaskItem(packageId)],
+            ResolvedCompileFileDefinitions = [taskItem1],
+            MainAssemblyPath = _mainAssemblyPath,
+            ProtectedPackageId = packageId,
+            ProtectedAssemblyName = assemblyName,
+            ValidationMode = "Warning",
+            ValidationScope = "Direct",
+        };
+
+        var result = task.Execute();
+
+        result.Should().BeTrue();
+        _buildEngine.Messages.Should().BeEmpty();
+        _buildEngine.Warnings.Should().NotBeEmpty();
+        _buildEngine.Errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void ReturnsFalse_LogsError_GivenErrorMode_ExpiredOutsideGracePeriodLicense()
+    {
+        var productName = "TestProduct";
+        var packageId = "TestPackageId";
+        var assemblyName = "TestAssembly";
+        var taskItem1 = CreateResolvedCompileFile(
+            includePems: true,
+            productName: productName,
+            packageId: packageId,
+            assemblyName: assemblyName);
+
+        var licenseParameters = new LicenseParameters
+        {
+            ProductName = productName,
+            PrivateKeyPem = _rsaPemPair.PrivateKey,
+            ExpirationDate = DateTime.UtcNow.AddDays(-10),
+            GracePeriodInDays = 1
+        };
+
+        CreateLicense(licenseParameters);
+
+        var task = new ValidateLicenseTask
+        {
+            BuildEngine = _buildEngine,
+            PackageReferences = [new TaskItem(packageId)],
+            ResolvedCompileFileDefinitions = [taskItem1],
+            MainAssemblyPath = _mainAssemblyPath,
+            ProtectedPackageId = packageId,
+            ProtectedAssemblyName = assemblyName,
+            ValidationMode = "Error",
+            ValidationScope = "Direct",
+        };
+
+        var result = task.Execute();
+
+        result.Should().BeFalse();
+        _buildEngine.Messages.Should().BeEmpty();
+        _buildEngine.Warnings.Should().BeEmpty();
+        _buildEngine.Errors.Should().NotBeEmpty();
+    }
+
+    [Fact]
     public void ReturnsTrue_LogsInfo_GivenNullMainAssemblyPath()
     {
         var task = new ValidateLicenseTask
@@ -708,6 +876,13 @@ public class ValidateLicenseTaskTests : IDisposable
         };
         var license = License.Create(licenseParams);
         var licenseFilePath = Path.Combine(_tempDir, $"{productName}.lic");
+        File.WriteAllText(licenseFilePath, license);
+    }
+
+    private void CreateLicense(LicenseParameters licenseParameters)
+    {
+        var license = License.Create(licenseParameters);
+        var licenseFilePath = Path.Combine(_tempDir, $"{licenseParameters.ProductName}.lic");
         File.WriteAllText(licenseFilePath, license);
     }
 

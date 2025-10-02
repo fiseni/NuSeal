@@ -2,7 +2,6 @@
 using Microsoft.Build.Utilities;
 using Mono.Cecil;
 using System;
-using System.IO;
 using System.Linq;
 
 namespace NuSeal;
@@ -38,40 +37,63 @@ public partial class ValidateLicenseTask : Task
             // If this task is being executed, it must have come from a protected package.
             // Something went wrong if we can't find the protected dll.
             // But we won't break end users' builds.
-            Log.LogMessage(MessageImportance.High, "NuSeal: No protected DLL was found for NuGetPackageId: {0}", ProtectedPackageId);
+            Log.LogMessage(MessageImportance.High, "NuSeal: No protected DLL was found for NuGet Package: {0}", ProtectedPackageId);
             return true;
         }
 
         try
         {
             using var assembly = AssemblyDefinition.ReadAssembly(protectedDll);
-
             var pems = AssemblyUtils.ExtractPems(assembly);
-
             if (pems.Count == 0)
             {
-                var fileName = Path.GetFileNameWithoutExtension(protectedDll);
-                Log.LogMessage(MessageImportance.High, "NuSeal: No public key resources found for {0}. Path: {1}.", fileName, protectedDll);
+                Log.LogMessage(MessageImportance.High, "NuSeal: No public key resources found for NuGet Package: {0}.", ProtectedPackageId);
                 return true;
             }
 
-            var hasValidLicense = pems.Any(pem =>
-                FileUtils.TryGetLicense(MainAssemblyPath, pem.ProductName, out var license)
-                && LicenseValidator.IsValid(pem, license));
+            var bestValidationResult = LicenseValidationResult.Invalid;
 
-            if (hasValidLicense is false)
+            foreach (var pem in pems)
             {
-                var fileName = Path.GetFileNameWithoutExtension(protectedDll);
+                if (FileUtils.TryGetLicense(MainAssemblyPath, pem.ProductName, out var license))
+                {
+                    var validationResult = LicenseValidator.Validate(pem, license);
+                    if (validationResult == LicenseValidationResult.Valid)
+                    {
+                        return true;
+                    }
 
-                if (options.ValidationMode == NuSealValidationMode.Warning)
-                {
-                    Log.LogWarning("NuSeal: No valid license found for {0}. Path: {1}.", fileName, protectedDll);
+                    if (validationResult < bestValidationResult)
+                    {
+                        bestValidationResult = validationResult;
+                    }
                 }
-                else
-                {
-                    Log.LogError("NuSeal: No valid license found for {0}. Path: {1}.", fileName, protectedDll);
-                    return false;
-                }
+            }
+
+            var errorMessage = bestValidationResult switch
+            {
+                LicenseValidationResult.ExpiredWithinGracePeriod
+                    => "NuSeal: License for {0} has expired but is within the grace period. Please renew your license soon.",
+                LicenseValidationResult.ExpiredOutsideGracePeriod
+                    => "NuSeal: License for {0} has expired. Please renew your license.",
+                _ => "NuSeal: No valid license found for NuGet Package: {0}."
+            };
+
+            if (bestValidationResult == LicenseValidationResult.ExpiredWithinGracePeriod)
+            {
+                Log.LogWarning(errorMessage, ProtectedPackageId);
+                return true;
+            }
+
+            if (options.ValidationMode == NuSealValidationMode.Warning)
+            {
+                Log.LogWarning(errorMessage, ProtectedPackageId);
+                return true;
+            }
+            else
+            {
+                Log.LogError(errorMessage, ProtectedPackageId);
+                return false;
             }
         }
         catch (Exception ex)
