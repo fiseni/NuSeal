@@ -10,7 +10,7 @@ internal class Assets
 
     public static string GenerateProps(ConsumerParameters parameters)
     {
-        var pemItems = string.Join("\r\n", parameters.Pems.Select(x =>
+        var pemItems = string.Join(Environment.NewLine, parameters.Pems.Select(x =>
         {
             var item = $"""
             <Pem_{parameters.Suffix} Include="
