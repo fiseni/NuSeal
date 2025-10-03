@@ -6,7 +6,7 @@ namespace NuSeal;
 
 internal class Assets
 {
-    private const string TASK_NAME = nameof(ValidateLicenseTask);
+    private const string TASK_NAME = nameof(ValidateLicenseTask_0_4_0);
 
     public static string GenerateProps(ConsumerParameters parameters)
     {

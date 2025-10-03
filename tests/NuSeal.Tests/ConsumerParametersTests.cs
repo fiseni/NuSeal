@@ -7,7 +7,7 @@ public class ConsumerParametersTests
     {
         var parameters = new ConsumerParameters(
             "path/to/assets",
-            "1.0.0", 
+            "1.0.0",
             "path/to/output",
             "Package.Id",
             "Assembly",
@@ -28,7 +28,7 @@ public class ConsumerParametersTests
         var parameters = new ConsumerParameters(
             "path/to/assets",
             "1.0.0",
-            "path/to/output", 
+            "path/to/output",
             "Package.Id",
             "Assembly",
             Array.Empty<PemData>(),

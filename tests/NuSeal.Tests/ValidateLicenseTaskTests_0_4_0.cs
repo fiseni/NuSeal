@@ -3,14 +3,14 @@ using Microsoft.Build.Utilities;
 
 namespace Tests;
 
-public class ValidateLicenseTaskTests : IDisposable
+public class ValidateLicenseTaskTests_0_4_0 : IDisposable
 {
     private readonly RsaPemPair _rsaPemPair;
     private readonly TestBuildEngine _buildEngine;
     private readonly string _tempDir;
     private readonly string _mainAssemblyPath;
 
-    public ValidateLicenseTaskTests()
+    public ValidateLicenseTaskTests_0_4_0()
     {
         _rsaPemPair = RsaKeyGenerator.GeneratePem();
         _buildEngine = new TestBuildEngine();
@@ -26,7 +26,7 @@ public class ValidateLicenseTaskTests : IDisposable
         var productName = "TestProduct";
         CreateValidLicense(productName);
 
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = _mainAssemblyPath,
@@ -51,7 +51,7 @@ public class ValidateLicenseTaskTests : IDisposable
         var productName = "TestProduct";
         CreateValidLicense(productName);
 
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = _mainAssemblyPath,
@@ -75,7 +75,7 @@ public class ValidateLicenseTaskTests : IDisposable
     {
         var productName = "TestProduct";
 
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = _mainAssemblyPath,
@@ -99,7 +99,7 @@ public class ValidateLicenseTaskTests : IDisposable
     {
         var productName = "TestProduct";
 
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = _mainAssemblyPath,
@@ -124,7 +124,7 @@ public class ValidateLicenseTaskTests : IDisposable
         var productName = "TestProduct";
         CreateValidLicense(productName);
 
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = _mainAssemblyPath,
@@ -158,7 +158,7 @@ public class ValidateLicenseTaskTests : IDisposable
 
         CreateLicense(licenseParameters);
 
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = _mainAssemblyPath,
@@ -192,7 +192,7 @@ public class ValidateLicenseTaskTests : IDisposable
 
         CreateLicense(licenseParameters);
 
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = _mainAssemblyPath,
@@ -226,7 +226,7 @@ public class ValidateLicenseTaskTests : IDisposable
 
         CreateLicense(licenseParameters);
 
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = _mainAssemblyPath,
@@ -260,7 +260,7 @@ public class ValidateLicenseTaskTests : IDisposable
 
         CreateLicense(licenseParameters);
 
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = _mainAssemblyPath,
@@ -282,7 +282,7 @@ public class ValidateLicenseTaskTests : IDisposable
     [Fact]
     public void ReturnsTrue_LogsInfo_GivenNullMainAssemblyPath()
     {
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = null!,
@@ -304,7 +304,7 @@ public class ValidateLicenseTaskTests : IDisposable
     [Fact]
     public void ReturnsTrue_LogsInfo_GivenEmptyMainAssemblyPath()
     {
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = "",
@@ -326,7 +326,7 @@ public class ValidateLicenseTaskTests : IDisposable
     [Fact]
     public void ReturnsTrue_LogsInfo_GivenWhitespaceMainAssemblyPath()
     {
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = "  ",
@@ -348,7 +348,7 @@ public class ValidateLicenseTaskTests : IDisposable
     [Fact]
     public void ReturnsTrue_LogsInfo_GivenNullProtectedPackageId()
     {
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = "x",
@@ -370,7 +370,7 @@ public class ValidateLicenseTaskTests : IDisposable
     [Fact]
     public void ReturnsTrue_LogsInfo_GivenEmptyProtectedPackageId()
     {
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = "x",
@@ -392,7 +392,7 @@ public class ValidateLicenseTaskTests : IDisposable
     [Fact]
     public void ReturnsTrue_LogsInfo_GivenWhitespaceProtectedPackageId()
     {
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = "x",
@@ -414,7 +414,7 @@ public class ValidateLicenseTaskTests : IDisposable
     [Fact]
     public void ReturnsTrue_LogsInfo_GivenNullProtectedAssemblyName()
     {
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = "x",
@@ -436,7 +436,7 @@ public class ValidateLicenseTaskTests : IDisposable
     [Fact]
     public void ReturnsTrue_LogsInfo_GivenEmptyProtectedAssemblyName()
     {
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = "x",
@@ -458,7 +458,7 @@ public class ValidateLicenseTaskTests : IDisposable
     [Fact]
     public void ReturnsTrue_LogsInfo_GivenWhitespaceProtectedAssemblyName()
     {
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = "x",
@@ -480,7 +480,7 @@ public class ValidateLicenseTaskTests : IDisposable
     [Fact]
     public void ReturnsTrue_LogsInfo_GivenNullPems()
     {
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = "x",
@@ -502,7 +502,7 @@ public class ValidateLicenseTaskTests : IDisposable
     [Fact]
     public void ReturnsTrue_LogsInfo_GivenEmptyPems()
     {
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = "x",
@@ -524,7 +524,7 @@ public class ValidateLicenseTaskTests : IDisposable
     [Fact]
     public void ReturnsTrue_LogsInfo_GivenNullValidationMode()
     {
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = "x",
@@ -546,7 +546,7 @@ public class ValidateLicenseTaskTests : IDisposable
     [Fact]
     public void ReturnsTrue_LogsInfo_GivenEmptyValidationMode()
     {
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = "x",
@@ -568,7 +568,7 @@ public class ValidateLicenseTaskTests : IDisposable
     [Fact]
     public void ReturnsTrue_LogsInfo_GivenWhitespaceValidationMode()
     {
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = "x",
@@ -590,7 +590,7 @@ public class ValidateLicenseTaskTests : IDisposable
     [Fact]
     public void ReturnsTrue_LogsInfo_GivenNullValidationScope()
     {
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = "x",
@@ -612,7 +612,7 @@ public class ValidateLicenseTaskTests : IDisposable
     [Fact]
     public void ReturnsTrue_LogsInfo_GivenEmptyValidationScope()
     {
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = "x",
@@ -634,7 +634,7 @@ public class ValidateLicenseTaskTests : IDisposable
     [Fact]
     public void ReturnsTrue_LogsInfo_GivenWhitespaceValidationScope()
     {
-        var task = new ValidateLicenseTask
+        var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
             MainAssemblyPath = "x",

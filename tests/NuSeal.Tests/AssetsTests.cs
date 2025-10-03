@@ -58,7 +58,7 @@ public class AssetsTests : IDisposable
               </ItemGroup>
 
               <UsingTask
-                TaskName="NuSeal.ValidateLicenseTask"
+                TaskName="NuSeal.ValidateLicenseTask_0_4_0"
                 AssemblyFile="$(NuSealAssembly_PrefixPackageId1)"
                 TaskFactory="TaskHostFactory" />
 
@@ -93,7 +93,7 @@ public class AssetsTests : IDisposable
                       AfterTargets="AfterBuild"
                       >
 
-                <NuSeal.ValidateLicenseTask
+                <NuSeal.ValidateLicenseTask_0_4_0
                   MainAssemblyPath="$(TargetPath)"
                   ProtectedPackageId="Prefix.PackageId1"
                   ProtectedAssemblyName="Assembly1"
@@ -135,7 +135,7 @@ public class AssetsTests : IDisposable
                       AfterTargets="AfterBuild"
                       Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'">
 
-                <NuSeal.ValidateLicenseTask
+                <NuSeal.ValidateLicenseTask_0_4_0
                   MainAssemblyPath="$(TargetPath)"
                   ProtectedPackageId="Prefix.PackageId1"
                   ProtectedAssemblyName="Assembly1"

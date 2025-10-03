@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace NuSeal;
 
-public partial class ValidateLicenseTask : Task
+public partial class ValidateLicenseTask_0_4_0 : Task
 {
     public string MainAssemblyPath { get; set; } = "";
     public string ProtectedPackageId { get; set; } = "";
@@ -26,7 +26,7 @@ public partial class ValidateLicenseTask : Task
         {
             // This should never happen as we always pass all arguments while preparing assets for authors.
             // If that's the case, something went really wrong, and we won't break end users' builds.
-            Log.LogMessage(MessageImportance.High, "NuSeal: Invalid arguments for {0}", nameof(ValidateLicenseTask));
+            Log.LogMessage(MessageImportance.High, "NuSeal: Invalid arguments for {0}", nameof(ValidateLicenseTask_0_4_0));
             return true;
         }
 
