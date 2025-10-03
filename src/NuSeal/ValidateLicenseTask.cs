@@ -1,6 +1,5 @@
 ﻿using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using Mono.Cecil;
 using System;
 using System.Linq;
 
@@ -8,8 +7,6 @@ namespace NuSeal;
 
 public partial class ValidateLicenseTask : Task
 {
-    public ITaskItem[] PackageReferences { get; set; } = Array.Empty<ITaskItem>();
-    public ITaskItem[] ResolvedCompileFileDefinitions { get; set; } = Array.Empty<ITaskItem>();
     public string MainAssemblyPath { get; set; } = "";
     public string ProtectedPackageId { get; set; } = "";
     public string ProtectedAssemblyName { get; set; } = "";
@@ -34,15 +31,6 @@ public partial class ValidateLicenseTask : Task
         }
 
         var options = new NuSealOptions(ValidationMode, ValidationScope);
-
-        if (!TryGetProtectedDllPath(options, out var protectedDll))
-        {
-            // If this task is being executed, it must have come from a protected package.
-            // Something went wrong if we can't find the protected dll.
-            // But we won't break end users' builds.
-            Log.LogMessage(MessageImportance.High, "NuSeal: No protected DLL was found for NuGet Package: {0}", ProtectedPackageId);
-            return true;
-        }
 
         try
         {
@@ -100,35 +88,9 @@ public partial class ValidateLicenseTask : Task
         }
         catch (Exception ex)
         {
-            Log.LogMessage(MessageImportance.High, "NuSeal: Failed to process {0}. Error: {1}", protectedDll, ex.Message);
+            Log.LogMessage(MessageImportance.High, "NuSeal: Failed to process license validation for {0}. Error: {1}", ProtectedPackageId, ex.Message);
         }
 
         return true;
-    }
-
-    private bool TryGetProtectedDllPath(
-        NuSealOptions options,
-        out string dllPath)
-    {
-        if (options.ValidationScope == NuSealValidationScope.Direct
-            && !PackageReferences.Any(x => string.Equals(x.ItemSpec, ProtectedPackageId, StringComparison.OrdinalIgnoreCase)))
-        {
-            dllPath = "";
-            return false;
-        }
-
-        foreach (var file in ResolvedCompileFileDefinitions)
-        {
-            var nugetPackageId = file.GetMetadata("NuGetPackageId");
-            if (string.Equals(nugetPackageId, ProtectedPackageId, StringComparison.OrdinalIgnoreCase))
-            {
-                dllPath = file.ItemSpec;
-                return true;
-            }
-
-        }
-
-        dllPath = "";
-        return false;
     }
 }

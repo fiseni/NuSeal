@@ -269,8 +269,6 @@ public class GenerateConsumerAssetsTaskTests : IDisposable
                       Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'">
 
                 <NuSeal.ValidateLicenseTask
-                  PackageReferences="@(PackageReference)"
-                  ResolvedCompileFileDefinitions="@(ResolvedCompileFileDefinitions)"
                   MainAssemblyPath="$(TargetPath)"
                   ProtectedPackageId="Prefix.PackageId1"
                   ProtectedAssemblyName="Assembly1"
