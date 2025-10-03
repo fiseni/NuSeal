@@ -56,8 +56,6 @@ internal class Assets
                       {condition}>
 
                 <NuSeal.{TASK_NAME}
-                  PackageReferences="@(PackageReference)"
-                  ResolvedCompileFileDefinitions="@(ResolvedCompileFileDefinitions)"
                   MainAssemblyPath="$(TargetPath)"
                   ProtectedPackageId="{parameters.PackageId}"
                   ProtectedAssemblyName="{parameters.AssemblyName}"

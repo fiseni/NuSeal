@@ -50,7 +50,6 @@
     <PackageReference Include="Microsoft.Build.Utilities.Core" PrivateAssets="all" ExcludeAssets="runtime" />
     <PackageReference Include="System.Text.Json" PrivateAssets="all" ExcludeAssets="runtime" />
     <PackageReference Include="BouncyCastle.Cryptography" PrivateAssets="all" />
-    <PackageReference Include="Mono.Cecil" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
@@ -64,10 +63,7 @@
     <ItemGroup>
       <BuildOutputInPackage
         Include="@(ReferenceCopyLocalPaths)"
-        TargetPath="%(ReferenceCopyLocalPaths.DestinationSubPath)"
-        Condition="'%(ReferenceCopyLocalPaths.Filename)' != 'Mono.Cecil.Mdb' AND 
-                   '%(ReferenceCopyLocalPaths.Filename)' != 'Mono.Cecil.Pdb' AND 
-                   '%(ReferenceCopyLocalPaths.Filename)' != 'Mono.Cecil.Rocks'" />
+        TargetPath="%(ReferenceCopyLocalPaths.DestinationSubPath)" />
     </ItemGroup>
   </Target>
 

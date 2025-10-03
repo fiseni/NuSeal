@@ -1,6 +1,5 @@
 ﻿using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using Mono.Cecil;
 
 namespace Tests;
 
@@ -22,23 +21,66 @@ public class ValidateLicenseTaskTests : IDisposable
     }
 
     [Fact]
-    public void ReturnsTrue_LogsWarning_GivenNoLicenseAndWarningMode()
+    public void ReturnsTrue_GivenValidLicenseAndDirectScope()
     {
         var productName = "TestProduct";
-        var packageId = "TestPackageId";
-        var assemblyName = "TestAssembly";
-        var taskItem1 = CreateResolvedCompileFile(
-            packageId: packageId,
-            assemblyName: assemblyName);
+        CreateValidLicense(productName);
 
         var task = new ValidateLicenseTask
         {
             BuildEngine = _buildEngine,
-            PackageReferences = [new TaskItem(packageId)],
-            ResolvedCompileFileDefinitions = [taskItem1],
             MainAssemblyPath = _mainAssemblyPath,
-            ProtectedPackageId = packageId,
-            ProtectedAssemblyName = assemblyName,
+            ProtectedPackageId = "TestPackageId",
+            ProtectedAssemblyName = "TestAssembly",
+            Pems = GeneratePemTaskItems(productName),
+            ValidationMode = "Error",
+            ValidationScope = "Direct",
+        };
+
+        var result = task.Execute();
+
+        result.Should().BeTrue();
+        _buildEngine.Messages.Should().BeEmpty();
+        _buildEngine.Warnings.Should().BeEmpty();
+        _buildEngine.Errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void ReturnsTrue_GivenValidLicenseAndTransitiveScope()
+    {
+        var productName = "TestProduct";
+        CreateValidLicense(productName);
+
+        var task = new ValidateLicenseTask
+        {
+            BuildEngine = _buildEngine,
+            MainAssemblyPath = _mainAssemblyPath,
+            ProtectedPackageId = "TestPackageId",
+            ProtectedAssemblyName = "TestAssembly",
+            Pems = GeneratePemTaskItems(productName),
+            ValidationMode = "Error",
+            ValidationScope = "Transitive",
+        };
+
+        var result = task.Execute();
+
+        result.Should().BeTrue();
+        _buildEngine.Messages.Should().BeEmpty();
+        _buildEngine.Warnings.Should().BeEmpty();
+        _buildEngine.Errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void ReturnsTrue_LogsWarning_GivenNoLicenseAndWarningMode()
+    {
+        var productName = "TestProduct";
+
+        var task = new ValidateLicenseTask
+        {
+            BuildEngine = _buildEngine,
+            MainAssemblyPath = _mainAssemblyPath,
+            ProtectedPackageId = "TestPackageId",
+            ProtectedAssemblyName = "TestAssembly",
             Pems = GeneratePemTaskItems(productName),
             ValidationMode = "Warning",
             ValidationScope = "Direct",
@@ -56,20 +98,13 @@ public class ValidateLicenseTaskTests : IDisposable
     public void ReturnsFalse_LogsError_GivenNoLicenseAndErrorMode()
     {
         var productName = "TestProduct";
-        var packageId = "TestPackageId";
-        var assemblyName = "TestAssembly";
-        var taskItem1 = CreateResolvedCompileFile(
-            packageId: packageId,
-            assemblyName: assemblyName);
 
         var task = new ValidateLicenseTask
         {
             BuildEngine = _buildEngine,
-            PackageReferences = [new TaskItem(packageId)],
-            ResolvedCompileFileDefinitions = [taskItem1],
             MainAssemblyPath = _mainAssemblyPath,
-            ProtectedPackageId = packageId,
-            ProtectedAssemblyName = assemblyName,
+            ProtectedPackageId = "TestPackageId",
+            ProtectedAssemblyName = "TestAssembly",
             Pems = GeneratePemTaskItems(productName),
             ValidationMode = "Error",
             ValidationScope = "Direct",
@@ -87,249 +122,15 @@ public class ValidateLicenseTaskTests : IDisposable
     public void ReturnsTrue_LogsInfo_GivenNoPems()
     {
         var productName = "TestProduct";
-        var packageId = "TestPackageId";
-        var assemblyName = "TestAssembly";
-        var taskItem1 = CreateResolvedCompileFile(
-            packageId: packageId,
-            assemblyName: assemblyName);
-
         CreateValidLicense(productName);
 
         var task = new ValidateLicenseTask
         {
             BuildEngine = _buildEngine,
-            PackageReferences = [new TaskItem(packageId)],
-            ResolvedCompileFileDefinitions = [taskItem1],
             MainAssemblyPath = _mainAssemblyPath,
-            ProtectedPackageId = packageId,
-            ProtectedAssemblyName = assemblyName,
+            ProtectedPackageId = "TestPackageId",
+            ProtectedAssemblyName = "TestAssembly",
             Pems = Array.Empty<ITaskItem>(),
-            ValidationMode = "Error",
-            ValidationScope = "Direct",
-        };
-
-        var result = task.Execute();
-
-        result.Should().BeTrue();
-        _buildEngine.Messages.Should().NotBeEmpty();
-        _buildEngine.Warnings.Should().BeEmpty();
-        _buildEngine.Errors.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void ReturnsTrue_GivenDirectScope_HasReferences_HasResolvedFiles()
-    {
-        var productName = "TestProduct";
-        var packageId = "TestPackageId";
-        var assemblyName = "TestAssembly";
-        var taskItem1 = CreateResolvedCompileFile(
-            packageId: "x",
-            assemblyName: "x");
-
-        var taskItem2 = CreateResolvedCompileFile(
-            packageId: packageId,
-            assemblyName: assemblyName);
-
-        CreateValidLicense(productName);
-
-        var task = new ValidateLicenseTask
-        {
-            BuildEngine = _buildEngine,
-            PackageReferences = [new TaskItem("x"), new TaskItem(packageId)],
-            ResolvedCompileFileDefinitions = [taskItem1, taskItem2],
-            MainAssemblyPath = _mainAssemblyPath,
-            ProtectedPackageId = packageId,
-            ProtectedAssemblyName = assemblyName,
-            Pems = GeneratePemTaskItems(productName),
-            ValidationMode = "Error",
-            ValidationScope = "Direct",
-        };
-
-        var result = task.Execute();
-
-        result.Should().BeTrue();
-        _buildEngine.Messages.Should().BeEmpty();
-        _buildEngine.Warnings.Should().BeEmpty();
-        _buildEngine.Errors.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void ReturnsTrue_GivenTransitiveScope_HasReferences_HasResolvedFiles()
-    {
-        var productName = "TestProduct";
-        var packageId = "TestPackageId";
-        var assemblyName = "TestAssembly";
-        var taskItem1 = CreateResolvedCompileFile(
-            packageId: packageId,
-            assemblyName: assemblyName);
-
-        CreateValidLicense(productName);
-
-        var task = new ValidateLicenseTask
-        {
-            BuildEngine = _buildEngine,
-            PackageReferences = [new TaskItem(packageId)],
-            ResolvedCompileFileDefinitions = [taskItem1],
-            MainAssemblyPath = _mainAssemblyPath,
-            ProtectedPackageId = packageId,
-            ProtectedAssemblyName = assemblyName,
-            Pems = GeneratePemTaskItems(productName),
-            ValidationMode = "Error",
-            ValidationScope = "Transitive",
-        };
-
-        var result = task.Execute();
-
-        result.Should().BeTrue();
-        _buildEngine.Messages.Should().BeEmpty();
-        _buildEngine.Warnings.Should().BeEmpty();
-        _buildEngine.Errors.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void ReturnsTrue_GivenTransitiveScope_NoReferences_HasResolvedFiles()
-    {
-        var productName = "TestProduct";
-        var packageId = "TestPackageId";
-        var assemblyName = "TestAssembly";
-        var taskItem1 = CreateResolvedCompileFile(
-            packageId: packageId,
-            assemblyName: assemblyName);
-
-        CreateValidLicense(productName);
-
-        var task = new ValidateLicenseTask
-        {
-            BuildEngine = _buildEngine,
-            PackageReferences = Array.Empty<ITaskItem>(),
-            ResolvedCompileFileDefinitions = [taskItem1],
-            MainAssemblyPath = _mainAssemblyPath,
-            ProtectedPackageId = packageId,
-            ProtectedAssemblyName = assemblyName,
-            Pems = GeneratePemTaskItems(productName),
-            ValidationMode = "Error",
-            ValidationScope = "Transitive",
-        };
-
-        var result = task.Execute();
-
-        result.Should().BeTrue();
-        _buildEngine.Messages.Should().BeEmpty();
-        _buildEngine.Warnings.Should().BeEmpty();
-        _buildEngine.Errors.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void ReturnsTrue_LogsInfo_GivenTransitiveScope_HasReferences_HasResolvedFilesWithInvalidId()
-    {
-        var productName = "TestProduct";
-        var packageId = "TestPackageId";
-        var assemblyName = "TestAssembly";
-        var taskItem1 = CreateResolvedCompileFile(
-            packageId: "x",
-            assemblyName: assemblyName);
-
-        CreateValidLicense(productName);
-
-        var task = new ValidateLicenseTask
-        {
-            BuildEngine = _buildEngine,
-            PackageReferences = [new TaskItem(packageId)],
-            ResolvedCompileFileDefinitions = [taskItem1],
-            MainAssemblyPath = _mainAssemblyPath,
-            ProtectedPackageId = packageId,
-            ProtectedAssemblyName = assemblyName,
-            Pems = GeneratePemTaskItems(productName),
-            ValidationMode = "Error",
-            ValidationScope = "Transitive",
-        };
-
-        var result = task.Execute();
-
-        result.Should().BeTrue();
-        _buildEngine.Messages.Should().NotBeEmpty();
-        _buildEngine.Warnings.Should().BeEmpty();
-        _buildEngine.Errors.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void ReturnsTrue_LogsInfo_GivenDirectScope_HasReferenceWithInvalidId_HasResolvedFiles()
-    {
-        var productName = "TestProduct";
-        var packageId = "TestPackageId";
-        var assemblyName = "TestAssembly";
-        var taskItem1 = CreateResolvedCompileFile(
-            packageId: packageId,
-            assemblyName: assemblyName);
-
-        CreateValidLicense(productName);
-
-        var task = new ValidateLicenseTask
-        {
-            BuildEngine = _buildEngine,
-            PackageReferences = [new TaskItem("x")],
-            ResolvedCompileFileDefinitions = [taskItem1],
-            MainAssemblyPath = _mainAssemblyPath,
-            ProtectedPackageId = packageId,
-            ProtectedAssemblyName = assemblyName,
-            Pems = GeneratePemTaskItems(productName),
-            ValidationMode = "Error",
-            ValidationScope = "Direct",
-        };
-
-        var result = task.Execute();
-
-        result.Should().BeTrue();
-        _buildEngine.Messages.Should().NotBeEmpty();
-        _buildEngine.Warnings.Should().BeEmpty();
-        _buildEngine.Errors.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void ReturnsTrue_LogsInfo_GivenDirectScope_NoReferences_HasResolvedFiles()
-    {
-        var productName = "TestProduct";
-        var packageId = "TestPackageId";
-        var assemblyName = "TestAssembly";
-        var taskItem1 = CreateResolvedCompileFile(
-            packageId: packageId,
-            assemblyName: assemblyName);
-
-        CreateValidLicense(productName);
-
-        var task = new ValidateLicenseTask
-        {
-            BuildEngine = _buildEngine,
-            PackageReferences = Array.Empty<ITaskItem>(),
-            ResolvedCompileFileDefinitions = [taskItem1],
-            MainAssemblyPath = _mainAssemblyPath,
-            ProtectedPackageId = packageId,
-            ProtectedAssemblyName = assemblyName,
-            Pems = GeneratePemTaskItems(productName),
-            ValidationMode = "Error",
-            ValidationScope = "Direct",
-        };
-
-        var result = task.Execute();
-
-        result.Should().BeTrue();
-        _buildEngine.Messages.Should().NotBeEmpty();
-        _buildEngine.Warnings.Should().BeEmpty();
-        _buildEngine.Errors.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void ReturnsTrue_LogsInfo_GivenNoReferencesAndNoResolvedFiles()
-    {
-        var task = new ValidateLicenseTask
-        {
-            BuildEngine = _buildEngine,
-            PackageReferences = Array.Empty<ITaskItem>(),
-            ResolvedCompileFileDefinitions = Array.Empty<ITaskItem>(),
-            MainAssemblyPath = _mainAssemblyPath,
-            ProtectedPackageId = "x",
-            ProtectedAssemblyName = "x",
-            Pems = GeneratePemTaskItems("x"),
             ValidationMode = "Error",
             ValidationScope = "Direct",
         };
@@ -346,11 +147,6 @@ public class ValidateLicenseTaskTests : IDisposable
     public void ReturnsTrue_LogsWarning_GivenWarningMode_ExpiredWithinGracePeriodLicense()
     {
         var productName = "TestProduct";
-        var packageId = "TestPackageId";
-        var assemblyName = "TestAssembly";
-        var taskItem1 = CreateResolvedCompileFile(
-            packageId: packageId,
-            assemblyName: assemblyName);
 
         var licenseParameters = new LicenseParameters
         {
@@ -365,11 +161,9 @@ public class ValidateLicenseTaskTests : IDisposable
         var task = new ValidateLicenseTask
         {
             BuildEngine = _buildEngine,
-            PackageReferences = [new TaskItem(packageId)],
-            ResolvedCompileFileDefinitions = [taskItem1],
             MainAssemblyPath = _mainAssemblyPath,
-            ProtectedPackageId = packageId,
-            ProtectedAssemblyName = assemblyName,
+            ProtectedPackageId = "TestPackageId",
+            ProtectedAssemblyName = "TestAssembly",
             Pems = GeneratePemTaskItems(productName),
             ValidationMode = "Warning",
             ValidationScope = "Direct",
@@ -387,11 +181,6 @@ public class ValidateLicenseTaskTests : IDisposable
     public void ReturnsTrue_LogsWarning_GivenErrorMode_ExpiredWithinGracePeriodLicense()
     {
         var productName = "TestProduct";
-        var packageId = "TestPackageId";
-        var assemblyName = "TestAssembly";
-        var taskItem1 = CreateResolvedCompileFile(
-            packageId: packageId,
-            assemblyName: assemblyName);
 
         var licenseParameters = new LicenseParameters
         {
@@ -406,11 +195,9 @@ public class ValidateLicenseTaskTests : IDisposable
         var task = new ValidateLicenseTask
         {
             BuildEngine = _buildEngine,
-            PackageReferences = [new TaskItem(packageId)],
-            ResolvedCompileFileDefinitions = [taskItem1],
             MainAssemblyPath = _mainAssemblyPath,
-            ProtectedPackageId = packageId,
-            ProtectedAssemblyName = assemblyName,
+            ProtectedPackageId = "TestPackageId",
+            ProtectedAssemblyName = "TestAssembly",
             Pems = GeneratePemTaskItems(productName),
             ValidationMode = "Error",
             ValidationScope = "Direct",
@@ -428,11 +215,6 @@ public class ValidateLicenseTaskTests : IDisposable
     public void ReturnsTrue_LogsWarning_GivenWarningMode_ExpiredOutsideGracePeriodLicense()
     {
         var productName = "TestProduct";
-        var packageId = "TestPackageId";
-        var assemblyName = "TestAssembly";
-        var taskItem1 = CreateResolvedCompileFile(
-            packageId: packageId,
-            assemblyName: assemblyName);
 
         var licenseParameters = new LicenseParameters
         {
@@ -447,11 +229,9 @@ public class ValidateLicenseTaskTests : IDisposable
         var task = new ValidateLicenseTask
         {
             BuildEngine = _buildEngine,
-            PackageReferences = [new TaskItem(packageId)],
-            ResolvedCompileFileDefinitions = [taskItem1],
             MainAssemblyPath = _mainAssemblyPath,
-            ProtectedPackageId = packageId,
-            ProtectedAssemblyName = assemblyName,
+            ProtectedPackageId = "TestPackageId",
+            ProtectedAssemblyName = "TestAssembly",
             Pems = GeneratePemTaskItems(productName),
             ValidationMode = "Warning",
             ValidationScope = "Direct",
@@ -469,11 +249,6 @@ public class ValidateLicenseTaskTests : IDisposable
     public void ReturnsFalse_LogsError_GivenErrorMode_ExpiredOutsideGracePeriodLicense()
     {
         var productName = "TestProduct";
-        var packageId = "TestPackageId";
-        var assemblyName = "TestAssembly";
-        var taskItem1 = CreateResolvedCompileFile(
-            packageId: packageId,
-            assemblyName: assemblyName);
 
         var licenseParameters = new LicenseParameters
         {
@@ -488,11 +263,9 @@ public class ValidateLicenseTaskTests : IDisposable
         var task = new ValidateLicenseTask
         {
             BuildEngine = _buildEngine,
-            PackageReferences = [new TaskItem(packageId)],
-            ResolvedCompileFileDefinitions = [taskItem1],
             MainAssemblyPath = _mainAssemblyPath,
-            ProtectedPackageId = packageId,
-            ProtectedAssemblyName = assemblyName,
+            ProtectedPackageId = "TestPackageId",
+            ProtectedAssemblyName = "TestAssembly",
             Pems = GeneratePemTaskItems(productName),
             ValidationMode = "Error",
             ValidationScope = "Direct",
@@ -898,25 +671,6 @@ public class ValidateLicenseTaskTests : IDisposable
         var license = License.Create(licenseParameters);
         var licenseFilePath = Path.Combine(_tempDir, $"{licenseParameters.ProductName}.lic");
         File.WriteAllText(licenseFilePath, license);
-    }
-
-    private ITaskItem CreateResolvedCompileFile(
-        string packageId = "TestPackageId",
-        string assemblyName = "TestAssembly")
-    {
-        var dllPath = Path.Combine(_tempDir, $"{assemblyName}.dll");
-
-        // Create a test assembly
-        var assemblyDef = AssemblyDefinition.CreateAssembly(
-            new AssemblyNameDefinition(assemblyName, new Version(1, 0, 0, 0)),
-            "TestModule",
-            ModuleKind.Dll);
-        assemblyDef.Write(dllPath);
-
-
-        var taskItem = new TaskItem(dllPath);
-        taskItem.SetMetadata("NuGetPackageId", packageId);
-        return taskItem;
     }
 
     private ITaskItem[] GeneratePemTaskItems(params string[] productNames)
