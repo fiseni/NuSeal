@@ -3,10 +3,14 @@
   <Target Name="NuSealPrepareAssetsForConsumer"
           BeforeTargets="Build">
 
+    <PropertyGroup>
+      <NuSealOutputPath Condition="!Exists('$(NuSealOutputPath)')">$(OutputPath)</NuSealOutputPath>
+    </PropertyGroup>
+
     <NuSeal.GenerateConsumerAssetsTask
         NuSealAssetsPath="$(MSBuildThisFileDirectory)"
         NuSealVersion="@(PackageReference->WithMetadataValue('Identity', 'NuSeal')->'%(Version)')"
-        ConsumerOutputPath="$(OutputPath)"
+        ConsumerOutputPath="$(NuSealOutputPath)"
         ConsumerPackageId="$(PackageId)"
         ConsumerAssemblyName="$(AssemblyName)"
         ConsumerPems="@(NuSealPem)"
@@ -17,13 +21,13 @@
         />
 
     <ItemGroup Label="Package build assets">
-      <None Include="$(OutputPath)\$(PackageId).props" Pack="true" PackagePath="build\$(PackageId).props" Visible="false"/>
-      <None Include="$(OutputPath)\$(PackageId).targets" Pack="true" PackagePath="build\$(PackageId).targets" Visible="false"/>
+      <None Include="$(NuSealOutputPath)\$(PackageId).props" Pack="true" PackagePath="build\$(PackageId).props" Visible="false"/>
+      <None Include="$(NuSealOutputPath)\$(PackageId).targets" Pack="true" PackagePath="build\$(PackageId).targets" Visible="false"/>
     </ItemGroup>
 
     <ItemGroup Label="Package buildTransitive assets" Condition="'$(NuSealValidationScope)' == 'Transitive'">
-      <None Include="$(OutputPath)\$(PackageId).props" Pack="true" PackagePath="buildTransitive\$(PackageId).props" Visible="false"/>
-      <None Include="$(OutputPath)\$(PackageId).targets" Pack="true" PackagePath="buildTransitive\$(PackageId).targets" Visible="false"/>
+      <None Include="$(NuSealOutputPath)\$(PackageId).props" Pack="true" PackagePath="buildTransitive\$(PackageId).props" Visible="false"/>
+      <None Include="$(NuSealOutputPath)\$(PackageId).targets" Pack="true" PackagePath="buildTransitive\$(PackageId).targets" Visible="false"/>
     </ItemGroup>
     
   </Target>
