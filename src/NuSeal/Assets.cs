@@ -43,17 +43,13 @@ internal class Assets
 
     public static string GenerateTargets(ConsumerParameters parameters)
     {
-        var condition = parameters.Options.ValidationScope == NuSealValidationScope.Transitive
-            ? $"Condition=\"'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'\""
-            : "";
-
         var output = $"""
             <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
               <Target Name="NuSealValidateLicense_{parameters.Suffix}"
                       DependsOnTargets="ResolvePackageAssets"
                       AfterTargets="AfterBuild"
-                      {condition}>
+                      {parameters.TargetCondition}>
 
                 <NuSeal.{TASK_NAME}
                   MainAssemblyPath="$(TargetPath)"

@@ -20,6 +20,7 @@ public class AssetsTests : IDisposable
             packageId: "Prefix.PackageId1",
             assemblyName: "Assembly1",
             pems: GeneratePemData("ProductA", "ProductB"),
+            condition: null,
             propsFile: null,
             targetsFile: null,
             validationMode: null,
@@ -71,7 +72,7 @@ public class AssetsTests : IDisposable
     }
 
     [Fact]
-    public void GenerateTargets_ReturnUniqueAssetWithNoCondition_GivenDirectScope()
+    public void GenerateTargets_ReturnUniqueAsset_GivenDirectScope()
     {
         var parameters1 = new ConsumerParameters(
             nuSealAssetsPath: "path/to/nuseal/assets",
@@ -80,6 +81,7 @@ public class AssetsTests : IDisposable
             packageId: "Prefix.PackageId1",
             assemblyName: "Assembly1",
             pems: GeneratePemData("ProductA"),
+            condition: null,
             propsFile: null,
             targetsFile: null,
             validationMode: "Warning",
@@ -113,7 +115,7 @@ public class AssetsTests : IDisposable
     }
 
     [Fact]
-    public void GenerateTargets_ReturnUniqueAssetWithCondition_GivenTransitiveScope()
+    public void GenerateTargets_ReturnUniqueAsset_GivenTransitiveScope()
     {
         var parameters1 = new ConsumerParameters(
             nuSealAssetsPath: "path/to/nuseal/assets",
@@ -122,6 +124,7 @@ public class AssetsTests : IDisposable
             packageId: "Prefix.PackageId1",
             assemblyName: "Assembly1",
             pems: GeneratePemData("ProductA"),
+            condition: null,
             propsFile: null,
             targetsFile: null,
             validationMode: "Warning",
@@ -133,7 +136,93 @@ public class AssetsTests : IDisposable
               <Target Name="NuSealValidateLicense_PrefixPackageId1"
                       DependsOnTargets="ResolvePackageAssets"
                       AfterTargets="AfterBuild"
-                      Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'">
+                      Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe'">
+
+                <NuSeal.ValidateLicenseTask_0_4_0
+                  MainAssemblyPath="$(TargetPath)"
+                  ProtectedPackageId="Prefix.PackageId1"
+                  ProtectedAssemblyName="Assembly1"
+                  Pems="@(Pem_PrefixPackageId1)"
+                  ValidationMode="Warning"
+                  ValidationScope="Transitive"
+                  />
+
+              </Target>
+
+            </Project>
+            """;
+
+        var result = Assets.GenerateTargets(parameters1);
+
+        result.Should().Be(expectedContent);
+    }
+
+    [Fact]
+    public void GenerateTargets_ReturnUniqueAsset_GivenDirectScopeAndCondition()
+    {
+        var parameters1 = new ConsumerParameters(
+            nuSealAssetsPath: "path/to/nuseal/assets",
+            nuSealVersion: "1.2.3",
+            outputPath: _testDirectory,
+            packageId: "Prefix.PackageId1",
+            assemblyName: "Assembly1",
+            pems: GeneratePemData("ProductA"),
+            condition: "'#(OutputType)' == 'Exe' Or '#(OutputType)' == 'WinExe'",
+            propsFile: null,
+            targetsFile: null,
+            validationMode: "Warning",
+            validationScope: "Direct");
+
+        var expectedContent = $"""
+            <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+              <Target Name="NuSealValidateLicense_PrefixPackageId1"
+                      DependsOnTargets="ResolvePackageAssets"
+                      AfterTargets="AfterBuild"
+                      Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe'">
+
+                <NuSeal.ValidateLicenseTask_0_4_0
+                  MainAssemblyPath="$(TargetPath)"
+                  ProtectedPackageId="Prefix.PackageId1"
+                  ProtectedAssemblyName="Assembly1"
+                  Pems="@(Pem_PrefixPackageId1)"
+                  ValidationMode="Warning"
+                  ValidationScope="Direct"
+                  />
+
+              </Target>
+
+            </Project>
+            """;
+
+        var result = Assets.GenerateTargets(parameters1);
+
+        result.Should().Be(expectedContent);
+    }
+
+    [Fact]
+    public void GenerateTargets_ReturnUniqueAsset_GivenTransitiveScopeAndCondition()
+    {
+        var parameters1 = new ConsumerParameters(
+            nuSealAssetsPath: "path/to/nuseal/assets",
+            nuSealVersion: "1.2.3",
+            outputPath: _testDirectory,
+            packageId: "Prefix.PackageId1",
+            assemblyName: "Assembly1",
+            pems: GeneratePemData("ProductA"),
+            condition: "'#(OutputType)' == 'Exe'",
+            propsFile: null,
+            targetsFile: null,
+            validationMode: "Warning",
+            validationScope: "Transitive");
+
+        var expectedContent = $"""
+            <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+              <Target Name="NuSealValidateLicense_PrefixPackageId1"
+                      DependsOnTargets="ResolvePackageAssets"
+                      AfterTargets="AfterBuild"
+                      Condition="'$(OutputType)' == 'Exe'">
 
                 <NuSeal.ValidateLicenseTask_0_4_0
                   MainAssemblyPath="$(TargetPath)"
