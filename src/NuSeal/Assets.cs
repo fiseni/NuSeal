@@ -47,7 +47,6 @@ internal class Assets
             <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
               <Target Name="NuSealValidateLicense_{parameters.Suffix}"
-                      DependsOnTargets="ResolvePackageAssets"
                       AfterTargets="AfterBuild"
                       {parameters.TargetCondition}>
 

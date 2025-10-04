@@ -264,7 +264,6 @@ public class GenerateConsumerAssetsTaskTests : IDisposable
             <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
               <Target Name="NuSealValidateLicense_PrefixPackageId1"
-                      DependsOnTargets="ResolvePackageAssets"
                       AfterTargets="AfterBuild"
                       Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe'">
 
