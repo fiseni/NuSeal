@@ -266,7 +266,7 @@ public class GenerateConsumerAssetsTaskTests : IDisposable
               <Target Name="NuSealValidateLicense_PrefixPackageId1"
                       DependsOnTargets="ResolvePackageAssets"
                       AfterTargets="AfterBuild"
-                      Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe' Or '$(MSBuildProjectSdk)' == 'Microsoft.NET.Sdk.Web'">
+                      Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe'">
 
                 <NuSeal.ValidateLicenseTask_0_4_0
                   MainAssemblyPath="$(TargetPath)"

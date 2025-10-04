@@ -9,6 +9,7 @@ internal class ConsumerParameters
         string packageId,
         string assemblyName,
         PemData[] pems,
+        string? condition,
         string? propsFile,
         string? targetsFile,
         string? validationMode,
@@ -27,6 +28,26 @@ internal class ConsumerParameters
         ValidationMode = Options.ValidationMode.ToString();
         ValidationScope = Options.ValidationScope.ToString();
         Suffix = packageId.Replace(".", "");
+
+        if (string.IsNullOrWhiteSpace(condition))
+        {
+            TargetCondition = Options.ValidationScope == NuSealValidationScope.Transitive
+                ? $"Condition=\"'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe'\""
+                : "";
+        }
+        else
+        {
+            var parsedCondition = condition!.Replace("##", "$").Replace("#", "$");
+            if (parsedCondition[0] != '"')
+            {
+                parsedCondition = $"\"{parsedCondition}";
+            }
+            if (parsedCondition[parsedCondition.Length - 1] != '"')
+            {
+                parsedCondition = $"{parsedCondition}\"";
+            }
+            TargetCondition = $"Condition={parsedCondition}";
+        }
     }
 
     public string NuSealAssetsPath { get; }
@@ -35,6 +56,7 @@ internal class ConsumerParameters
     public string PackageId { get; }
     public string AssemblyName { get; }
     public PemData[] Pems { get; }
+    public string TargetCondition { get; }
     public string? PropsFile { get; }
     public string? TargetsFile { get; }
     public string ValidationMode { get; }

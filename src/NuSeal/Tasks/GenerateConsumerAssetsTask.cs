@@ -26,6 +26,8 @@ public partial class GenerateConsumerAssetsTask : Task
     [Required]
     public ITaskItem[] ConsumerPems { get; set; } = Array.Empty<ITaskItem>();
 
+    public string? ConsumerCondition { get; set; }
+
     public string? ConsumerPropsFile { get; set; }
 
     public string? ConsumerTargetsFile { get; set; }
@@ -89,6 +91,7 @@ public partial class GenerateConsumerAssetsTask : Task
                 packageId: ConsumerPackageId,
                 assemblyName: ConsumerAssemblyName,
                 pems: pems,
+                condition: ConsumerCondition,
                 propsFile: ConsumerPropsFile,
                 targetsFile: ConsumerTargetsFile,
                 validationMode: ValidationMode,
