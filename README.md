@@ -7,7 +7,7 @@
 &nbsp; 
 
 ---
-NuSeal provides the infrastructure for creating and validating NuGet package licenses. The validation occurs during build time (offline), preventing unauthorized use of your packages. It's designed to be generic while allowing each product package to set its own public key and license policies.
+NuSeal provides the infrastructure for creating and validating NuGet package licenses. The validation occurs during build time (offline), preventing unauthorized use of your packages. It's designed to be generic while allowing each author to set their own public key and license policies.
 
 <strong>Packages:</strong>
 
@@ -86,7 +86,7 @@ File.WriteAllText("YourProductName.lic", license);
 
 Parameters explained:
 - privateKeyPem - Your private RSA key in PEM format
-- productName - Unique identifier of your product associated with this license. It might be the package name if this license is intended only for this package; or it might be a bundle name if the license is associated with group of packages. <strong>Important: this name is while defining the `NuSealPem` item and as a license filename.</strong>
+- productName - Unique identifier of your product associated with this license. It might be the package name if this license is intended only for this package; or it might be a bundle name if the license is associated with group of packages. <strong>Important: this name is used while defining the `NuSealPem` item and as a license filename.</strong>
 - subscriptionId - Unique identifier for the customer subscription
 - clientId - Unique identifier for the customer or user
 - edition - Edition of your product (e.g., "Free", "Professional", "Enterprise")
@@ -215,13 +215,7 @@ By default, once the `YourPackageId.props` and `YourPackageId.targets` assets ar
 <None Include="$(OutputPath)\$(PackageId).targets" Pack="true" PackagePath="build\$(PackageId).targets" Visible="false"/>
 ```
 
-What if author is already packing build assets? Let's assume that the author already publishes build assets in their package. They might have something as follows.
-```xml
-<None Include="build\YourPackageId.props" Pack="true" PackagePath="build\YourPackageId.props" Visible="false"/>
-<None Include="build\YourPackageId.targets" Pack="true" PackagePath="build\YourPackageId.targets" Visible="false"/>
-```
-
-Authors can pass their props and targets to NuSeal, and we do all the required merging and packing of assets. So, instead of the above, the authors will provide their assets to NuSeal as follows.
+If the author is already packing assets to their NuGet package, they can provide them to NuSeal. We'll do the merging and pack the merged assets.
 
 ```xml
 <PropertyGroup>
