@@ -91,7 +91,6 @@ public class AssetsTests : IDisposable
             <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
               <Target Name="NuSealValidateLicense_PrefixPackageId1"
-                      DependsOnTargets="ResolvePackageAssets"
                       AfterTargets="AfterBuild"
                       >
 
@@ -134,7 +133,6 @@ public class AssetsTests : IDisposable
             <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
               <Target Name="NuSealValidateLicense_PrefixPackageId1"
-                      DependsOnTargets="ResolvePackageAssets"
                       AfterTargets="AfterBuild"
                       Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe'">
 
@@ -177,7 +175,6 @@ public class AssetsTests : IDisposable
             <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
               <Target Name="NuSealValidateLicense_PrefixPackageId1"
-                      DependsOnTargets="ResolvePackageAssets"
                       AfterTargets="AfterBuild"
                       Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe'">
 
@@ -220,7 +217,6 @@ public class AssetsTests : IDisposable
             <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
               <Target Name="NuSealValidateLicense_PrefixPackageId1"
-                      DependsOnTargets="ResolvePackageAssets"
                       AfterTargets="AfterBuild"
                       Condition="'$(OutputType)' == 'Exe'">
 
