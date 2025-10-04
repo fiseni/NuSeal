@@ -27,7 +27,8 @@ NuSeal provides the infrastructure for creating and validating NuGet package lic
   - [2. Validation Scope](#2-validation-scope)
   - [3. Validation Condition](#3-validation-condition)
   - [4. Output Path](#4-output-path)
-  - [5. Packing Assets](#5-packing-assets)
+  - [5. Merging custom assets](#5-mergin-custom-assets)
+  - [5. Disable packing assets](#6-disable-packing-assets)
 
 ## TL;DR
 
@@ -140,9 +141,9 @@ The license file should be named `YourProductName.lic`. <strong>Important:</stro
 
 The default behavior of NuSeal is as follows.
 
-- The `YourPackageId.props` and `YourPackageId.targets` are generated in the build output path.
-- The generated assets are packed into your NuGet package under the `build` folder.
-- License validation is executed for direct consumers of your package during their build process.
+- The `YourPackageId.props` and `YourPackageId.targets` assets are generated in the build output path.
+- The generated assets are packed into the NuGet package under the `build` folder.
+- License validation is executed for direct consumers of the protected package during their build process.
 - If no license is found, the build fails with an error.
 - The license is validated against the following criteria:
   - The license has valid lifetime
@@ -166,7 +167,7 @@ It alters the behavior when no valid license is found.
 
 ### 2. Validation Scope
 Depending on the nature of the library and the business model, authors may want a different strategy where even transitive consumers are required to have a license.
-  - `Direct` (default): The assets are packed only to `build` directory. Only projects that directly consume your package will be validated for licenses.
+  - `Direct` (default): The assets are packed only to `build` directory. Only projects that directly consume the protected package will be validated for licenses.
   - `Transitive`: The assets are packed to `buildTransitive` and `build` directories. The `build` is necessary to support projects using `packages.config`. The assets will flow to all consumers, direct and transitive. For this scope, to avoid cluttering the build for large solutions, we're constraining the validation to only executable assemblies.
 
 ```xml
@@ -176,13 +177,13 @@ Depending on the nature of the library and the business model, authors may want 
 ```
 
 ### 3. Validation Condition
-The generated target, depending on the validation scope, may or may not include a condition
-  - `Direct` (default): No condition is applied. All projects that directly consume your package will be validated for licenses.
+The generated target, depending on the validation scope, may or may not include a condition.
+  - `Direct` (default): No condition is applied. All projects that directly consume the protected package will be validated for licenses.
   - `Transitive`: The target includes a condition to only validate executable assemblies.
     ```xml
     Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe'"
     ```
-You may alter this behavior by specifying your own condition.
+The authors may alter this behavior and specify their custom condition as follows. If defined, it will be applied regardless of the scope.
 
 ```xml
 <PropertyGroup>
@@ -190,14 +191,14 @@ You may alter this behavior by specifying your own condition.
 </PropertyGroup>
 ```
 
-As seen in the example we're using `#()` instead of `$()`. Since we need to preserve the original condition as literal, you should not use `$` or `@` characters, otherwise the vairables will be evaluated. Use the `#` character instead, and we'll do the replacement during generation.
+Note that `#()` is used instead of `$()`. Since we need to preserve the original condition as literal, and avoid variable evaluation; the `$` and `@` characters should not be used. Use the `#` character instead, and we'll do the replacement during asset generation.
 - Use `##` for `@`
 - Use `#` for `$`
 
 ### 4. Output Path
 
 By default, the assets `YourPackageId.props` and `YourPackageId.targets` are generated in the build output path; the value of `$(OutputPath)`.
-If you want to generate the assets in a different location, you can specify an output path as follows.
+If the authors want to generate the assets in a different location, they can specify an output path as follows.
 
 ```xml
 <PropertyGroup>
@@ -205,7 +206,7 @@ If you want to generate the assets in a different location, you can specify an o
 </PropertyGroup>
 ```
 
-### 5. Packing assets
+### 5. Merging custom assets
 
 By default, once the `YourPackageId.props` and `YourPackageId.targets` assets are generated, we add items to pack them in the NuGet package. We're packing them in `build` directory, and in case of `Transitive` scope in `buildTransitive` directory as well.
 
@@ -214,7 +215,24 @@ By default, once the `YourPackageId.props` and `YourPackageId.targets` assets ar
 <None Include="$(OutputPath)\$(PackageId).targets" Pack="true" PackagePath="build\$(PackageId).targets" Visible="false"/>
 ```
 
-If you have a different strategy for generating NuGet packages (e.g. use nuspec files), then you may disable packing assets. We'll just generate the assets in the output path, and it's up to you to pack or further process them.
+What if author is already packing build assets? Let's assume that the author already publishes build assets in their package. They might have something as follows.
+```xml
+<None Include="build\YourPackageId.props" Pack="true" PackagePath="build\YourPackageId.props" Visible="false"/>
+<None Include="build\YourPackageId.targets" Pack="true" PackagePath="build\YourPackageId.targets" Visible="false"/>
+```
+
+Authors can pass their props and targets to NuSeal, and we do all the required merging and packing of assets. So, instead of the above, the authors will provide their assets to NuSeal as follows.
+
+```xml
+<PropertyGroup>
+    <NuSealIncludePropsFile>build\YourPackageId.props</NuSealIncludePropsFile>
+    <NuSealIncludeTargetsFile>build\YourPackageId.targets</NuSealIncludeTargetsFile>
+</PropertyGroup>
+```
+
+### 6. Disable packing assets
+
+Authors may have a different strategy for generating NuGet packages (e.g. they use nuspec files), have complex workflows or simply want to manually pack the assets. In that case they may disable packing assets altogether. We'll just generate the assets in the output path, and it's up to the authors to pack or further process them.
 
 ```xml
 <PropertyGroup>
