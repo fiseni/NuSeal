@@ -207,7 +207,7 @@ If you want to generate the assets in a different location, they can specify an 
 </PropertyGroup>
 ```
 
-### 5. Packing asets
+### 5. Packing assets
 
 By default, once we generate the `YourPackageId.props` and `YourPackageId.targets` assets, we add items to pack them in the NuGet package. We're packing them in `build` directory, and in case of `Transitive` scope we pack them in `buildTransitive` directory as well.
 
