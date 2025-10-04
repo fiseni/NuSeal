@@ -27,8 +27,8 @@ NuSeal provides the infrastructure for creating and validating NuGet package lic
   - [2. Validation Scope](#2-validation-scope)
   - [3. Validation Condition](#3-validation-condition)
   - [4. Output Path](#4-output-path)
-  - [5. Merging custom assets](#5-mergin-custom-assets)
-  - [5. Disable packing assets](#6-disable-packing-assets)
+  - [5. Merging custom assets](#5-merging-custom-assets)
+  - [6. Disable packing assets](#6-disable-packing-assets)
 
 ## TL;DR
 
@@ -143,7 +143,7 @@ The default behavior of NuSeal is as follows.
 
 - The `YourPackageId.props` and `YourPackageId.targets` assets are generated in the build output path.
 - The generated assets are packed into the NuGet package under the `build` folder.
-- License validation is executed for direct consumers of the protected package during their build process.
+- License validation is executed for direct consumers of the protected package.
 - If no license is found, the build fails with an error.
 - The license is validated against the following criteria:
   - The license has valid lifetime
