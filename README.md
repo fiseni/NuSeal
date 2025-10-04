@@ -167,15 +167,13 @@ It alters the behavior when no valid license is found.
 ### 2. Validation Scope
 Depending on the nature of the library and the business model, authors may want a different strategy where even transitive consumers are required to have a license.
   - `Direct` (default): The assets are packed only to `build` directory. Only projects that directly consume your package will be validated for licenses.
-  - `Transitive`: The assets are packed to `build` (to support projects using `packages.config`) and `buildTransitive` directories. The assets will flow to all consumers, direct and transitive. For this scope, to avoid cluttering the build for large solutions, we're constraining the validation to only executable assemblies.
+  - `Transitive`: The assets are packed to `buildTransitive` and `build` directories. The `build` is necessary to support projects using `packages.config`. The assets will flow to all consumers, direct and transitive. For this scope, to avoid cluttering the build for large solutions, we're constraining the validation to only executable assemblies.
 
 ```xml
 <PropertyGroup>
     <NuSealValidationScope>Transitive</NuSealValidationScope>
 </PropertyGroup>
 ```
-
-Note: We pack to `build` directory even for `Transitive` scope, so we can support projects using `packages.config`.
 
 ### 3. Validation Condition
 The generated target, depending on the validation scope, may or may not include a condition
@@ -199,7 +197,7 @@ As seen in the example we're using `#()` instead of `$()`. Since we need to pres
 ### 4. Output Path
 
 By default, the assets `YourPackageId.props` and `YourPackageId.targets` are generated in the build output path; the value of `$(OutputPath)`.
-If you want to generate the assets in a different location, they can specify an output path as follows.
+If you want to generate the assets in a different location, you can specify an output path as follows.
 
 ```xml
 <PropertyGroup>
