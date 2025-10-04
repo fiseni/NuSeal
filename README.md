@@ -214,7 +214,7 @@ By default, once the `YourPackageId.props` and `YourPackageId.targets` assets ar
 <None Include="$(OutputPath)\$(PackageId).targets" Pack="true" PackagePath="build\$(PackageId).targets" Visible="false"/>
 ```
 
-If you have a different strategy for generating NuGet packages (e.g. use nuspec files), or you want to manually pack the assets; then you may disable packing assets. We'll just generate the assets in the output path, and it's up to you to pack or further process them.
+If you have a different strategy for generating NuGet packages (e.g. use nuspec files), then you may disable packing assets. We'll just generate the assets in the output path, and it's up to you to pack or further process them.
 
 ```xml
 <PropertyGroup>
