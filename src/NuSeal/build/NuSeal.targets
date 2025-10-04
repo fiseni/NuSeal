@@ -20,12 +20,12 @@
         ValidationScope ="$(NuSealValidationScope)"
         />
 
-    <ItemGroup Label="Package build assets">
+    <ItemGroup Condition="'$(NuSealPackAssets)' != 'disable'">
       <None Include="$(NuSealOutputPath)\$(PackageId).props" Pack="true" PackagePath="build\$(PackageId).props" Visible="false"/>
       <None Include="$(NuSealOutputPath)\$(PackageId).targets" Pack="true" PackagePath="build\$(PackageId).targets" Visible="false"/>
     </ItemGroup>
 
-    <ItemGroup Label="Package buildTransitive assets" Condition="'$(NuSealValidationScope)' == 'Transitive'">
+    <ItemGroup Condition="'$(NuSealPackAssets)' != 'disable' AND '$(NuSealValidationScope)' == 'Transitive'">
       <None Include="$(NuSealOutputPath)\$(PackageId).props" Pack="true" PackagePath="buildTransitive\$(PackageId).props" Visible="false"/>
       <None Include="$(NuSealOutputPath)\$(PackageId).targets" Pack="true" PackagePath="buildTransitive\$(PackageId).targets" Visible="false"/>
     </ItemGroup>
