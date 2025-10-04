@@ -167,7 +167,7 @@ It alters the behavior when no valid license is found.
 ### 2. Validation Scope
 Depending on the nature of the library and the business model, authors may want a different strategy where even transitive consumers are required to have a license.
   - `Direct` (default): The assets are packed only to `build` directory. Only projects that directly consume your package will be validated for licenses.
-  - `Transitive`: The assets are packed to `build` and `buildTransitive` directories. The assets will flow to all consumers, direct and transitive. To avoid cluttering the build for large solutions, we're constraining the validation to only executable assemblies for this scope.
+  - `Transitive`: The assets are packed to `build` (to support projects using `packages.config`) and `buildTransitive` directories. The assets will flow to all consumers, direct and transitive. For this scope, to avoid cluttering the build for large solutions, we're constraining the validation to only executable assemblies.
 
 ```xml
 <PropertyGroup>
@@ -181,9 +181,9 @@ Note: We pack to `build` directory even for `Transitive` scope, so we can suppor
 The generated target, depending on the validation scope, may or may not include a condition
   - `Direct` (default): No condition is applied. All projects that directly consume your package will be validated for licenses.
   - `Transitive`: The target includes a condition to only validate executable assemblies.
-  ```xml
-  Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe'"
-  ```
+    ```xml
+    Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe'"
+    ```
 You may alter this behavior by specifying your own condition.
 
 ```xml
@@ -216,7 +216,7 @@ By default, once we generate the `YourPackageId.props` and `YourPackageId.target
 <None Include="$(OutputPath)\$(PackageId).targets" Pack="true" PackagePath="build\$(PackageId).targets" Visible="false"/>
 ```
 
-If you have a different strategy for generating NuGet packages (e.g. they use nuspec files), or you want to manually pack the assets; then you may disable packing assets. We'll just generate the assets in the output path, and it's up to you to pack or further process them.
+If you have a different strategy for generating NuGet packages (e.g. use nuspec files), or you want to manually pack the assets; then you may disable packing assets. We'll just generate the assets in the output path, and it's up to you to pack or further process them.
 
 ```xml
 <PropertyGroup>
