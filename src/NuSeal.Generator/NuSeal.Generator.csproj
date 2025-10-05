@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Package Metadata">
-    <Version>0.3.0</Version>
+    <Version>0.4.0</Version>
     <PackageId>NuSeal.Generator</PackageId>
     <Title>NuSeal.Generator</Title>
     <Description>A helper library for generating licenses for NuSeal.</Description>
