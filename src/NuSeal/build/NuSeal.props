@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <NuSealAssembly>$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', '..', 'tasks', 'netstandard2.0', 'NuSeal_0_3_0.dll'))</NuSealAssembly>
+    <NuSealAssembly>$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', '..', 'tasks', 'netstandard2.0', 'NuSeal_0_4_0.dll'))</NuSealAssembly>
   </PropertyGroup>
 
   <UsingTask

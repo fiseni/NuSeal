@@ -4,7 +4,7 @@
   <Import Project="..\ProjectMetadata.targets" />
 
   <PropertyGroup>
-    <AssemblyName>NuSeal_0_3_0</AssemblyName>
+    <AssemblyName>NuSeal_0_4_0</AssemblyName>
     <RootNamespace>NuSeal</RootNamespace>
     <TargetFramework>netstandard2.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Package Metadata">
-    <Version>0.3.0</Version>
+    <Version>0.4.0</Version>
     <PackageId>NuSeal</PackageId>
     <Title>NuSeal</Title>
     <Description>A library that validates licenses during build time.</Description>
