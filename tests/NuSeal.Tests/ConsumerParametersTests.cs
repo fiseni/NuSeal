@@ -79,7 +79,7 @@ public class ConsumerParametersTests
             validationMode: "Error",
             validationScope: "Transitive");
 
-        parameters.Suffix.Should().Be("MyComplexPackageId");
+        parameters.PackageSuffix.Should().Be("MyComplexPackageId");
     }
 
     [Theory]
@@ -150,7 +150,7 @@ public class ConsumerParametersTests
         parameters.TargetsFile.Should().Be(targetsFile);
         parameters.ValidationMode.Should().Be("Warning");
         parameters.ValidationScope.Should().Be("Direct");
-        parameters.Suffix.Should().Be("PrefixPackageId");
+        parameters.PackageSuffix.Should().Be("PrefixPackageId");
         parameters.Options.Should().NotBeNull();
     }
 }

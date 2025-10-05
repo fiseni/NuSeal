@@ -8,7 +8,7 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
     private readonly RsaPemPair _rsaPemPair;
     private readonly TestBuildEngine _buildEngine;
     private readonly string _tempDir;
-    private readonly string _mainAssemblyPath;
+    private readonly string _targetAssemblyPath;
 
     public ValidateLicenseTaskTests_0_4_0()
     {
@@ -16,8 +16,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         _buildEngine = new TestBuildEngine();
         _tempDir = Path.Combine(Path.GetTempPath(), $"NuSealTests_{Guid.NewGuid()}");
         Directory.CreateDirectory(_tempDir);
-        _mainAssemblyPath = Path.Combine(_tempDir, "MainApp.dll");
-        File.WriteAllText(_mainAssemblyPath, "Dummy content");
+        _targetAssemblyPath = Path.Combine(_tempDir, "MainApp.dll");
+        File.WriteAllText(_targetAssemblyPath, "Dummy content");
     }
 
     [Fact]
@@ -29,7 +29,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = _mainAssemblyPath,
+            TargetAssemblyPath = _targetAssemblyPath,
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "TestPackageId",
             ProtectedAssemblyName = "TestAssembly",
             Pems = GeneratePemTaskItems(productName),
@@ -54,7 +55,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = _mainAssemblyPath,
+            TargetAssemblyPath = _targetAssemblyPath,
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "TestPackageId",
             ProtectedAssemblyName = "TestAssembly",
             Pems = GeneratePemTaskItems(productName),
@@ -78,7 +80,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = _mainAssemblyPath,
+            TargetAssemblyPath = _targetAssemblyPath,
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "TestPackageId",
             ProtectedAssemblyName = "TestAssembly",
             Pems = GeneratePemTaskItems(productName),
@@ -102,7 +105,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = _mainAssemblyPath,
+            TargetAssemblyPath = _targetAssemblyPath,
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "TestPackageId",
             ProtectedAssemblyName = "TestAssembly",
             Pems = GeneratePemTaskItems(productName),
@@ -127,7 +131,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = _mainAssemblyPath,
+            TargetAssemblyPath = _targetAssemblyPath,
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "TestPackageId",
             ProtectedAssemblyName = "TestAssembly",
             Pems = Array.Empty<ITaskItem>(),
@@ -161,7 +166,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = _mainAssemblyPath,
+            TargetAssemblyPath = _targetAssemblyPath,
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "TestPackageId",
             ProtectedAssemblyName = "TestAssembly",
             Pems = GeneratePemTaskItems(productName),
@@ -195,7 +201,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = _mainAssemblyPath,
+            TargetAssemblyPath = _targetAssemblyPath,
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "TestPackageId",
             ProtectedAssemblyName = "TestAssembly",
             Pems = GeneratePemTaskItems(productName),
@@ -229,7 +236,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = _mainAssemblyPath,
+            TargetAssemblyPath = _targetAssemblyPath,
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "TestPackageId",
             ProtectedAssemblyName = "TestAssembly",
             Pems = GeneratePemTaskItems(productName),
@@ -263,7 +271,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = _mainAssemblyPath,
+            TargetAssemblyPath = _targetAssemblyPath,
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "TestPackageId",
             ProtectedAssemblyName = "TestAssembly",
             Pems = GeneratePemTaskItems(productName),
@@ -280,12 +289,13 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
     }
 
     [Fact]
-    public void ReturnsTrue_LogsInfo_GivenNullMainAssemblyPath()
+    public void ReturnsTrue_LogsInfo_GivenNullTargetAssemblyPath()
     {
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = null!,
+            TargetAssemblyPath = null!,
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "x",
             Pems = GeneratePemTaskItems("x"),
@@ -302,12 +312,13 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
     }
 
     [Fact]
-    public void ReturnsTrue_LogsInfo_GivenEmptyMainAssemblyPath()
+    public void ReturnsTrue_LogsInfo_GivenEmptyTargetAssemblyPath()
     {
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = "",
+            TargetAssemblyPath = "",
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "x",
             Pems = GeneratePemTaskItems("x"),
@@ -324,12 +335,82 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
     }
 
     [Fact]
-    public void ReturnsTrue_LogsInfo_GivenWhitespaceMainAssemblyPath()
+    public void ReturnsTrue_LogsInfo_GivenWhitespaceTargetAssemblyPath()
     {
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = "  ",
+            TargetAssemblyPath = "  ",
+            NuSealVersion = "1.2.3",
+            ProtectedPackageId = "x",
+            ProtectedAssemblyName = "x",
+            Pems = GeneratePemTaskItems("x"),
+            ValidationMode = "x",
+            ValidationScope = "x",
+        };
+
+        var result = task.Execute();
+
+        result.Should().BeTrue();
+        _buildEngine.Messages.Should().NotBeEmpty();
+        _buildEngine.Warnings.Should().BeEmpty();
+        _buildEngine.Errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void ReturnsTrue_LogsInfo_GivenNullNuSealVersion()
+    {
+        var task = new ValidateLicenseTask_0_4_0
+        {
+            BuildEngine = _buildEngine,
+            TargetAssemblyPath = "x",
+            NuSealVersion = null!,
+            ProtectedPackageId = "x",
+            ProtectedAssemblyName = "x",
+            Pems = GeneratePemTaskItems("x"),
+            ValidationMode = "x",
+            ValidationScope = "x",
+        };
+
+        var result = task.Execute();
+
+        result.Should().BeTrue();
+        _buildEngine.Messages.Should().NotBeEmpty();
+        _buildEngine.Warnings.Should().BeEmpty();
+        _buildEngine.Errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void ReturnsTrue_LogsInfo_GivenEmptyNuSealVersion()
+    {
+        var task = new ValidateLicenseTask_0_4_0
+        {
+            BuildEngine = _buildEngine,
+            TargetAssemblyPath = "x",
+            NuSealVersion = "",
+            ProtectedPackageId = "x",
+            ProtectedAssemblyName = "x",
+            Pems = GeneratePemTaskItems("x"),
+            ValidationMode = "x",
+            ValidationScope = "x",
+        };
+
+        var result = task.Execute();
+
+        result.Should().BeTrue();
+        _buildEngine.Messages.Should().NotBeEmpty();
+        _buildEngine.Warnings.Should().BeEmpty();
+        _buildEngine.Errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void ReturnsTrue_LogsInfo_GivenWhitespaceNuSealVersion()
+    {
+        var task = new ValidateLicenseTask_0_4_0
+        {
+            BuildEngine = _buildEngine,
+            TargetAssemblyPath = "x",
+            NuSealVersion = "  ",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "x",
             Pems = GeneratePemTaskItems("x"),
@@ -351,7 +432,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = "x",
+            TargetAssemblyPath = "x",
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = null!,
             ProtectedAssemblyName = "x",
             Pems = GeneratePemTaskItems("x"),
@@ -373,7 +455,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = "x",
+            TargetAssemblyPath = "x",
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "",
             ProtectedAssemblyName = "x",
             Pems = GeneratePemTaskItems("x"),
@@ -395,7 +478,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = "x",
+            TargetAssemblyPath = "x",
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "  ",
             ProtectedAssemblyName = "x",
             Pems = GeneratePemTaskItems("x"),
@@ -417,7 +501,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = "x",
+            TargetAssemblyPath = "x",
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = null!,
             Pems = GeneratePemTaskItems("x"),
@@ -439,7 +524,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = "x",
+            TargetAssemblyPath = "x",
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "",
             Pems = GeneratePemTaskItems("x"),
@@ -461,7 +547,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = "x",
+            TargetAssemblyPath = "x",
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "  ",
             Pems = GeneratePemTaskItems("x"),
@@ -483,7 +570,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = "x",
+            TargetAssemblyPath = "x",
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "x",
             Pems = null!,
@@ -505,7 +593,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = "x",
+            TargetAssemblyPath = "x",
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "x",
             Pems = Array.Empty<ITaskItem>(),
@@ -527,7 +616,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = "x",
+            TargetAssemblyPath = "x",
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "x",
             Pems = GeneratePemTaskItems("x"),
@@ -549,7 +639,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = "x",
+            TargetAssemblyPath = "x",
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "x",
             Pems = GeneratePemTaskItems("x"),
@@ -571,7 +662,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = "x",
+            TargetAssemblyPath = "x",
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "x",
             Pems = GeneratePemTaskItems("x"),
@@ -593,7 +685,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = "x",
+            TargetAssemblyPath = "x",
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "x",
             Pems = GeneratePemTaskItems("x"),
@@ -615,7 +708,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = "x",
+            TargetAssemblyPath = "x",
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "x",
             Pems = GeneratePemTaskItems("x"),
@@ -637,7 +731,8 @@ public class ValidateLicenseTaskTests_0_4_0 : IDisposable
         var task = new ValidateLicenseTask_0_4_0
         {
             BuildEngine = _buildEngine,
-            MainAssemblyPath = "x",
+            TargetAssemblyPath = "x",
+            NuSealVersion = "1.2.3",
             ProtectedPackageId = "x",
             ProtectedAssemblyName = "x",
             Pems = GeneratePemTaskItems("x"),

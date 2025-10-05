@@ -27,7 +27,8 @@ internal class ConsumerParameters
         Options = new NuSealOptions(validationMode, validationScope);
         ValidationMode = Options.ValidationMode.ToString();
         ValidationScope = Options.ValidationScope.ToString();
-        Suffix = packageId.Replace(".", "");
+        PackageSuffix = packageId.Replace(".", "");
+        NuSealVersionSuffix = nuSealVersion.Replace(".", "_").Replace("-", "_");
 
         if (string.IsNullOrWhiteSpace(condition))
         {
@@ -61,6 +62,7 @@ internal class ConsumerParameters
     public string? TargetsFile { get; }
     public string ValidationMode { get; }
     public string ValidationScope { get; }
-    public string Suffix { get; set; }
+    public string PackageSuffix { get; }
+    public string NuSealVersionSuffix { get; }
     public NuSealOptions Options { get; }
 }

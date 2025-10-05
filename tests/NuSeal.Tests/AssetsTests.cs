@@ -30,7 +30,7 @@ public class AssetsTests : IDisposable
             <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
               <PropertyGroup>
-                <NuSealAssembly_PrefixPackageId1>$([MSBuild]::NormalizePath('$(NugetPackageRoot)', 'nuseal', '1.2.3', 'tasks', 'netstandard2.0', 'NuSeal.dll'))</NuSealAssembly_PrefixPackageId1>
+                <NuSealAssembly_1_2_3>$([MSBuild]::NormalizePath('$(NugetPackageRoot)', 'nuseal', '1.2.3', 'tasks', 'netstandard2.0', 'NuSeal_1_2_3.dll'))</NuSealAssembly_1_2_3>
               </PropertyGroup>
 
               <ItemGroup>
@@ -60,7 +60,7 @@ public class AssetsTests : IDisposable
 
               <UsingTask
                 TaskName="NuSeal.ValidateLicenseTask_0_4_0"
-                AssemblyFile="$(NuSealAssembly_PrefixPackageId1)"
+                AssemblyFile="$(NuSealAssembly_1_2_3)"
                 TaskFactory="TaskHostFactory" />
 
             </Project>
@@ -95,7 +95,8 @@ public class AssetsTests : IDisposable
                       >
 
                 <NuSeal.ValidateLicenseTask_0_4_0
-                  MainAssemblyPath="$(TargetPath)"
+                  TargetAssemblyPath="$(TargetPath)"
+                  NuSealVersion="1.2.3"
                   ProtectedPackageId="Prefix.PackageId1"
                   ProtectedAssemblyName="Assembly1"
                   Pems="@(Pem_PrefixPackageId1)"
@@ -137,7 +138,8 @@ public class AssetsTests : IDisposable
                       Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe'">
 
                 <NuSeal.ValidateLicenseTask_0_4_0
-                  MainAssemblyPath="$(TargetPath)"
+                  TargetAssemblyPath="$(TargetPath)"
+                  NuSealVersion="1.2.3"
                   ProtectedPackageId="Prefix.PackageId1"
                   ProtectedAssemblyName="Assembly1"
                   Pems="@(Pem_PrefixPackageId1)"
@@ -179,7 +181,8 @@ public class AssetsTests : IDisposable
                       Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe'">
 
                 <NuSeal.ValidateLicenseTask_0_4_0
-                  MainAssemblyPath="$(TargetPath)"
+                  TargetAssemblyPath="$(TargetPath)"
+                  NuSealVersion="1.2.3"
                   ProtectedPackageId="Prefix.PackageId1"
                   ProtectedAssemblyName="Assembly1"
                   Pems="@(Pem_PrefixPackageId1)"
@@ -221,7 +224,8 @@ public class AssetsTests : IDisposable
                       Condition="'$(OutputType)' == 'Exe'">
 
                 <NuSeal.ValidateLicenseTask_0_4_0
-                  MainAssemblyPath="$(TargetPath)"
+                  TargetAssemblyPath="$(TargetPath)"
+                  NuSealVersion="1.2.3"
                   ProtectedPackageId="Prefix.PackageId1"
                   ProtectedAssemblyName="Assembly1"
                   Pems="@(Pem_PrefixPackageId1)"
