@@ -3,16 +3,16 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>AuthorPackage</PackageId>
-    <Version>0.0.1</Version>
+    <Version>0.4.0</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NuSeal" Version="0.3.0"/>
+    <PackageReference Include="NuSeal" Version="0.4.0"/>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="YourProductName.nuseal.pem" />
+    <NuSealPem Include="public_key.pem" ProductName="YourProductName" />
   </ItemGroup>
 
 </Project>
