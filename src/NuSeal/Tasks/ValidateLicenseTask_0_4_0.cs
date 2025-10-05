@@ -7,7 +7,8 @@ namespace NuSeal;
 
 public partial class ValidateLicenseTask_0_4_0 : Task
 {
-    public string MainAssemblyPath { get; set; } = "";
+    public string TargetAssemblyPath { get; set; } = "";
+    public string NuSealVersion { get; set; } = "";
     public string ProtectedPackageId { get; set; } = "";
     public string ProtectedAssemblyName { get; set; } = "";
     public ITaskItem[] Pems { get; set; } = Array.Empty<ITaskItem>();
@@ -16,7 +17,8 @@ public partial class ValidateLicenseTask_0_4_0 : Task
 
     public override bool Execute()
     {
-        if (string.IsNullOrWhiteSpace(MainAssemblyPath)
+        if (string.IsNullOrWhiteSpace(TargetAssemblyPath)
+            || string.IsNullOrWhiteSpace(NuSealVersion)
             || string.IsNullOrWhiteSpace(ProtectedPackageId)
             || string.IsNullOrWhiteSpace(ProtectedAssemblyName)
             || Pems is null
@@ -45,7 +47,7 @@ public partial class ValidateLicenseTask_0_4_0 : Task
 
             foreach (var pem in pems)
             {
-                if (FileUtils.TryGetLicense(MainAssemblyPath, pem.ProductName, out var license))
+                if (FileUtils.TryGetLicense(TargetAssemblyPath, pem.ProductName, out var license))
                 {
                     var validationResult = LicenseValidator.Validate(pem, license);
                     if (validationResult == LicenseValidationResult.Valid)

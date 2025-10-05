@@ -4,7 +4,7 @@
   <Import Project="..\ProjectMetadata.targets" />
 
   <PropertyGroup>
-    <AssemblyName>NuSeal</AssemblyName>
+    <AssemblyName>NuSeal_0_3_0</AssemblyName>
     <RootNamespace>NuSeal</RootNamespace>
     <TargetFramework>netstandard2.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>

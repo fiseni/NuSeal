@@ -13,7 +13,7 @@ internal class Assets
         var pemItems = string.Join(Environment.NewLine, parameters.Pems.Select(x =>
         {
             var item = $"""
-            <Pem_{parameters.Suffix} Include="
+            <Pem_{parameters.PackageSuffix} Include="
             {x.PublicKeyPem}
             " ProductName="{x.ProductName}" />
             """;
@@ -24,7 +24,7 @@ internal class Assets
             <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
               <PropertyGroup>
-                <NuSealAssembly_{parameters.Suffix}>$([MSBuild]::NormalizePath('$(NugetPackageRoot)', 'nuseal', '{parameters.NuSealVersion}', 'tasks', 'netstandard2.0', 'NuSeal.dll'))</NuSealAssembly_{parameters.Suffix}>
+                <NuSealAssembly_{parameters.NuSealVersionSuffix}>$([MSBuild]::NormalizePath('$(NugetPackageRoot)', 'nuseal', '{parameters.NuSealVersion}', 'tasks', 'netstandard2.0', 'NuSeal_{parameters.NuSealVersionSuffix}.dll'))</NuSealAssembly_{parameters.NuSealVersionSuffix}>
               </PropertyGroup>
 
               <ItemGroup>
@@ -33,7 +33,7 @@ internal class Assets
 
               <UsingTask
                 TaskName="NuSeal.{TASK_NAME}"
-                AssemblyFile="$(NuSealAssembly_{parameters.Suffix})"
+                AssemblyFile="$(NuSealAssembly_{parameters.NuSealVersionSuffix})"
                 TaskFactory="TaskHostFactory" />
 
             </Project>
@@ -46,15 +46,16 @@ internal class Assets
         var output = $"""
             <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-              <Target Name="NuSealValidateLicense_{parameters.Suffix}"
+              <Target Name="NuSealValidateLicense_{parameters.PackageSuffix}"
                       AfterTargets="AfterBuild"
                       {parameters.TargetCondition}>
 
                 <NuSeal.{TASK_NAME}
-                  MainAssemblyPath="$(TargetPath)"
+                  TargetAssemblyPath="$(TargetPath)"
+                  NuSealVersion="{parameters.NuSealVersion}"
                   ProtectedPackageId="{parameters.PackageId}"
                   ProtectedAssemblyName="{parameters.AssemblyName}"
-                  Pems="@(Pem_{parameters.Suffix})"
+                  Pems="@(Pem_{parameters.PackageSuffix})"
                   ValidationMode="{parameters.ValidationMode}"
                   ValidationScope="{parameters.ValidationScope}"
                   />
