@@ -29,4 +29,4 @@ jobs:
       run: dotnet pack ci.slnf --configuration Release --no-build --no-restore --output .
 
     - name: Push to NuGet
-      run: dotnet nuget push "NuSeal.Generator.*.nupkg" --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push "NuSeal.*.nupkg" --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
