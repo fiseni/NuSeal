@@ -24,7 +24,7 @@ internal class Assets
             <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
               <PropertyGroup>
-                <NuSealAssembly_{parameters.NuSealVersionSuffix}>$([MSBuild]::NormalizePath('$(NugetPackageRoot)', 'nuseal', '{parameters.NuSealVersion}', 'tasks', 'netstandard2.0', 'NuSeal_{parameters.NuSealVersionSuffix}.dll'))</NuSealAssembly_{parameters.NuSealVersionSuffix}>
+                <NuSealAssembly_{parameters.NuSealVersionSuffix}>$([MSBuild]::NormalizePath('$(NugetPackageRoot)', 'nuseal', '{parameters.NuSealVersion}', 'tasks', 'netstandard2.0', 'NuSeal_0_4_0.dll'))</NuSealAssembly_{parameters.NuSealVersionSuffix}>
               </PropertyGroup>
 
               <ItemGroup>
