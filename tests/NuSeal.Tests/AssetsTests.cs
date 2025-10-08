@@ -30,7 +30,7 @@ public class AssetsTests : IDisposable
             <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
               <PropertyGroup>
-                <NuSealAssembly_1_2_3>$([MSBuild]::NormalizePath('$(NugetPackageRoot)', 'nuseal', '1.2.3', 'tasks', 'netstandard2.0', 'NuSeal_1_2_3.dll'))</NuSealAssembly_1_2_3>
+                <NuSealAssembly_1_2_3>$([MSBuild]::NormalizePath('$(NugetPackageRoot)', 'nuseal', '1.2.3', 'tasks', 'netstandard2.0', 'NuSeal_0_4_0.dll'))</NuSealAssembly_1_2_3>
               </PropertyGroup>
 
               <ItemGroup>
