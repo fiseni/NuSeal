@@ -46,7 +46,7 @@ Package authors first need to create public/private key pairs. You can use the `
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="NuSeal.Generator" Version="0.4.0" />
+  <PackageReference Include="NuSeal.Generator" Version="0.4.1" />
 </ItemGroup>
 ```
 
@@ -103,7 +103,7 @@ To protect your NuGet package, add the `NuSeal` package as a dependency:
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="NuSeal" Version="0.4.0" />
+  <PackageReference Include="NuSeal" Version="0.4.1" />
 </ItemGroup>
 ```
 
