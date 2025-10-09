@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AuthorPackage" Version="0.4.0" />
+    <PackageReference Include="AuthorPackage" Version="0.4.1" />
   </ItemGroup>
 
   <!-- // We're additional NuGet source in this repo so we can consume AuthorPAckage --> 
