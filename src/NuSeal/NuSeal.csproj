@@ -43,6 +43,7 @@
   </PropertyGroup>
 
   <ItemGroup Label="Packaging files">
+    <None Include="build\*" Pack="true" PackagePath="build\" />
     <None Include="build\*" Pack="true" PackagePath="buildMultiTargeting\" />
   </ItemGroup>
 
