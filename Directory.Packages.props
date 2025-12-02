@@ -7,17 +7,17 @@
 
   <ItemGroup Label="Package dependencies">
     <PackageVersion Include="Microsoft.Build.Framework" Version="17.14.8" />
-    <PackageVersion Include="Microsoft.Build.Utilities.Core" Version="17.14.8" />
-    <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.14.0" />
-    <PackageVersion Include="System.Text.Json" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Build.Utilities.Core" Version="18.0.2" />
+    <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.15.0" />
+    <PackageVersion Include="System.Text.Json" Version="10.0.0" />
     <PackageVersion Include="BouncyCastle.Cryptography" Version="2.6.2" />
   </ItemGroup>
 
   <ItemGroup Label="Test projects dependencies">
     <PackageVersion Include="FluentAssertions" Version="[7.2.0]" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="xunit" Version="2.9.3" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
   </ItemGroup>
 
