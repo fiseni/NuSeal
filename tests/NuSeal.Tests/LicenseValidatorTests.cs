@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace Tests;
 
-public class LicenseValidatorTests
+public sealed class LicenseValidatorTests
 {
     private const string _productName = "TestProduct";
     private readonly RsaKeyPair _keyPair;

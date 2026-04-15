@@ -1,6 +1,6 @@
 ﻿namespace Tests;
 
-public class ConsumerParametersTests
+public sealed class ConsumerParametersTests
 {
     [Fact]
     public void Constructor_SetsDefaultOptions_GivenNull()

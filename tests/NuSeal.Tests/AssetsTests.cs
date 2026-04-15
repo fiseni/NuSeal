@@ -1,6 +1,6 @@
 ﻿namespace Tests;
 
-public class AssetsTests : IDisposable
+public sealed class AssetsTests : IDisposable
 {
     private readonly string _testDirectory;
 

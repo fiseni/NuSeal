@@ -3,7 +3,7 @@ using Microsoft.Build.Utilities;
 
 namespace Tests;
 
-public class GenerateConsumerAssetsTaskTests : IDisposable
+public sealed class GenerateConsumerAssetsTaskTests : IDisposable
 {
     private readonly TestBuildEngine _buildEngine;
     private readonly string _testDirectory;

@@ -1,6 +1,6 @@
 ﻿namespace Tests;
 
-public class FileUtils_TryGetLicenseTests : IDisposable
+public sealed class FileUtils_TryGetLicenseTests : IDisposable
 {
     private readonly string _testRootDirectory;
     private readonly string _subDirectory;

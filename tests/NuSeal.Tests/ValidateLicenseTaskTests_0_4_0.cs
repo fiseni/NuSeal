@@ -3,7 +3,7 @@ using Microsoft.Build.Utilities;
 
 namespace Tests;
 
-public class ValidateLicenseTaskTests_0_4_0 : IDisposable
+public sealed class ValidateLicenseTaskTests_0_4_0 : IDisposable
 {
     private readonly RsaPemPair _rsaPemPair;
     private readonly TestBuildEngine _buildEngine;
