@@ -66,7 +66,7 @@ showhelp()
   echo -e "user\t\t-\tDeletes *.csproj.user files.";
   echo -e "coverages\t-\tDeletes test and coverage artifacts.";
   echo -e "branches\t-\tDeletes local unused git branches (e.g. no corresponding remote branch).";
-  echo -e "all\t\t-\tApply all options";
+  echo -e "all\t\t-\tApply all options (except branches option)";
 }
 
 safetyCheck;
@@ -92,7 +92,6 @@ elif [ "$1" = "all" ]; then
   deleteLogs;
   deleteUserCsprojFiles;
   deleteTestResults;
-  deleteLocalGitBranches;
 else
   deleteBinObj;
 fi
