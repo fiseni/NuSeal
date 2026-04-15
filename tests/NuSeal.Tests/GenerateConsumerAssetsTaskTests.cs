@@ -330,7 +330,7 @@ public sealed class GenerateConsumerAssetsTaskTests : IDisposable
             -----END PUBLIC KEY-----
             """;
 
-            var path = Path.Combine(_testDirectory, $"{Guid.NewGuid().ToString()}.pem");
+            var path = Path.Combine(_testDirectory, $"{Guid.NewGuid()}.pem");
             File.WriteAllText(path, publicKeyPem);
             var taskItem = new TaskItem(path);
             if (!string.IsNullOrWhiteSpace(productName))
