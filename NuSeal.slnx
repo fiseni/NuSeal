@@ -6,17 +6,24 @@
   <Folder Name="/_meta/">
     <File Path=".editorconfig" />
     <File Path=".gitattributes" />
-    <File Path=".github/workflows/ci.yml" />
-    <File Path=".github/workflows/release-nuseal-generator.yml" />
-    <File Path=".github/workflows/release-nuseal.yml" />
-    <File Path=".github/workflows/release.yml" />
     <File Path=".gitignore" />
+    <File Path="clean.sh" />
+    <File Path="CODE_OF_CONDUCT.md" />
+    <File Path="coverage.sh" />
     <File Path="Directory.Packages.props" />
     <File Path="exclusion.dic" />
+    <File Path="LICENSE.txt" />
+    <File Path="nuget.config" />
     <File Path="readme-nuget.md" />
     <File Path="README.md" />
     <File Path="src/ProjectMetadata.props" />
     <File Path="src/ProjectMetadata.targets" />
+  </Folder>
+  <Folder Name="/_meta/workflows/">
+    <File Path=".github/workflows/ci.yml" />
+    <File Path=".github/workflows/release-nuseal-generator.yml" />
+    <File Path=".github/workflows/release-nuseal.yml" />
+    <File Path=".github/workflows/release.yml" />
   </Folder>
   <Project Path="src/NuSeal.Generator/NuSeal.Generator.csproj" />
   <Project Path="src/NuSeal/NuSeal.csproj" />
