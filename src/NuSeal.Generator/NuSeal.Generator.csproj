@@ -6,14 +6,14 @@
   <PropertyGroup>
     <AssemblyName>NuSeal.Generator</AssemblyName>
     <RootNamespace>NuSeal</RootNamespace>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Label="Package Metadata">
-    <Version>0.4.2</Version>
+    <Version>0.5.0</Version>
     <PackageId>NuSeal.Generator</PackageId>
     <Title>NuSeal.Generator</Title>
     <Description>A helper library for generating licenses for NuSeal.</Description>
