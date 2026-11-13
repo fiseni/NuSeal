@@ -6,8 +6,6 @@ namespace NuSeal;
 
 internal class Assets
 {
-    private const string TASK_NAME = nameof(ValidateLicenseTask_0_4_0);
-
     public static string GenerateProps(ConsumerParameters parameters)
     {
         var pemItems = string.Join(Environment.NewLine, parameters.Pems.Select(x =>
@@ -24,7 +22,7 @@ internal class Assets
             <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
               <PropertyGroup>
-                <NuSealAssembly_{parameters.NuSealVersionSuffix}>$([MSBuild]::NormalizePath('$(NugetPackageRoot)', 'nuseal', '{parameters.NuSealVersion}', 'tasks', 'netstandard2.0', 'NuSeal_0_4_0.dll'))</NuSealAssembly_{parameters.NuSealVersionSuffix}>
+                <NuSealAssembly_{parameters.NuSealVersionSuffix}>$([MSBuild]::NormalizePath('$(NugetPackageRoot)', 'nuseal', '{parameters.NuSealVersion}', 'tasks', 'netstandard2.0', '{NuSealMetadata.AssemblyName}.dll'))</NuSealAssembly_{parameters.NuSealVersionSuffix}>
               </PropertyGroup>
 
               <ItemGroup>
@@ -32,7 +30,7 @@ internal class Assets
               </ItemGroup>
 
               <UsingTask
-                TaskName="NuSeal.{TASK_NAME}"
+                TaskName="NuSeal.{NuSealMetadata.ValidateTaskNameLatest}"
                 AssemblyFile="$(NuSealAssembly_{parameters.NuSealVersionSuffix})"
                 TaskFactory="TaskHostFactory" />
 
@@ -50,7 +48,7 @@ internal class Assets
                       AfterTargets="AfterBuild"
                       {parameters.TargetCondition}>
 
-                <NuSeal.{TASK_NAME}
+                <NuSeal.{NuSealMetadata.ValidateTaskNameLatest}
                   TargetAssemblyPath="$(TargetPath)"
                   NuSealVersion="{parameters.NuSealVersion}"
                   ProtectedPackageId="{parameters.PackageId}"

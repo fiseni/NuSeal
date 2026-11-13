@@ -11,8 +11,7 @@ public partial class GenerateConsumerAssetsTask : Task
     [Required]
     public string NuSealAssetsPath { get; set; } = "";
 
-    [Required]
-    public string NuSealVersion { get; set; } = "";
+    public string NuSealVersion { get; set; } = NuSealMetadata.Version;
 
     [Required]
     public string ConsumerOutputPath { get; set; } = "";

@@ -219,7 +219,7 @@ public sealed class GenerateConsumerAssetsTaskTests : IDisposable
             <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
               <PropertyGroup>
-                <NuSealAssembly_1_2_3>$([MSBuild]::NormalizePath('$(NugetPackageRoot)', 'nuseal', '1.2.3', 'tasks', 'netstandard2.0', 'NuSeal_0_4_0.dll'))</NuSealAssembly_1_2_3>
+                <NuSealAssembly_1_2_3>$([MSBuild]::NormalizePath('$(NugetPackageRoot)', 'nuseal', '1.2.3', 'tasks', 'netstandard2.0', 'NuSeal_0_5_0.dll'))</NuSealAssembly_1_2_3>
               </PropertyGroup>
 
               <ItemGroup>
@@ -248,7 +248,7 @@ public sealed class GenerateConsumerAssetsTaskTests : IDisposable
               </ItemGroup>
 
               <UsingTask
-                TaskName="NuSeal.ValidateLicenseTask_0_4_0"
+                TaskName="NuSeal.ValidateLicenseTask_0_5_0"
                 AssemblyFile="$(NuSealAssembly_1_2_3)"
                 TaskFactory="TaskHostFactory" />
 
@@ -267,7 +267,7 @@ public sealed class GenerateConsumerAssetsTaskTests : IDisposable
                       AfterTargets="AfterBuild"
                       Condition="'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe'">
 
-                <NuSeal.ValidateLicenseTask_0_4_0
+                <NuSeal.ValidateLicenseTask_0_5_0
                   TargetAssemblyPath="$(TargetPath)"
                   NuSealVersion="1.2.3"
                   ProtectedPackageId="Prefix.PackageId1"

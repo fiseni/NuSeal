@@ -9,7 +9,7 @@
 
     <NuSeal.GenerateConsumerAssetsTask
         NuSealAssetsPath="$(MSBuildThisFileDirectory)"
-        NuSealVersion="@(PackageReference->WithMetadataValue('Identity', 'NuSeal')->'%(Version)')"
+        NuSealVersion=""
         ConsumerOutputPath="$(NuSealOutputPath)"
         ConsumerPackageId="$(PackageId)"
         ConsumerAssemblyName="$(AssemblyName)"
