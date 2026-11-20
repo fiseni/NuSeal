@@ -1,4 +1,7 @@
-﻿namespace NuSeal;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace NuSeal;
 
 internal class ConsumerParameters
 {
@@ -30,25 +33,35 @@ internal class ConsumerParameters
         PackageSuffix = packageId.Replace(".", "");
         NuSealVersionSuffix = nuSealVersion.Replace(".", "_").Replace("-", "_");
 
+        string? conditionExpression;
         if (string.IsNullOrWhiteSpace(condition))
         {
-            TargetCondition = Options.ValidationScope == NuSealValidationScope.Transitive
-                ? $"Condition=\"'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe'\""
-                : "";
+            conditionExpression = Options.ValidationScope == NuSealValidationScope.Transitive
+                ? "'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe'"
+                : null;
         }
         else
         {
-            var parsedCondition = condition!.Replace("##", "$").Replace("#", "$");
-            if (parsedCondition[0] != '"')
-            {
-                parsedCondition = $"\"{parsedCondition}";
-            }
-            if (parsedCondition[parsedCondition.Length - 1] != '"')
-            {
-                parsedCondition = $"{parsedCondition}\"";
-            }
-            TargetCondition = $"Condition={parsedCondition}";
+            var parsedCondition = condition!.Replace("##", "@").Replace("#", "$");
+            conditionExpression = parsedCondition.Length >= 2 && parsedCondition[0] == '"' && parsedCondition[parsedCondition.Length - 1] == '"'
+                ? parsedCondition.Substring(1, parsedCondition.Length - 2)
+                : parsedCondition;
         }
+
+        var licenseConditions = pems
+            .SelectMany(pem => pem.AllowedLicenses.Select(license => $"'$({pem.ProductName}License)' != '{license}'"))
+            .ToArray();
+
+        var conditions = new List<string>();
+        if (conditionExpression is not null)
+        {
+            conditions.Add(licenseConditions.Length > 0 ? $"({conditionExpression})" : conditionExpression);
+        }
+        conditions.AddRange(licenseConditions);
+
+        TargetCondition = conditions.Count > 0
+            ? $"Condition=\"{string.Join(" And ", conditions)}\""
+            : "";
     }
 
     public string NuSealAssetsPath { get; }

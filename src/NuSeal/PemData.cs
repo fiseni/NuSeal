@@ -10,4 +10,5 @@ internal class PemData
 
     public string ProductName { get; }
     public string PublicKeyPem { get; }
+    public string[] AllowedLicenses { get; set; } = [];
 }

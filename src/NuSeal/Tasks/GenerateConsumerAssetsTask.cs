@@ -72,7 +72,12 @@ public partial class GenerateConsumerAssetsTask : Task
             var pemFileName = x.ItemSpec;
             var publicKeyPem = File.ReadAllText(pemFileName);
             var productName = x.GetMetadata("ProductName");
-            return new PemData(productName, publicKeyPem);
+            var allowedLicenses = x.GetMetadata("AllowedLicenses").Split([';'], StringSplitOptions.RemoveEmptyEntries);
+            var pemData = new PemData(productName, publicKeyPem)
+            {
+                AllowedLicenses = allowedLicenses
+            };
+            return pemData;
         }).ToArray();
 
         if (pems.Any(x => string.IsNullOrEmpty(x.ProductName)))

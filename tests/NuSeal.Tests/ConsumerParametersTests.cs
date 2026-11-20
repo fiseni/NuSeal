@@ -20,6 +20,7 @@ public sealed class ConsumerParametersTests
 
         parameters.ValidationMode.Should().Be("Error");
         parameters.ValidationScope.Should().Be("Direct");
+        parameters.TargetCondition.Should().BeEmpty();
         parameters.Options.Should().NotBeNull();
     }
 
@@ -41,6 +42,7 @@ public sealed class ConsumerParametersTests
 
         parameters.PropsFile.Should().BeNull();
         parameters.TargetsFile.Should().BeNull();
+        parameters.TargetCondition.Should().Be("Condition=\"'$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe'\"");
     }
 
     [Fact]
@@ -112,6 +114,86 @@ public sealed class ConsumerParametersTests
     }
 
     [Fact]
+    public void Constructor_AddsAllowedLicenseConditions()
+    {
+        var pem = new PemData("Product", "public-key")
+        {
+            AllowedLicenses = ["AGPL-3.0", "MIT"]
+        };
+
+        var parameters = new ConsumerParameters(
+            nuSealAssetsPath: "path/to/assets",
+            nuSealVersion: "1.0.0",
+            outputPath: "path/to/output",
+            packageId: "Package.Id",
+            assemblyName: "Assembly",
+            pems: [pem],
+            condition: null,
+            propsFile: null,
+            targetsFile: null,
+            validationMode: null,
+            validationScope: "transitive");
+
+        parameters.TargetCondition.Should().Be(
+            "Condition=\"('$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe') And '$(ProductLicense)' != 'AGPL-3.0' And '$(ProductLicense)' != 'MIT'\"");
+    }
+
+    [Fact]
+    public void Constructor_AddsAllowedLicenseConditions_GivenMultiplePems()
+    {
+        var pem1 = new PemData("Product1", "public-key")
+        {
+            AllowedLicenses = ["AGPL-3.0", "MIT"]
+        };
+        var pem2 = new PemData("Product2", "another-public-key")
+        {
+            AllowedLicenses = ["GPL-3.0"]
+        };
+        var pem3 = new PemData("Product3", "yet-another-public-key");
+
+        var parameters = new ConsumerParameters(
+            nuSealAssetsPath: "path/to/assets",
+            nuSealVersion: "1.0.0",
+            outputPath: "path/to/output",
+            packageId: "Package.Id",
+            assemblyName: "Assembly",
+            pems: [pem1, pem2, pem3],
+            condition: null,
+            propsFile: null,
+            targetsFile: null,
+            validationMode: null,
+            validationScope: "transitive");
+
+        parameters.TargetCondition.Should().Be(
+            "Condition=\"('$(OutputType)' == 'Exe' Or '$(OutputType)' == 'WinExe') And '$(Product1License)' != 'AGPL-3.0' And '$(Product1License)' != 'MIT' And '$(Product2License)' != 'GPL-3.0'\"");
+    }
+
+    [Fact]
+    public void Constructor_AddsAllowedLicenseConditionsToConsumerCondition()
+    {
+        var pem = new PemData("Product", "public-key")
+        {
+            AllowedLicenses = ["AGPL-3.0", "MIT"]
+        };
+
+        var parameters = new ConsumerParameters(
+            nuSealAssetsPath: "path/to/assets",
+            nuSealVersion: "1.0.0",
+            outputPath: "path/to/output",
+            packageId: "Package.Id",
+            assemblyName: "Assembly",
+            pems: [pem],
+            condition: "'$(Configuration)' == 'Release'",
+            propsFile: null,
+            targetsFile: null,
+            validationMode: null,
+            validationScope: null);
+
+        parameters.TargetCondition.Should().Be(
+            "Condition=\"('$(Configuration)' == 'Release') And '$(ProductLicense)' != 'AGPL-3.0' And '$(ProductLicense)' != 'MIT'\"");
+    }
+
+    [Fact]
     public void Constructor_SetsPropertiesCorrectly()
     {
         var nuSealAssetsPath = "path/to/assets";
@@ -119,7 +201,7 @@ public sealed class ConsumerParametersTests
         var outputPath = "path/to/output";
         var packageId = "Prefix.PackageId";
         var assemblyName = "AssemblyName";
-        var pems = new PemData[1];
+        var pems = new[] { new PemData("Product", "public-key") };
         var condition = "'#(OutputType)' == 'Exe' Or '#(OutputType)' == 'WinExe'";
         var propsFile = "props.props";
         var targetsFile = "targets.targets";
