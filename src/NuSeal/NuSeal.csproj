@@ -48,9 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Build.Utilities.Core" PrivateAssets="all" ExcludeAssets="runtime">
-      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.Build.Utilities.Core" PrivateAssets="all" ExcludeAssets="runtime" />
     <PackageReference Include="System.Text.Json" PrivateAssets="all" ExcludeAssets="runtime" />
     <PackageReference Include="BouncyCastle.Cryptography" PrivateAssets="all" />
   </ItemGroup>
@@ -59,24 +57,38 @@
     <InternalsVisibleTo Include="NuSeal.Tests" />
   </ItemGroup>
 
-  <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
+  <Target
+    Name="CopyProjectReferencesToPackage"
+    DependsOnTargets="ResolveReferences">
 
     <ItemGroup>
-      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths)" TargetPath="%(ReferenceCopyLocalPaths.DestinationSubPath)" />
+      <BuildOutputInPackage
+        Include="@(ReferenceCopyLocalPaths)"
+        TargetPath="%(ReferenceCopyLocalPaths.DestinationSubPath)" />
     </ItemGroup>
   </Target>
 
-  <Target Name="CopyAssemblyToPackage" DependsOnTargets="ResolveReferences">
+  <Target
+    Name="CopyAssemblyToPackage"
+    DependsOnTargets="ResolveReferences">
 
     <ItemGroup>
-      <BuildOutputInPackage Include="$(TargetDir)$(AssemblyName).dll" TargetPath="..\..\lib\$(TargetFramework)" />
+      <BuildOutputInPackage
+        Include="$(TargetDir)$(AssemblyName).dll"
+        TargetPath="..\..\lib\$(TargetFramework)" />
     </ItemGroup>
   </Target>
 
-  <Target Name="AddBuildDependencyFileToBuiltProjectOutputGroupOutput" BeforeTargets="BuiltProjectOutputGroup" Condition=" '$(GenerateDependencyFile)' == 'true'">
+  <Target
+    Name="AddBuildDependencyFileToBuiltProjectOutputGroupOutput"
+    BeforeTargets="BuiltProjectOutputGroup"
+    Condition=" '$(GenerateDependencyFile)' == 'true'">
 
     <ItemGroup>
-      <BuiltProjectOutputGroupOutput Include="$(ProjectDepsFilePath)" TargetPath="$(ProjectDepsFileName)" FinalOutputPath="$(ProjectDepsFilePath)" />
+      <BuiltProjectOutputGroupOutput
+        Include="$(ProjectDepsFilePath)"
+        TargetPath="$(ProjectDepsFileName)"
+        FinalOutputPath="$(ProjectDepsFilePath)" />
     </ItemGroup>
   </Target>
 
